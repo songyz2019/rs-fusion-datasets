@@ -69,8 +69,8 @@ x_h, x_l, y, extras = dataset[0]
 
 
 ## Help
-- [User Manual](https://github.com/songyz2019/fetch_houston2013/wiki/Usage)
-- [Developer Manual](https://github.com/songyz2019/fetch_houston2013/wiki/Development)
+- [User Manual](https://github.com/songyz2019/rs-fusion-datasets/wiki/Usage)
+- [Developer Manual](https://github.com/songyz2019/rs-fusion-datasets/wiki/Development)
 - [Test cases](tests/test.py)
 - [PyTorch Demo: train your model in 50 lines of code](tests/demo_torch.py)
 
