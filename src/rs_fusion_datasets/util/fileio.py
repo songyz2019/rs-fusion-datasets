@@ -144,7 +144,7 @@ def zip_download_and_extract(dir_name, url :str, required_files :dict, datahome 
         opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36')]
         urllib.request.install_opener(opener)
         print(f"Downloading {url} to {basedir/zip_name}")
-        urllib.request.urlretrieve(url, basedir/zip_name, reporthook=lambda blocknum, bs, size: print(f"Downloading {blocknum*bs/1024/1024:0.3}MB/{size/1024/1024:0.3}MB", end="\r"))
+        urllib.request.urlretrieve(url, basedir/zip_name, reporthook=lambda blocknum, bs, size: print(f"Downloading {blocknum*bs/1024/1024:0.3f}MB/{size/1024/1024:0.3f}MB", end="\r"))
         urllib.request.install_opener(urllib.request.build_opener()) # Reset
         print() # avoid \r issue
 

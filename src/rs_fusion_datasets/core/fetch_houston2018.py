@@ -15,7 +15,7 @@ import rasterio
 from scipy.sparse import coo_array, spmatrix
 from jaxtyping import UInt16, Float32, UInt64
 
-from ..util.fileio import read_roi, zip_download_and_extract
+from ..util.fileio import zip_download_and_extract
 from .common import DataMetaInfo
 
 def fetch_houston2018(datahome: Optional[str] = None, download_if_missing=True) -> tuple[
