@@ -13,7 +13,7 @@ import skimage
 from scipy.sparse import coo_array
 
 from .common import DataMetaInfo
-from ..util.fileio import get_data_home, verify_files
+from ..util.fileio import zip_download_and_extract
 
 
 
@@ -25,46 +25,23 @@ def _fetch_houston2013mmrs(datahome=None):
     your dataset and provide the link. The default link is only for internal test. 
     """
     # 1. 准备
-    logger = logging.getLogger("fetch_houston2013mmrs")
-    DATA_HOME = Path(get_data_home(datahome))
-    ZIP_PATH = DATA_HOME / 'houston2013mmrs.zip'
-    UNZIPPED_PATH = DATA_HOME / 'houston2013mmrs'
-    ROOT = DATA_HOME / 'houston2013mmrs' / 'Houston2013/'
 
-    FILES_SHA256 = {
+    basedir = zip_download_and_extract('houston2013mmcr', 'http://localhost:5000/houston2013mmcr.zip', {
+        'houston2013mmcr.zip': '360a56f013479fcb7c46a725adfc44a953d4c4675da10016947559e8005df829'
         'gt.mat' : '75ecccc08ac7709e48285bb098fda802da6efd6dc0168cb1c99c6ce09d0b6ae0',
         'HSI.mat' : '6a0edba3c224df411623ed5774fc34e91929ab341709859b2f56cc38dbb3c6fd',
         'LiDAR.mat' : '7aa956e7c371fd29a495f0cb9bb8f572aaa4065fcfeda2b3e854a5cef74b35ad',
         'TRLabel.mat' : '96ce863eaf4dc548c3140a480dee33c812d46194ae5ed345fed6e71a3d72b527',
-        'TSLabel.mat' : '46bd849d556c80ed67b33f23dd288eafa7ac9f97a847390be373b702b0bf5a45',
-    }
-    if not exists(DATA_HOME):
-        os.makedirs(DATA_HOME)
+        'TSLabel.mat' : '46bd849d556c80ed67b33f23dd288eafa7ac9f97a847390be373b702b0bf5a45'
+    })
 
-    # 2.下载数据集zip文件并解压
-    if exists(ROOT) and len(os.listdir(ROOT)) > 0:  # 已存在解压的文件夹且非空
-        verify_files(ROOT, FILES_SHA256, f"please try removing {ROOT}")
-    else:
-        # 解压 2013_DFTC 目录下的所有文件
-        logger.info(f"Decompressing {ZIP_PATH}")
-        with ZipFile(ZIP_PATH, 'r') as zip_file:
-            zip_file.extractall(UNZIPPED_PATH)
-
-        verify_files(ROOT, FILES_SHA256)
-
-        # 删除ZIP
-        os.remove(ZIP_PATH)
-
-        # 显示版权信息
-        #with open(ROOT / 'LICENSE', 'r', encoding='utf-8') as f:
-        #    logger.info(f.read())
 
     # 3.加载数据
-    hsi = loadmat(str(ROOT / 'HSI.mat'))['HSI'].transpose(2,0,1)
-    lidar = loadmat(str(ROOT / 'LiDAR.mat'))['LiDAR'] [np.newaxis,:,:]
-    tr = loadmat(str(ROOT / 'TRLabel.mat'))['TRLabel']
-    te = loadmat(str(ROOT / 'TSLabel.mat'))['TSLabel']
-    gt = loadmat(str(ROOT / 'gt.mat'))['gt']
+    hsi = loadmat(str(basedir / 'HSI.mat'))['HSI'].transpose(2,0,1)
+    lidar = loadmat(str(basedir / 'LiDAR.mat'))['LiDAR'] [np.newaxis,:,:]
+    tr = loadmat(str(basedir / 'TRLabel.mat'))['TRLabel']
+    te = loadmat(str(basedir / 'TSLabel.mat'))['TSLabel']
+    gt = loadmat(str(basedir / 'gt.mat'))['gt']
 
     tr = coo_array(tr, dtype='int')
     te = coo_array(te, dtype='int')
