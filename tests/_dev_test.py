@@ -5,14 +5,14 @@ import unittest
 
 import numpy as np
 import skimage
-from fetch_houston2013 import _fetch_houston2013mmrs, _Houston2013Mmrs
+from rs_fusion_datasets import _fetch_houston2013mmrs, _Houston2013Mmrs
 from torch.utils.data import DataLoader
 from itertools import product
 from hsi2rgb import hsi2rgb
 import torch
 from typing import get_type_hints, TypedDict, get_origin
 
-from fetch_houston2013 import CommonHsiDsmDataset, DataMetaInfo
+from rs_fusion_datasets import CommonHsiDsmDataset, DataMetaInfo
 
 
 def is_typeddict_instance(obj, typeddict_cls):

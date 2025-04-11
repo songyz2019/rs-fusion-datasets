@@ -22,14 +22,13 @@ Download and load remote sensing datasets easily and swiftly. rs-fusion-datasets
 
 
 ## Quick Start
-1. install this package
+1. Install this package
 ```bash
-pip install fetch_houston2013
-# will soon migrate to pip install rs-fusion-datasets
+pip install rs-fusion-datasets
 ```
 2. import and get the dataset
 ```python
-from fetch_houston2013 import fetch_houston2013, fetch_muufl, fetch_trento, split_spmatrix
+from rs-fusion-datasets import fetch_houston2013, fetch_muufl, fetch_trento, split_spmatrix
 # For Houston 2013
 hsi, dsm, train_label, test_label, info = fetch_houston2013()
 # For Muufl
@@ -58,7 +57,7 @@ or directly use them for getting the value in a very fast way:
 ### torch
 A standard ready-to-use Torch vison dataset.
 ```python
-from fetch_houston2013 import Houston2013, Trento, Muufl
+from rs-fusion-datasets import Houston2013, Trento, Muufl
 dataset = Muufl(subset='train', patch_size=11)
 x_h, x_l, y, extras = dataset[0]
 ```
