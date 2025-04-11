@@ -1,24 +1,31 @@
-# fetch houston2013 muufl and trento
+# Remote Sensing Fusion Datasets
 
 [![PyPI - Version](https://img.shields.io/pypi/v/fetch-houston2013.svg)](https://pypi.org/project/fetch-houston2013)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/fetch-houston2013)](https://pypi.org/project/fetch-houston2013)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fetch-houston2013.svg)](https://pypi.org/project/fetch-houston2013)
-![GitHub Created At](https://img.shields.io/github/created-at/songyz2019/fetch_houston2013)
-![GitHub License](https://img.shields.io/github/license/songyz2019/fetch_houston2013)
+![GitHub Created At](https://img.shields.io/github/created-at/songyz2019/rs-fusion-datasets)
+![GitHub License](https://img.shields.io/github/license/songyz2019/rs-fusion-datasets)
 
 
 
-Download and load Houston 2013 Dataset, Trento dataset and Muufl dataset easily and swiftly. fetch_houston2013 is:
+Download and load remote sensing datasets easily and swiftly. rs-fusion-datasets (formerly known as fetch_houston2013) is:
 1. A fast houston2013 muufl and trento dataset fetcher that automatically downloads all data
 2. A ready-to-use torch dataloader for houston2013 muufl and trento dataset
 3. A toolbox for visualizing the datasets
 
 ![screenshot](screenshot.jpg)
 
+## Supported Datasets
+1. Houston 2013
+2. Trento
+3. Muufl
+
+
 ## Quick Start
 1. install this package
 ```bash
-pip install fetch-houston2013
+pip install fetch_houston2013
+# will soon migrate to pip install rs-fusion-datasets
 ```
 2. import and get the dataset
 ```python
@@ -70,7 +77,7 @@ x_h, x_l, y, extras = dataset[0]
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=songyz2019/fetch_houston2013&type=Date)](https://www.star-history.com/#songyz2019/fetch_houston2013&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=songyz2019/rs-fusion-datasets&type=Date)](https://www.star-history.com/#songyz2019/rs-fusion-datasets&Date)
 
 ## Contribution
 We welcome all contributions, including issues, pull requests, feature requests and discussions.

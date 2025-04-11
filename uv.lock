@@ -80,45 +80,6 @@ wheels = [
 ]
 
 [[package]]
-name = "fetch-houston2013"
-version = "0.8.1.dev1"
-source = { editable = "." }
-dependencies = [
-    { name = "jaxtyping", version = "0.2.36", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "jaxtyping", version = "0.3.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "numpy", version = "2.2.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "rasterio" },
-    { name = "scikit-image", version = "0.24.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "scikit-image", version = "0.25.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "scipy", version = "1.13.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "scipy", version = "1.15.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "hsi2rgb" },
-    { name = "torch" },
-    { name = "torchvision" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "jaxtyping", specifier = ">=0.2.0" },
-    { name = "numpy", specifier = ">=1.24.0" },
-    { name = "rasterio", specifier = ">=1.2.0" },
-    { name = "scikit-image", specifier = ">=0.21.0" },
-    { name = "scipy", specifier = ">=1.10.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "hsi2rgb", specifier = ">=0.1.1" },
-    { name = "torch", specifier = ">=2.5.1" },
-    { name = "torchvision", specifier = ">=0.20.1" },
-]
-
-[[package]]
 name = "filelock"
 version = "3.18.0"
 source = { registry = "https://pypi.org/simple" }
@@ -705,6 +666,45 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/38/af/60768ad82f7e03a5180fb087b60cbe0522893b2153a313a0a530325eaff2/rasterio-1.4.3-cp39-cp39-macosx_14_0_arm64.whl", hash = "sha256:3f411a6a5bcb81ab6dc9128a8bccd13d3822cfa4a50c239e3a0528751a1ad5fc", size = 18771688 },
     { url = "https://files.pythonhosted.org/packages/e1/93/52f8514173501efe3b1987d668868507f7f60e6cf246960ed132c5c2d1b3/rasterio-1.4.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:597f8dcf494d0ca4254434496e83b1723fec206d23d64da5751a582a2b01e1d3", size = 22217797 },
     { url = "https://files.pythonhosted.org/packages/bd/e5/5a29b8b098067e8983b1592a3447d3928721d8ad3a7c4cee482e501942ee/rasterio-1.4.3-cp39-cp39-win_amd64.whl", hash = "sha256:a702e21712ba237e34515d829847f9f5f06d8e665e864a7bb0a3d4d8f6dec10d", size = 25445953 },
+]
+
+[[package]]
+name = "rs-fusion-datasets"
+version = "0.8.1.dev1"
+source = { editable = "." }
+dependencies = [
+    { name = "jaxtyping", version = "0.2.36", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "jaxtyping", version = "0.3.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "numpy", version = "2.2.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "rasterio" },
+    { name = "scikit-image", version = "0.24.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "scikit-image", version = "0.25.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "scipy", version = "1.13.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "scipy", version = "1.15.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "hsi2rgb" },
+    { name = "torch" },
+    { name = "torchvision" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "jaxtyping", specifier = ">=0.2.0" },
+    { name = "numpy", specifier = ">=1.24.0" },
+    { name = "rasterio", specifier = ">=1.2.0" },
+    { name = "scikit-image", specifier = ">=0.21.0" },
+    { name = "scipy", specifier = ">=1.10.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "hsi2rgb", specifier = ">=0.1.1" },
+    { name = "torch", specifier = ">=2.5.1" },
+    { name = "torchvision", specifier = ">=0.20.1" },
 ]
 
 [[package]]

@@ -5,7 +5,7 @@ import unittest
 
 import numpy as np
 import skimage
-from fetch_houston2013 import fetch_houston2013, fetch_muufl, split_spmatrix, fetch_trento, Muufl, Houston2013, Trento, DataMetaInfo, lbl2rgb
+from rs_fusion_datasets import fetch_houston2013, fetch_muufl, split_spmatrix, fetch_trento, Muufl, Houston2013, Trento, DataMetaInfo, lbl2rgb
 import torch
 from torch.utils.data import DataLoader
 from itertools import product

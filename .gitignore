@@ -13,3 +13,4 @@ load_secrets.bash
 
 *.pth
 *.pt
+*cache/
