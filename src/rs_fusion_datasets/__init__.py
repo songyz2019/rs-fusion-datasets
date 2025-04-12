@@ -1,7 +1,7 @@
 import logging
 import os
 logging.basicConfig(
-    level=os.environ.get("RS_FUSION_DATASETS_LOGLEVEL", "INFO")
+    level=os.environ.get("RS_FUSION_DATASETS_LOGLEVEL", "ERROR")
 )
 
 

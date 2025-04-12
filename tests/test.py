@@ -28,9 +28,9 @@ def is_typeddict_instance(obj, typeddict_cls):
 
 class Test(unittest.TestCase):
     def setUp(self):
-        self.trento_hsi, self.trento_dsm, self.trento_lbl, self.trento_info = fetch_trento()
-        self.houston2013_hsi, self.houston2013_dsm, self.houston2013_lbl_train, self.houston2013_lbl_test, self.houston2013_info = fetch_houston2013()
-        self.muufl_hsi, self.muufl_dsm, self.muufl_lbl, self.muufl_info = fetch_muufl()
+        self.trento = fetch_trento()
+        self.houston2013 = fetch_houston2013()
+        self.muufl = fetch_muufl()
     
     def torch_dataloader_test(self, dataset):
         b = 16
@@ -69,7 +69,7 @@ class Test(unittest.TestCase):
         skimage.io.imsave(f"dist/{info['name']}_{subset}.png", img, check_contrast=False)
 
     def test_fetch_houston2013(self):
-        casi, lidar, train_truth, test_truth, info = fetch_houston2013()
+        casi, lidar, train_truth, test_truth, info = self.houston2013
         H, W = 349, 1905
         C_H, C_L = 144, 1
         self.assertEqual(train_truth.data.max(), info['n_class'])
@@ -104,7 +104,7 @@ class Test(unittest.TestCase):
         skimage.io.imsave(f"dist/{info['name']}_dsm.png", dsm_img.astype(np.uint8))
 
     def test_fetch_muufl(self):
-        casi, lidar, truth, info = fetch_muufl()
+        casi, lidar, truth, info = self.muufl
         train_label, test_label = split_spmatrix(truth, 20)
         H, W = 325, 220
         C_H, C_L = 64, 2
@@ -129,7 +129,7 @@ class Test(unittest.TestCase):
         skimage.io.imsave(f"dist/{info['name']}_dsm.png", dsm_img.astype(np.uint8))
 
     def test_fetch_trento(self):
-        casi, lidar, truth, info = fetch_trento()
+        casi, lidar, truth, info = self.trento
         train_label, test_label = split_spmatrix(truth, 20)
 
         H, W = 166, 600
@@ -165,8 +165,8 @@ class Test(unittest.TestCase):
 
 
     def test_lbl2rgb(self):
-        for datafetch in [fetch_muufl, fetch_trento]:
-            casi, lidar, truth, info = datafetch()
+        for datafetch in [self.trento, self.muufl]:
+            casi, lidar, truth, info = datafetch
             train_label, test_label = split_spmatrix(truth, 100)
             self.generate_lbl2rgb(train_label, info, subset='train')
             self.generate_lbl2rgb(test_label, info, subset='test')

@@ -19,6 +19,8 @@ Download and load remote sensing datasets easily and swiftly. rs-fusion-datasets
 1. Houston 2013
 2. Trento
 3. Muufl
+4. Houston 2018 (WIP)
+4. Augsberg (WIP)
 
 
 ## Quick Start
