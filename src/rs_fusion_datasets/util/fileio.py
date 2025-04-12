@@ -93,7 +93,7 @@ def verify_file(path: Path, expected_sha256: str) -> bool:
         logging.debug(f"Not a file")
         raise ValueError(f"{path} is not a file")
     if expected_sha256 != _quick_sha256(path):
-        logging.debug(f"Incorrect sha256")
+        logging.debug(f"Incorrect sha256: {_quick_sha256(path)}")
         return False
     logging.debug(f"PASS")
     return True

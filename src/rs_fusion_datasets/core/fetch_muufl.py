@@ -24,12 +24,12 @@ def fetch_muufl(url :Union[str, List[str]]='https://github.com/GatorSense/MUUFLG
     """
 
     basedir = zip_download_and_extract('muufl', url, {
-        'muufl.zip'      :'8d8bb945cafedf0d7226d3e9a00a158a7769011dfef1c8edb9dddcc050e1ca62',
-        "MUUFLGulfportSceneLabels/muufl_gulfport_campus_1_hsi_220_label.mat": "69420a72866dff4a858ae503e6e2981af46f406a4ad8f4dd642efa43feb59edc"
+        'muufl.zip'      :'e5270adbf248e9639c7951f44b2fbf40384cc931bda72a2e73b87a6473b0c560',
+        "MUUFLGulfport-0.1/MUUFLGulfportSceneLabels/muufl_gulfport_campus_1_hsi_220_label.mat": "69420a72866dff4a858ae503e6e2981af46f406a4ad8f4dd642efa43feb59edc"
     })
 
     d = scipy.io.loadmat(
-        basedir / 'MUUFLGulfportSceneLabels/muufl_gulfport_campus_1_hsi_220_label.mat',
+        basedir / 'MUUFLGulfport-0.1/MUUFLGulfportSceneLabels/muufl_gulfport_campus_1_hsi_220_label.mat',
         squeeze_me=True,
         mat_dtype=True,
         struct_as_record=False
