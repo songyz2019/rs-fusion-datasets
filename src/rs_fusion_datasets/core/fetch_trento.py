@@ -20,7 +20,7 @@ def fetch_trento(url :Union[str, List[str]]='https://github.com/tyust-dayu/Trent
         'trento.zip'      :'b203331b039d994015c4137753f15973cb638046532b8dced6064888bf970631',
         'Trento-b4afc449ce5d6936ddc04fe267d86f9f35536afd/allgrd.mat'      :'7e3fb2a2ea22c2661dfc768db3cb93c9643b324e7e64fadedfa57f5edbf1818f',
         'Trento-b4afc449ce5d6936ddc04fe267d86f9f35536afd/Italy_hsi.mat'   :'7b965fd405314b5c91451042e547a1923be6f5a38c6da83969032cff79729280',
-        'Trento-b4afc449ce5d6936ddc04fe267d86f9f35536afd/Italy_lidar.mat' :'2219e6259e3ad80521a8a7ff879916624efa61eb6df1bfd80538f6f2d4befa2c',
+        'Trento-b4afc449ce5d6936ddc04fe267d86f9f35536afd/Italy_lidar.mat' :'a04dc90368d6a7b4f9d3936024ba9fef4105456c090daa14fff31b8b79e94ab1',
     })
 
 
