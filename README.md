@@ -1,8 +1,8 @@
 # Remote Sensing Fusion Datasets
 
-[![PyPI - Version](https://img.shields.io/pypi/v/fetch-houston2013.svg)](https://pypi.org/project/fetch-houston2013)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/fetch-houston2013)](https://pypi.org/project/fetch-houston2013)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fetch-houston2013.svg)](https://pypi.org/project/fetch-houston2013)
+[![PyPI - Version](https://img.shields.io/pypi/v/rs-fusion-datasets.svg)](https://pypi.org/project/rs-fusion-datasets)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/rs-fusion-datasets)](https://pypi.org/project/rs-fusion-datasets)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/rs-fusion-datasets.svg)](https://pypi.org/project/rs-fusion-datasets)
 ![GitHub Created At](https://img.shields.io/github/created-at/songyz2019/rs-fusion-datasets)
 ![GitHub License](https://img.shields.io/github/license/songyz2019/rs-fusion-datasets)
 
@@ -30,7 +30,7 @@ pip install rs-fusion-datasets
 ```
 2. import and get the dataset
 ```python
-from rs-fusion-datasets import fetch_houston2013, fetch_muufl, fetch_trento, split_spmatrix
+from rs_fusion_datasets import fetch_houston2013, fetch_muufl, fetch_trento, split_spmatrix
 # For Houston 2013
 hsi, dsm, train_label, test_label, info = fetch_houston2013()
 # For Muufl
@@ -57,9 +57,9 @@ or directly use them for getting the value in a very fast way:
 ```
 
 ### torch
-A standard ready-to-use Torch vison dataset.
+Ready-to-use Torch vison datasets.
 ```python
-from rs-fusion-datasets import Houston2013, Trento, Muufl
+from rs_fusion_datasets import Houston2013, Trento, Muufl
 dataset = Muufl(subset='train', patch_size=11)
 x_h, x_l, y, extras = dataset[0]
 ```
