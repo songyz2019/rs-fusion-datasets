@@ -31,7 +31,8 @@ jobs:
 
     - run: uv sync --frozen
     - run: uv build
-    - run: uv run tests/test.py
+    - run: RS_FUSION_DATASETS_LOGLEVEL=DEBUG uv run tests/test.py
+      
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4

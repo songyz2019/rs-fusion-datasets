@@ -1,15 +1,8 @@
-import os
-from os.path import exists, expanduser, join
-from pathlib import Path
-from types import SimpleNamespace
-from typing import List
-from zipfile import ZipFile
-import logging
+from typing import List, Union
 
 import numpy as np
 from scipy.io import loadmat
 
-import skimage
 from scipy.sparse import coo_array
 
 from .common import DataMetaInfo
@@ -17,31 +10,29 @@ from ..util.fileio import zip_download_and_extract
 
 
 
-def _fetch_houston2013mmrs(datahome=None):
+def _fetch_houston2013mmrs(url :Union[str, List[str]]='http://10.7.36.2:5000/dataset/houston2013mmrs.zip'):
     """
 
     Image array format: CHW
     You are not supposed to use this function because the Houston2013_mmcr dataset is not public available in a direct link, and you should host
     your dataset and provide the link. The default link is only for internal test. 
     """
-    # 1. 准备
-
-    basedir = zip_download_and_extract('houston2013mmcr', 'http://localhost:5000/houston2013mmcr.zip', {
-        'houston2013mmcr.zip': '360a56f013479fcb7c46a725adfc44a953d4c4675da10016947559e8005df829'
-        'gt.mat' : '75ecccc08ac7709e48285bb098fda802da6efd6dc0168cb1c99c6ce09d0b6ae0',
-        'HSI.mat' : '6a0edba3c224df411623ed5774fc34e91929ab341709859b2f56cc38dbb3c6fd',
-        'LiDAR.mat' : '7aa956e7c371fd29a495f0cb9bb8f572aaa4065fcfeda2b3e854a5cef74b35ad',
-        'TRLabel.mat' : '96ce863eaf4dc548c3140a480dee33c812d46194ae5ed345fed6e71a3d72b527',
-        'TSLabel.mat' : '46bd849d556c80ed67b33f23dd288eafa7ac9f97a847390be373b702b0bf5a45'
+    basedir = zip_download_and_extract('houston2013mmrs', url, {
+        'houston2013mmrs.zip'     : '7a2d719d12f49f1984e6f28821254cd6b217ba85599780a093ed3388ae1fd762',
+        'Houston2013/gt.mat'      : '75ecccc08ac7709e48285bb098fda802da6efd6dc0168cb1c99c6ce09d0b6ae0',
+        'Houston2013/HSI.mat'     : '6a0edba3c224df411623ed5774fc34e91929ab341709859b2f56cc38dbb3c6fd',
+        'Houston2013/LiDAR.mat'   : '7aa956e7c371fd29a495f0cb9bb8f572aaa4065fcfeda2b3e854a5cef74b35ad',
+        'Houston2013/TRLabel.mat' : '96ce863eaf4dc548c3140a480dee33c812d46194ae5ed345fed6e71a3d72b527',
+        'Houston2013/TSLabel.mat' : '46bd849d556c80ed67b33f23dd288eafa7ac9f97a847390be373b702b0bf5a45',
     })
 
 
     # 3.加载数据
-    hsi = loadmat(str(basedir / 'HSI.mat'))['HSI'].transpose(2,0,1)
-    lidar = loadmat(str(basedir / 'LiDAR.mat'))['LiDAR'] [np.newaxis,:,:]
-    tr = loadmat(str(basedir / 'TRLabel.mat'))['TRLabel']
-    te = loadmat(str(basedir / 'TSLabel.mat'))['TSLabel']
-    gt = loadmat(str(basedir / 'gt.mat'))['gt']
+    hsi = loadmat(str(basedir / 'Houston2013/HSI.mat'))['HSI'].transpose(2,0,1)
+    lidar = loadmat(str(basedir / 'Houston2013/LiDAR.mat'))['LiDAR'] [np.newaxis,:,:]
+    tr = loadmat(str(basedir / 'Houston2013/TRLabel.mat'))['TRLabel']
+    te = loadmat(str(basedir / 'Houston2013/TSLabel.mat'))['TSLabel']
+    gt = loadmat(str(basedir / 'Houston2013/gt.mat'))['gt']
 
     tr = coo_array(tr, dtype='int')
     te = coo_array(te, dtype='int')

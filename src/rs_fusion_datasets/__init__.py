@@ -1,3 +1,10 @@
+import logging
+import os
+logging.basicConfig(
+    level=os.environ.get("RS_FUSION_DATASETS_LOGLEVEL", "INFO")
+)
+
+
 from .core.fetch_houston2013 import fetch_houston2013
 from .core.fetch_houston2018 import fetch_houston2018
 from .core._fetch_houston2013mmrs import _fetch_houston2013mmrs

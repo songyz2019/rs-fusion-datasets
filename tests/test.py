@@ -28,7 +28,9 @@ def is_typeddict_instance(obj, typeddict_cls):
 
 class Test(unittest.TestCase):
     def setUp(self):
-        pass
+        self.trento_hsi, self.trento_dsm, self.trento_lbl, self.trento_info = fetch_trento()
+        self.houston2013_hsi, self.houston2013_dsm, self.houston2013_lbl_train, self.houston2013_lbl_test, self.houston2013_info = fetch_houston2013()
+        self.muufl_hsi, self.muufl_dsm, self.muufl_lbl, self.muufl_info = fetch_muufl()
     
     def torch_dataloader_test(self, dataset):
         b = 16

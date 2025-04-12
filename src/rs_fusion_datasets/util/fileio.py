@@ -1,7 +1,10 @@
+from ftplib import FTP
+import logging
 import os
 from os.path import expanduser, join
 from pathlib import Path
-from typing import List
+import re
+from typing import List, Union
 import warnings
 import hashlib
 from io import StringIO
@@ -69,31 +72,6 @@ def read_roi(path :Path, shape) -> coo_array:
 
     return img.tocoo()
 
-# TODO: deprecate this
-def verify_files(root: Path, files_sha256: dict, extra_message: str = '') -> None:
-    """验证root下的文件的sha256是否与files_sha256相符
-
-    :param extra_message: 额外报错信息
-    :param files_sha256: 例如: `{"1.txt", "f4d619....", "2.txt": "9d03010....."}`
-    :param root: 文件夹目录
-    """
-
-    def sha256(path):
-        """Calculate the sha256 hash of the file at path."""
-        sha256hash = hashlib.sha256()
-        chunk_size = 8192
-        with open(path, "rb") as f:
-            while True:
-                buffer = f.read(chunk_size)
-                if not buffer:
-                    break
-                sha256hash.update(buffer)
-        return sha256hash.hexdigest()
-
-    for filename, checksum in files_sha256.items():
-        assert sha256(root/filename) == checksum, f"Incorrect SHA256 for {filename}. Expect {checksum}, Actual {sha256(root/filename)}. {extra_message}"
-
-
 def verify_file(path: Path, expected_sha256: str) -> bool:
     def _quick_sha256(path):
         """Calculate the sha256 hash of the file at path."""
@@ -107,15 +85,20 @@ def verify_file(path: Path, expected_sha256: str) -> bool:
                 sha256hash.update(buffer)
         return sha256hash.hexdigest()
 
+    logging.debug(f"Verifying {path} with sha256 {expected_sha256}")
     if not path.exists():
+        logging.debug(f"Not exist")
         return False
     if not path.is_file():
+        logging.debug(f"Not a file")
         raise ValueError(f"{path} is not a file")
     if expected_sha256 != _quick_sha256(path):
+        logging.debug(f"Incorrect sha256")
         return False
+    logging.debug(f"PASS")
     return True
 
-def zip_download_and_extract(dir_name, url :str, required_files :dict, datahome = None) -> None:
+def zip_download_and_extract(dir_name, url :Union[str, List[str]], required_files :dict, datahome = None) -> None:
     """
     Download a zip file from url and extract it to datahome
 
@@ -125,6 +108,7 @@ def zip_download_and_extract(dir_name, url :str, required_files :dict, datahome 
     The required_files[dir_name+'.zip'] is the zip file itself, and the rest are the files in the zip file.
     Put your file to basedir/zip_name to skip the download step.
     """
+    # breakpoint()
     dir_name = dir_name.removesuffix('/')
     if isinstance(dir_name, str):
         basedir = Path(get_data_home(datahome))/dir_name
@@ -139,16 +123,12 @@ def zip_download_and_extract(dir_name, url :str, required_files :dict, datahome 
     
 
     zip_name = dir_name+'.zip'
-    if not verify_file(basedir/zip_name, required_files[zip_name]):
-        opener = urllib.request.build_opener()
-        opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36')]
-        urllib.request.install_opener(opener)
-        print(f"Downloading {url} to {basedir/zip_name}")
-        urllib.request.urlretrieve(url, basedir/zip_name, reporthook=lambda blocknum, bs, size: print(f"Downloading {blocknum*bs/1024/1024:0.3f}MB/{size/1024/1024:0.3f}MB", end="\r"))
-        urllib.request.install_opener(urllib.request.build_opener()) # Reset
-        print() # avoid \r issue
+    mirrored_download(
+        basedir/zip_name,
+        url,
+        required_files[zip_name]
+    )
 
-        verify_file(basedir/zip_name, required_files[zip_name])
     # Now the zip file must exist and verified, or the program raised an exception
     # Assuming the zip file is OK
 
@@ -162,3 +142,74 @@ def zip_download_and_extract(dir_name, url :str, required_files :dict, datahome 
             raise ValueError(f"{basedir/path} is not found or not verified")
 
     return basedir
+
+def _ftp_download(path :Path, url, sha256: str):
+    """Only simple case url supported ftp://username@host.com?password/aug.zip"""
+    grp = re.match(r'ftp://(\w+)@([\w\.]+)\?([\w\.]+)/([\w\.]+)', url)
+    ftp_username, ftp_host, ftp_password, ftp_file_name = grp.groups()
+
+    if verify_file(path, sha256):
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    ftp = FTP(ftp_host)
+    ftp.login(user=ftp_username, passwd=ftp_password)
+    ftp.voidcmd('TYPE I')
+
+    size_mb = ftp.size(ftp_file_name) / 1024 / 1024
+    with open(path, 'wb') as fp:
+        global i_rsfds
+        i_rsfds = 0 # add a random suffix
+        def retr_callback(chunk: bytes):
+            global i_rsfds
+            i_rsfds += len(chunk)
+            print(f"{i_rsfds/1024/1024:.3f}MB/{size_mb:.3f}MB", end='\r')
+            fp.write(chunk)
+        ftp.retrbinary(f'RETR {ftp_file_name}', retr_callback, blocksize=65536)
+
+    assert verify_file(path, sha256)
+
+
+
+
+
+def mirrored_download(path :Path, url :Union[str, List[str]], sha256: str):
+    """Download a file from urls, and check the sha256 hash. If the download fails, try the next url.
+
+    :param path: The path to save the file
+    :param urls: The list of urls to download from
+    :param sha256: The sha256 hash of the file
+    """
+    if verify_file(path, sha256):
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if isinstance(url, str):
+        url = [url,]
+    
+    opener = urllib.request.build_opener()
+    opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0')]
+    urllib.request.install_opener(opener)
+
+    success = False
+    for url in url:
+        try:
+            print(f"Downloading {url} to {path}")
+            if url.startswith('http://') or url.startswith('https://'):
+                urllib.request.urlretrieve(url, path, reporthook=lambda blocknum, bs, size: print(f"{blocknum*bs/1024/1024:0.3f}MB/{size/1024/1024:0.3f}MB", end="\r"))
+            elif url.startswith('ftp://'):
+                _ftp_download(path, url, sha256)
+            print("\nDownload Success")
+            if verify_file(path, sha256):
+                success = True
+                break
+        except (urllib.error.URLError, urllib.error.HTTPError, ValueError) as e:
+            print(f"Error downloading {url}: {e}")
+            continue
+
+    urllib.request.install_opener(urllib.request.build_opener()) # Reset
+    if not success:
+        raise ValueError(f"Failed to download {path} from all urls")
+    else:
+        return
+
+

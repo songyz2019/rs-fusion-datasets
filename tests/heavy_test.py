@@ -1,11 +1,12 @@
 # SPDX-FileCopyrightText: 2025-present songyz2023 <songyz2023dlut@outlook.com>
 # SPDX-License-Identifier: Apache-2.0
 
+from pathlib import Path
 import unittest
 
 import numpy as np
 import skimage
-from rs_fusion_datasets import _fetch_houston2013mmrs, _Houston2013Mmrs
+from rs_fusion_datasets import _fetch_houston2013mmrs, _Houston2013Mmrs, fetch_houston2018
 from torch.utils.data import DataLoader
 from itertools import product
 from hsi2rgb import hsi2rgb
@@ -13,6 +14,7 @@ import torch
 from typing import get_type_hints, TypedDict, get_origin
 
 from rs_fusion_datasets import CommonHsiDsmDataset, DataMetaInfo
+from rs_fusion_datasets.util.fileio import ftp_download
 
 
 def is_typeddict_instance(obj, typeddict_cls):
@@ -28,6 +30,9 @@ def is_typeddict_instance(obj, typeddict_cls):
     
 
 class Test(unittest.TestCase):
+    def setUp(self):
+        pass
+
     def torch_dataloader_test(self, dataset :CommonHsiDsmDataset):
         b = 16
         dataloader = DataLoader(dataset, batch_size=b, shuffle=True, drop_last=True)
@@ -104,7 +109,17 @@ class Test(unittest.TestCase):
             dataset = Dataset(subset=subset, patch_size=patch_size)
             self.torch_dataloader_test(dataset)
 
-        
+    def test_fetch_houston2018(self):
+        hsi, lidar, lbl, info = fetch_houston2018()
+        hsi = hsi.astype(np.float32)
+        hsi = (hsi - hsi.min()) / (hsi.max() - hsi.min())
+        rgb = hsi2rgb(hsi, wavelength=info['wavelength'], input_format='CHW', output_format='HWC')
+        skimage.io.imsave(f"dist/{info['name']}_hsi.png", (rgb * 255.0).astype(np.uint8))
+
+        dsm = lidar[0, :, :]
+        dsm_img = (dsm - dsm.min()) / (dsm.max() - dsm.min()) * 255.0
+        skimage.io.imsave(f"dist/{info['name']}_dsm.png", dsm_img.astype(np.uint8))
+
 
 if __name__ == '__main__':
     unittest.main()

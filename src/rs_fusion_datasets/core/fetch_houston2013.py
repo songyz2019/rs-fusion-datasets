@@ -1,24 +1,20 @@
 # SPDX-FileCopyrightText: 2025-present songyz2023 <songyz2023dlut@outlook.com>
 # SPDX-License-Identifier: Apache-2.0
 
-import os
-from os.path import exists
-from pathlib import Path
-from typing import Optional
-from zipfile import ZipFile
-import urllib
-import urllib.request
-import logging
+from typing import List, Union
 
 import numpy as np
 import rasterio
 from scipy.sparse import coo_array, spmatrix
 from jaxtyping import UInt16, Float32, UInt64
 
-from ..util.fileio import get_data_home, verify_files, read_roi, zip_download_and_extract, verify_file
+from ..util.fileio import read_roi, zip_download_and_extract, verify_file, mirrored_download
 from .common import DataMetaInfo
 
-def fetch_houston2013(datahome: Optional[str] = None, download_if_missing=True) -> tuple[
+def fetch_houston2013(
+    url :Union[str, List[str]]='https://machinelearning.ee.uh.edu/2egf4tg8hial13gt/2013_DFTC.zip', 
+    va_url=["https://github.com/songyz2019/rs-fusion-datasets/raw/8539c932284a0d2ae60e7f968f430c42d4d1c09a/data/2013_IEEE_GRSS_DF_Contest_Samples_VA.txt", 'https://pastebin.com/raw/FJyu5SQX'],
+) -> tuple[
     UInt16[np.ndarray, '144 349 1905'],
     Float32[np.ndarray, '1 349 1905'],
     UInt64[spmatrix, '349 1905'],
@@ -35,11 +31,10 @@ def fetch_houston2013(datahome: Optional[str] = None, download_if_missing=True) 
 
     :return: (hsi, dsm, train_truth, test_truth, info)
     """
-    logger = logging.getLogger("fetch_houston2013")
 
 
-    basedir = zip_download_and_extract('houston2013', 'https://machinelearning.ee.uh.edu/2egf4tg8hial13gt/2013_DFTC.zip', {
-        '2013_DFTC/houston2013.zip': 'f4d619d5cbcb09d0301038f1b8fe83def6c2d484334b7b8127740a00ecf7e245',
+    basedir = zip_download_and_extract('houston2013', url, {
+        'houston2013.zip': 'f4d619d5cbcb09d0301038f1b8fe83def6c2d484334b7b8127740a00ecf7e245',
         '2013_DFTC/2013_IEEE_GRSS_DF_Contest_CASI.hdr':       '869be3459978b535b873bca98b1cf05066c7acca9c160b486a86efd775005e8d',
         '2013_DFTC/2013_IEEE_GRSS_DF_Contest_CASI.tif':       '1440f38594e8e82cc1944c084fc138ef55a70af54122828e999c4fb438574c14',
         '2013_DFTC/2013_IEEE_GRSS_DF_Contest_LiDAR.hdr':      '053c083de1cb0d9ad51c56964b29669733ef2c7db05997d4f4e0779ab2f6aade',
@@ -48,19 +43,13 @@ def fetch_houston2013(datahome: Optional[str] = None, download_if_missing=True) 
         '2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_TR.txt': '16c69cf216535d7b4df2045b05d49c50a078609aa6d011a5e23e54f4cd08abda',
         '2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_VA.zip': 'aac7015c7a986063002a86eb7f7cc57ed6f14f5eaf3e9ca29c0cb1e63fd7e0d5',
         '2013_DFTC/copyright.txt':                            '63d908383566b1ff6fd259aa202e31dab9a629808919d87d94970df7ad25180d',
-        '2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_VA.txt': '768bb02193d04c8020b45f1f31a49926a5b914040f77f71a81df756d6e8b8dcb'
     })
-    
-    if not verify_file(basedir/'2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_VA.txt'):
-        print(f"Downloading 2013_IEEE_GRSS_DF_Contest_Samples_VA.txt")
-        va_urls = ["https://github.com/songyz2019/fetch_houston2013/raw/8539c932284a0d2ae60e7f968f430c42d4d1c09a/data/2013_IEEE_GRSS_DF_Contest_Samples_VA.txt", 'https://pastebin.com/raw/FJyu5SQX']
-        for va_url in va_urls:
-            try:
-                urllib.request.urlretrieve(va_url, FILES_PATH/'2013_IEEE_GRSS_DF_Contest_Samples_VA.txt')
-            except Exception as e:
-                print(f"Error fetching {va_url}, using mirrors.")
-            else:
-                break
+    mirrored_download(
+        basedir/'2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_VA.txt',
+        va_url,
+        '768bb02193d04c8020b45f1f31a49926a5b914040f77f71a81df756d6e8b8dcb'
+    )
+
         
     # 3. 数据加载
     with rasterio.open(basedir / '2013_DFTC/2013_IEEE_GRSS_DF_Contest_LiDAR.tif') as f:
