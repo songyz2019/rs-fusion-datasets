@@ -195,7 +195,7 @@ def mirrored_download(path :Path, url :Union[str, List[str]], sha256: str):
         try:
             print(f"Downloading {url} to {path}")
             if url.startswith('http://') or url.startswith('https://'):
-                urllib.request.urlretrieve(url, path, reporthook=lambda blocknum, bs, size: print(f"{blocknum*bs/1024/1024:0.3f}MB/{size/1024/1024:0.3f}MB", end="\r")  if blocknum%256==0 else None )
+                urllib.request.urlretrieve(url, path, reporthook=lambda blocknum, bs, size: print(f"{blocknum*bs/1024/1024:0.3f}MB/{size/1024/1024:0.3f}MB", end="\r")  if blocknum%128==0 else None )
             elif url.startswith('ftp://'):
                 _ftp_download(path, url, sha256)
             print("\nDownload Success")

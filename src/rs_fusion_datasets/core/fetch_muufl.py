@@ -24,7 +24,7 @@ def fetch_muufl(url :Union[str, List[str]]='https://github.com/GatorSense/MUUFLG
     """
 
     basedir = zip_download_and_extract('muufl', url, {
-        'muufl.zip'      :'e5270adbf248e9639c7951f44b2fbf40384cc931bda72a2e73b87a6473b0c560',
+        'muufl.zip'      :'2219e6259e3ad80521a8a7ff879916624efa61eb6df1bfd80538f6f2d4befa2c',
         "MUUFLGulfport-0.1/MUUFLGulfportSceneLabels/muufl_gulfport_campus_1_hsi_220_label.mat": "69420a72866dff4a858ae503e6e2981af46f406a4ad8f4dd642efa43feb59edc"
     })
 
