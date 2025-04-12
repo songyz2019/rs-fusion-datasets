@@ -20,7 +20,7 @@ class Muufl(CommonHsiDsmDataset):
     
     This dataset is an opinionated version of the MUUFL Gulfport dataset. If you want to use the original dataset, please use `fetch_muufl`. Which tries to keep the original infomation.
     """
-    def __init__(self, subset, patch_size=5, n_train_perclass=20, *args, **kwargs):
+    def __init__(self, subset, patch_size=5, n_train_perclass=100, *args, **kwargs):
         def get_data():
             hsi, dsm, truth, info = fetch_muufl()
             train_truth, test_truth = split_spmatrix(truth, n_train_perclass)
@@ -28,7 +28,7 @@ class Muufl(CommonHsiDsmDataset):
         super().__init__(get_data, subset, patch_size, *args, **kwargs)
 
 class Trento(CommonHsiDsmDataset):
-    def __init__(self, subset, patch_size=5, n_train_perclass=20, *args, **kwargs):
+    def __init__(self, subset, patch_size=5, n_train_perclass=100, *args, **kwargs):
         def get_data():
             hsi, dsm, truth, info = fetch_trento()
             train_truth, test_truth = split_spmatrix(truth, n_train_perclass)

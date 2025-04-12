@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025-present songyz2023 <songyz2023dlut@outlook.com>
 # SPDX-License-Identifier: Apache-2.0
 
+import logging
 import unittest
 
 import numpy as np
@@ -28,6 +29,8 @@ def is_typeddict_instance(obj, typeddict_cls):
 
 class Test(unittest.TestCase):
     def setUp(self):
+        import logging
+        logging.basicConfig(level=logging.DEBUG)
         self.trento = fetch_trento()
         self.houston2013 = fetch_houston2013()
         self.muufl = fetch_muufl()
