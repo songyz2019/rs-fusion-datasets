@@ -20,15 +20,25 @@ def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], '... C H W'], palette, ki
         g = int(x[2:4], base=16) / 255.0
         b = int(x[4:6], base=16) / 255.0
         return [r,g,b]
-    
+    placeholder_palette = [
+        "#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0", "#f032e6",
+        "#bcf60c", "#fabebe", "#008080", "#e6beff", "#9a6324", "#fffac8", "#800000", "#aaffc3",
+        "#808000", "#ffd8b1", "#000075", "#808080", "#ffffff", "#000000", "#1f77b4", "#ff7f0e",
+        "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"
+    ]
     palette_presets = {
         'houston2013': ('forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan'),
         'muufl': ('forestgreen', 'limegreen', 'lightblue', 'papayawhip', 'red', 'blue', 'purple', 'pink','orangered', 'yellow', 'brown'),
-        'trento': ('royalblue','lightblue' , 'limegreen', 'yellow', 'red', 'brown')
+        'trento': ('royalblue','lightblue' , 'limegreen', 'yellow', 'red', 'brown'),
+        'houston2018-ouc': placeholder_palette, #TODO
+        'augsburg-ouc':    placeholder_palette, #TODO
+        'berlin-ouc':      placeholder_palette, #TODO
     }
     if palette in palette_presets:
         palette = palette_presets[palette]
-
+    elif not isinstance(palette, tuple):
+        raise ValueError(f"palette should be a tuple of colors, or a string in {list(palette_presets.keys())}, but got {palette}")
+    
     if len(lbl.shape)==3:
         if isinstance(lbl, torch.Tensor):
             lbl = torch.argmax(lbl, dim=-3).cpu().numpy()

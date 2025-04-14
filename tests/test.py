@@ -5,6 +5,7 @@ import unittest
 
 import numpy as np
 import skimage
+from rs_fusion_datasets import fetch_augsburg_ouc, fetch_berlin_ouc, fetch_houston2018_ouc
 from rs_fusion_datasets import fetch_houston2013, fetch_muufl, split_spmatrix, fetch_trento, Muufl, Houston2013, Houston2018Ouc, Trento, DataMetaInfo, lbl2rgb, AugsburgOuc, BerlinOuc
 import torch
 from torch.utils.data import DataLoader
@@ -34,8 +35,32 @@ class Test(unittest.TestCase):
         self.houston2013 = fetch_houston2013()
         self.muufl = fetch_muufl()
     
+    def test_lbl2rgb(self):
+        for datafetch in [fetch_augsburg_ouc, fetch_berlin_ouc, fetch_houston2018_ouc, fetch_houston2013, fetch_muufl, fetch_trento]:
+            r = datafetch()
+            if len(r) == 6:
+                hsi, dsm, train_label, test_label, all_label,info = r
+            elif len(r) == 5:
+                hsi, dsm, train_label, test_label ,info = r
+            elif len(r) == 4:
+                hsi, dsm, label, info = r
+                train_label, test_label = split_spmatrix(label, 100)
+            else:
+                raise ValueError(f"fetch function {datafetch} should return 4 or 5 or 6 elements, but got {len(r)}")
+            self.generate_lbl2rgb(train_label, info, subset='train')
+            self.generate_lbl2rgb(test_label, info, subset='test')
+            hsi = hsi.astype(np.float32)
+            hsi = (hsi - hsi.min()) / (hsi.max() - hsi.min())
+            rgb = hsi2rgb(hsi, wavelength=info['wavelength'], input_format='CHW', output_format='HWC')
+            skimage.io.imsave(f"dist/{info['name']}_hsi.png", (rgb * 255.0).astype(np.uint8))
+            for i,dsm in enumerate(dsm):
+                dsm_img = (dsm - dsm.min()) / (dsm.max() - dsm.min()) * 255.0
+                # dsm_img = skimage.exposure.equalize_adapthist(dsm_img, clip_limit=0.03)
+                skimage.io.imsave(f"dist/{info['name']}_dsm{i}.png", dsm_img.astype(np.uint8))
+
+
     def torch_dataloader_test(self, dataset):
-        b = 16
+        b = 8
         dataloader = DataLoader(dataset, batch_size=b, shuffle=True, drop_last=True)
         x_h, x_l, y, extras = next(iter(dataloader))
         
@@ -47,7 +72,7 @@ class Test(unittest.TestCase):
             self.assertIsInstance(x_l, torch.Tensor)
             self.assertIsInstance(y, torch.Tensor)
             self.assertEqual(x_h.shape, torch.Size([b, dataset.INFO['n_channel_hsi'],dataset.patch_size,dataset.patch_size]))
-            self.assertEqual(x_l.shape, torch.Size([b, 1,dataset.patch_size,dataset.patch_size]))
+            self.assertEqual(x_l.shape, torch.Size([b, dataset.INFO['n_channel_dsm'],dataset.patch_size,dataset.patch_size]))
             self.assertEqual(y.shape, torch.Size([b, dataset.n_class]))
             self.assertEqual(x_h.dtype, torch.float)
             self.assertEqual(x_l.dtype, torch.float)
@@ -96,14 +121,7 @@ class Test(unittest.TestCase):
         self.assertEqual(len(info['wavelength']), C_H)
         self.assertTrue(is_typeddict_instance(info, DataMetaInfo))
 
-        hsi = casi.astype(np.float32)
-        hsi = (hsi - hsi.min()) / (hsi.max() - hsi.min())
-        rgb = hsi2rgb(hsi, wavelength=info['wavelength'], input_format='CHW', output_format='HWC')
-        skimage.io.imsave(f"dist/{info['name']}_hsi.png", (rgb * 255.0).astype(np.uint8))
 
-        dsm = lidar[0, :, :]
-        dsm_img = (dsm - dsm.min()) / (dsm.max() - dsm.min()) * 255.0
-        skimage.io.imsave(f"dist/{info['name']}_dsm.png", dsm_img.astype(np.uint8))
 
     def test_fetch_muufl(self):
         casi, lidar, truth, info = self.muufl
@@ -119,16 +137,6 @@ class Test(unittest.TestCase):
         self.assertEqual(info['n_channel_hsi'], C_H)
         self.assertEqual(len(info['wavelength']), C_H)
         self.assertTrue(is_typeddict_instance(info, DataMetaInfo))
-
-
-        hsi = casi.astype(np.float32)
-        hsi = (hsi - hsi.min()) / (hsi.max() - hsi.min())
-        rgb = hsi2rgb(hsi, wavelength=info['wavelength'], input_format='CHW', output_format='HWC')
-        skimage.io.imsave(f"dist/{info['name']}_hsi.png", (rgb * 255.0).astype(np.uint8))
-
-        dsm = lidar[0, :, :]
-        dsm_img = (dsm - dsm.min()) / (dsm.max() - dsm.min()) * 255.0
-        skimage.io.imsave(f"dist/{info['name']}_dsm.png", dsm_img.astype(np.uint8))
 
     def test_fetch_trento(self):
         casi, lidar, truth, info = self.trento
@@ -147,18 +155,8 @@ class Test(unittest.TestCase):
         self.assertEqual(test_label.shape, (H, W))
         self.assertTrue(is_typeddict_instance(info, DataMetaInfo))
 
-
-        hsi = casi.astype(np.float32)
-        hsi = (hsi - hsi.min()) / (hsi.max() - hsi.min())
-        rgb = hsi2rgb(hsi, wavelength=info['wavelength'], input_format='CHW', output_format='HWC')
-        skimage.io.imsave(f"dist/{info['name']}_hsi.png", (rgb * 255.0).astype(np.uint8))
-
-        dsm = lidar[0, :, :]
-        dsm_img = (dsm - dsm.min()) / (dsm.max() - dsm.min()) * 255.0
-        skimage.io.imsave(f"dist/{info['name']}_dsm.png", dsm_img.astype(np.uint8))
-
     def test_torch_datasets(self):
-        for Dataset, subset, patch_size in product([Houston2018Ouc, BerlinOuc,AugsburgOuc,Houston2013, Muufl, Trento], ['train', 'test', 'full'], [1, 5, 10, 11]):
+        for Dataset, subset, patch_size in product([Houston2018Ouc, BerlinOuc,AugsburgOuc,Houston2013, Muufl, Trento], ['train', 'test', 'full'], [1, 6, 9]):
             dataset = Dataset(subset=subset, patch_size=patch_size)
             self.torch_dataloader_test(dataset)
             if Dataset in [Muufl, Trento] and subset == 'train':
@@ -168,18 +166,7 @@ class Test(unittest.TestCase):
     def test_datahome(self):
         fetch_trento(data_home='./tmp/')
         Trento(subset='train', patch_size=5, data_home='./tmp/')
-
-    def test_lbl2rgb(self):
-        for datafetch in [self.trento, self.muufl]:
-            casi, lidar, truth, info = datafetch
-            train_label, test_label = split_spmatrix(truth, 100)
-            self.generate_lbl2rgb(train_label, info, subset='train')
-            self.generate_lbl2rgb(test_label, info, subset='test')
-        for datafetch in [fetch_houston2013]:
-            casi, lidar, train_label, test_label, info = datafetch()
-            self.generate_lbl2rgb(train_label, info, subset='train')
-            self.generate_lbl2rgb(test_label, info, subset='test')
-        
+                    
 
 if __name__ == '__main__':
     unittest.main()

@@ -12,7 +12,7 @@ from ..core.common import DataMetaInfo
 class CommonHsiDsmDataset(VisionDataset):
     def __init__(self,
                  hsi :Num[ndarray, 'c h w'], 
-                 dsm :Num[ndarray, '1 h w'],
+                 dsm :Num[ndarray, 'd h w'],
                  lbl_train :Num[ndarray, 'h w'],
                  lbl_test :Num[ndarray, 'h w'],
                  info: DataMetaInfo,

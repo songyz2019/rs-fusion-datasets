@@ -14,7 +14,7 @@ from .common import DataMetaInfo
 
 def fetch_houston2013(
     url         :Union[str, List[str]]      = 'https://machinelearning.ee.uh.edu/2egf4tg8hial13gt/2013_DFTC.zip', 
-    url_lbl_val :Union[str, List[str]]      = ["https://github.com/songyz2019/rs-fusion-datasets/raw/8539c932284a0d2ae60e7f968f430c42d4d1c09a/data/2013_IEEE_GRSS_DF_Contest_Samples_VA.txt", 'https://pastebin.com/raw/FJyu5SQX'],
+    url_lbl_val :Union[str, List[str]]      = ["https://github.com/songyz2019/rs-fusion-datasets-dist/releases/download/v1.0.0/2013_IEEE_GRSS_DF_Contest_Samples_VA.txt", 'https://pastebin.com/raw/FJyu5SQX'],
     data_home   :Optional[Union[Path, str]] = None
 ) -> tuple[
     UInt16[np.ndarray, '144 349 1905'],

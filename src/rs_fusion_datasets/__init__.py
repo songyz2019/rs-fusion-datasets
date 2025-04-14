@@ -1,7 +1,6 @@
 import logging
 
 from .core.fetch_houston2013 import fetch_houston2013
-from .core._fetch_houston2018 import fetch_houston2018
 from .core.fetch_houston2013_mmrs import fetch_houston2013_mmr
 from .core.fetch_muufl import fetch_muufl
 from .core.fetch_trento import fetch_trento
@@ -12,12 +11,12 @@ from .core.common import DataMetaInfo
 
 from .util.split_spmatrix import split_spmatrix
 from .util.fileio import read_roi
+from .util.hsi2rgb import hsi2rgb
 
 
 __all__ = [
     'fetch_houston2013', 
     'fetch_houston2013_mmr', 
-    'fetch_houston2018',
     'fetch_muufl', 
     'fetch_trento', 
     'fetch_berlin_ouc',

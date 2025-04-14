@@ -20,7 +20,6 @@ class Houston2018Ouc(CommonHsiDsmDataset):
         :param data_home: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
         """
         hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_houston2018_ouc(data_home=data_home)
-        dsm = dsm[0:1]
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, subset, patch_size, *args, **kwargs)
 
 
@@ -34,7 +33,6 @@ class BerlinOuc(CommonHsiDsmDataset):
     """
     def __init__(self, subset: Literal['train', 'test', 'full'], patch_size=5, data_home :Optional[Union[Path,str]]=None, *args, **kwargs):
         hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_berlin_ouc(data_home=data_home)
-        dsm = dsm[0:1]
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, subset, patch_size, *args, **kwargs)
 
 class AugsburgOuc(CommonHsiDsmDataset):
@@ -47,7 +45,6 @@ class AugsburgOuc(CommonHsiDsmDataset):
     """
     def __init__(self, subset: Literal['train', 'test', 'full'], patch_size=5, data_home :Optional[Union[Path,str]]=None, *args, **kwargs):
         hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_augsburg_ouc(data_home=data_home)
-        dsm = dsm[0:1]
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, subset, patch_size, *args, **kwargs)
 
 class Houston2013(CommonHsiDsmDataset):
@@ -82,7 +79,6 @@ class Muufl(CommonHsiDsmDataset):
     def __init__(self, subset: Literal['train', 'test', 'full'], patch_size=5, data_home :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, *args, **kwargs):
         hsi, dsm, lbl, info = fetch_muufl(data_home=data_home)
         lbl_train, lbl_test = split_spmatrix(lbl, n_train_perclass)
-        dsm = dsm[0:1]
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, subset, patch_size, *args, **kwargs)
 
 class Trento(CommonHsiDsmDataset):
@@ -97,7 +93,6 @@ class Trento(CommonHsiDsmDataset):
     def __init__(self, subset: Literal['train', 'test', 'full'], patch_size=5, data_home :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, *args, **kwargs):
         hsi, dsm, lbl, info = fetch_trento(data_home=data_home)
         lbl_train, lbl_test = split_spmatrix(lbl, n_train_perclass)
-        dsm = dsm[0:1]
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, subset, patch_size, *args, **kwargs)
 
 
