@@ -143,7 +143,7 @@ def zip_download_and_extract(dir_name :str, url :Union[str, List[str]], required
         if path == zip_name:
             continue
         if not verify_file(basedir/path, sha256):
-            raise ValueError(f"{basedir/path} is not found or not verified")
+            raise ValueError(f"{basedir/path} is not found or not verified. If it exists, please delete {basedir} and try again.")
 
     return basedir
 

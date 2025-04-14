@@ -10,7 +10,7 @@ from ..util.fileio import zip_download_and_extract
 
 
 
-def fetch_houston2013mmrs(url :Union[str, List[str]]='https://github.com/songyz2019/rs-fusion-datasets-dist/releases/download/v1.0.0/houston2013mmrs.zip', datahome=None):
+def fetch_houston2013_mmrs(url :Union[str, List[str]]='https://github.com/songyz2019/rs-fusion-datasets-dist/releases/download/v1.0.0/houston2013mmrs.zip', datahome=None):
     """
     """
     basedir = zip_download_and_extract('houston2013mmrs', url, {
@@ -38,7 +38,7 @@ def fetch_houston2013mmrs(url :Union[str, List[str]]='https://github.com/songyz2
         'full_name': 'MMRS version of IEEE GRSS DF Contest Houston 2013',
         'homepage': 'https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit',
         'n_channel_hsi': 144,
-        'n_channel_lidar': 1,
+        'n_channel_dsm': 1,
         'n_class': 15,
         'width': 1905,
         'height': 349,

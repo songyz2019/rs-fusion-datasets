@@ -1,19 +1,25 @@
-from typing import List, Union, Optional
+from typing import List, Tuple, Union, Optional
 from pathlib import Path
 import numpy as np
+from numpy import ndarray
 import scipy.io
 
 from scipy.sparse import coo_array
-from jaxtyping import Float
 
 from ..util.fileio import zip_download_and_extract
 from .common import DataMetaInfo
+from jaxtyping import  Float32, UInt8
 
 
 def fetch_trento(
         url       :Union[str, List[str]]      = 'https://github.com/tyust-dayu/Trento/archive/b4afc449ce5d6936ddc04fe267d86f9f35536afd.zip', 
         data_home :Optional[Union[Path, str]] = None
-        ):
+        ) -> Tuple[
+        Float32[ndarray, '63 166 600'], 
+        Float32[ndarray, '2 166 600'],
+        UInt8[coo_array, '166 600'],
+        DataMetaInfo
+    ]:
     """
     Donwload and load the Trento dataset.
 
@@ -29,21 +35,21 @@ def fetch_trento(
 
 
     # 3. 数据加载
-    hsi = scipy.io.loadmat(
+    hsi  :Float32[ndarray, '166 600 63']  = scipy.io.loadmat(
         basedir / 'Trento-b4afc449ce5d6936ddc04fe267d86f9f35536afd/Italy_hsi.mat',
         squeeze_me=True,
         mat_dtype=True,
         struct_as_record=False
     )['data']
 
-    lidar = scipy.io.loadmat(
+    lidar :Float32[ndarray, '166 600 2']  = scipy.io.loadmat(
         basedir / 'Trento-b4afc449ce5d6936ddc04fe267d86f9f35536afd/Italy_lidar.mat',
         squeeze_me=True,
         mat_dtype=True,
         struct_as_record=False
     )['data']
 
-    truth = scipy.io.loadmat(
+    truth :UInt8[ndarray, '166 600'] = scipy.io.loadmat(
         basedir / 'Trento-b4afc449ce5d6936ddc04fe267d86f9f35536afd/allgrd.mat',
         squeeze_me=True,
         mat_dtype=True,
@@ -58,7 +64,7 @@ def fetch_trento(
         'homepage': '',
         'license': '',
         'n_channel_hsi': hsi.shape[-1],
-        'n_channel_lidar': lidar.shape[-1],
+        'n_channel_dsm': lidar.shape[-1],
         'n_class': 6,
         'width': hsi.shape[1],
         'height': hsi.shape[0],

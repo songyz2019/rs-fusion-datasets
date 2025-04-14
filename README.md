@@ -8,20 +8,20 @@
 
 
 
-Download and load remote sensing datasets easily and swiftly. rs-fusion-datasets (formerly known as fetch_houston2013) is:
-1. A fast houston2013 muufl and trento dataset fetcher that automatically downloads all data
-2. A ready-to-use torch dataloader for houston2013 muufl and trento dataset
-3. A toolbox for visualizing the datasets
+Download and load remote sensing datasets easily and swiftly. rs-fusion-datasets (formerly known as fetch_houston2013) is a Python package that:
+1. Automatically downloads and load many multimodel remote sensing datasets (houston2013, muufl, trento, houston2018, augsburg, etc.)
+2. Provides ready-to-use torch dataloaders for datasets
+3. Provides some utils for visulization, dataset spilit, etc.
 
 ![screenshot](screenshot.jpg)
 
 ## Supported Datasets
-1. Houston 2013
-2. Trento
-3. Muufl
-4. Houston 2018 (Working in progress)
-5. Augsberg (Working in progress)
-6. Berlin (Working in progress)
+1. Houston 2013: `fetch_houston2013`
+2. Trento: `fetch_trento`
+3. Muufl: `fetch_muufl`
+4. Houston 2018 (Experimental): `fetch_houston2018_ouc`
+5. Augsberg (Experimental): `fetch_augsberg_ouc`
+6. Berlin (Experimental): `fetch_berlin_ouc`
 
 
 ## Quick Start

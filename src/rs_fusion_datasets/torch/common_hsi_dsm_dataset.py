@@ -1,4 +1,3 @@
-# Assume that torch exists
 from typing import Literal
 
 from scipy.sparse import coo_array
@@ -6,7 +5,7 @@ from torchvision.datasets.vision import VisionDataset
 import torch
 import numpy as np
 from numpy import ndarray
-from jaxtyping import Num
+from jaxtyping import Num, Float
 
 from ..core.common import DataMetaInfo
 
@@ -30,17 +29,17 @@ class CommonHsiDsmDataset(VisionDataset):
         self.patch_size = patch_size
         self.patch_radius = patch_size // 2 # if patch_size is odd, it should be (patch_size - w_center)/2, but some user will use on-odd patch size
 
-        self.HSI, self.LIDAR, train_truth, test_truth, self.INFO = hsi, dsm, lbl_train, lbl_test, info
+        self.HSI, self.DSM, train_truth, test_truth, self.INFO = hsi, dsm, lbl_train, lbl_test, info
         self.n_class = self.INFO['n_class']
         self.n_channel_hsi   = self.INFO['n_channel_hsi']
-        self.n_channel_lidar = self.INFO['n_channel_lidar']
+        self.n_channel_dsm = self.INFO['n_channel_dsm']
 
 
         # Preprocess HSI and DSM
         pad_shape = ((0, 0), (self.patch_radius, self.patch_radius), (self.patch_radius, self.patch_radius))
 
         self.hsi = self.HSI
-        self.dsm = self.LIDAR
+        self.dsm = self.DSM
         self.dsm = (self.dsm - self.dsm.min()) / (self.dsm.max() - self.dsm.min())
 
         # If we have einops, just need
@@ -54,12 +53,16 @@ class CommonHsiDsmDataset(VisionDataset):
         self.hsi = np.pad(self.hsi,   pad_shape, 'symmetric')
         self.dsm = np.pad(self.dsm, pad_shape, 'symmetric')
 
-        # Preprocess truth
-        self.truth = {
-            'train': train_truth,
-            'test': test_truth,
-            'full': coo_array(-1*np.ones_like(train_truth.todense(), dtype=np.int16), dtype='int')
-        }[subset]
+        # Preproces
+        # Using dict to make branch is more clear but slower
+        if self.subset == 'train':
+            self.truth = train_truth
+        elif self.subset == 'test':
+            self.truth = test_truth
+        elif self.subset == 'full':
+            self.truth = coo_array(-1*np.ones_like(train_truth.todense(), dtype=np.int16), dtype='int')
+        else:
+            raise ValueError(f"Unknown subset: {subset}")
 
         self.hsi = torch.from_numpy(self.hsi).float()
         self.dsm = torch.from_numpy(self.dsm).float()
@@ -68,7 +71,12 @@ class CommonHsiDsmDataset(VisionDataset):
     def __len__(self):
         return self.truth.count_nonzero()
 
-    def __getitem__(self, index) -> tuple[np.ndarray, np.ndarray, np.ndarray, dict]:
+    def __getitem__(self, index) -> Tuple[
+        Float[ndarray, 'c h w'],
+        Float[ndarray, 'c h w'],
+        Float[ndarray, 'c h w'],
+        dict[str, int]
+        ]:
         w = self.patch_size
 
         i = self.truth.row[index]

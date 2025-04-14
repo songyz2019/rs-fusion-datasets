@@ -6,13 +6,15 @@ import unittest
 
 import numpy as np
 import skimage
-from rs_fusion_datasets import fetch_houston2013, fetch_muufl, split_spmatrix, fetch_trento, Muufl, Houston2013, Trento, DataMetaInfo, lbl2rgb
+from rs_fusion_datasets import fetch_houston2013, fetch_muufl, split_spmatrix, fetch_trento, Muufl, Houston2013, Houston2018Ouc, Trento, DataMetaInfo, lbl2rgb
 import torch
 from torch.utils.data import DataLoader
 from itertools import product
 from hsi2rgb import hsi2rgb
 
 from typing import get_type_hints
+
+from rs_fusion_datasets.torch.datasets import AugsburgOuc, BerlinOuc
 
 
 def is_typeddict_instance(obj, typeddict_cls):
@@ -86,7 +88,7 @@ class Test(unittest.TestCase):
         self.assertEqual(train_truth.shape, (H, W))
         self.assertEqual(test_truth.shape, (H, W))
         self.assertEqual(info['n_channel_hsi'], 144)
-        self.assertEqual(info['n_channel_lidar'], 1)
+        self.assertEqual(info['n_channel_dsm'], 1)
         self.assertEqual(info['n_class'], 15)
         self.assertEqual(info['width'], W)
         self.assertEqual(info['height'], H)
@@ -116,7 +118,7 @@ class Test(unittest.TestCase):
         self.assertEqual(truth.shape, (H, W))
         self.assertEqual(train_label.shape, (H, W))
         self.assertEqual(test_label.shape, (H, W))
-        self.assertEqual(info['n_channel_lidar'], C_L)
+        self.assertEqual(info['n_channel_dsm'], C_L)
         self.assertEqual(info['n_channel_hsi'], C_H)
         self.assertEqual(len(info['wavelength']), C_H)
         self.assertTrue(is_typeddict_instance(info, DataMetaInfo))
@@ -141,7 +143,7 @@ class Test(unittest.TestCase):
         self.assertEqual(lidar.shape, (C_L, H, W))
         self.assertEqual(info['n_channel_hsi'], C_H)
         self.assertEqual(len(info['wavelength']), C_H)
-        self.assertEqual(info['n_channel_lidar'], C_L)
+        self.assertEqual(info['n_channel_dsm'], C_L)
 
         self.assertEqual(truth.shape, (H, W))
         self.assertEqual(train_label.shape, (H, W))
@@ -159,13 +161,16 @@ class Test(unittest.TestCase):
         skimage.io.imsave(f"dist/{info['name']}_dsm.png", dsm_img.astype(np.uint8))
 
     def test_torch_datasets(self):
-        for Dataset, subset, patch_size in product([Houston2013, Muufl, Trento], ['train', 'test', 'full'], [1, 5, 10, 11]):
+        for Dataset, subset, patch_size in product([Houston2018Ouc, BerlinOuc,AugsburgOuc,Houston2013, Muufl, Trento], ['train', 'test', 'full'], [1, 5, 10, 11]):
             dataset = Dataset(subset=subset, patch_size=patch_size)
             self.torch_dataloader_test(dataset)
             if Dataset in [Muufl, Trento] and subset == 'train':
                 n_train_perclass = 50
                 self.assertEqual(dataset.n_class*n_train_perclass, len(Dataset(subset=subset, patch_size=5, n_train_perclass=n_train_perclass)))
 
+    def test_datahome(self):
+        fetch_trento(data_home='./tmp/')
+        Trento(subset='train', patch_size=5, data_home='./tmp/')
 
     def test_lbl2rgb(self):
         for datafetch in [self.trento, self.muufl]:

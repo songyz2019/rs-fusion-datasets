@@ -1,19 +1,25 @@
 from pathlib import Path
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Tuple
 
-import numpy as np
+from numpy import ndarray
 import scipy.io
 
 from scipy.sparse import coo_array
-from jaxtyping import Float
 from ..util.fileio import zip_download_and_extract
 from .common import DataMetaInfo
+from jaxtyping import  UInt16, Float32, UInt8, Float64
+
 
 
 def fetch_muufl(
         url :Union[str, List[str]]='https://github.com/GatorSense/MUUFLGulfport/archive/refs/tags/v0.1.zip', 
         data_home:Optional[Union[Path, str]]=None
-        ):
+        ) -> Tuple[
+        Float32[ndarray, '64 325 220'], 
+        Float32[ndarray, '2 325 220'],
+        Float64[coo_array, '325 220'],
+        DataMetaInfo
+    ]:
     """
     Donwload and load the MUUFL Gulfport dataset.
 
@@ -31,9 +37,9 @@ def fetch_muufl(
         mat_dtype=True,
         struct_as_record=False
     )['hsi']
-    hsi = d.Data # HWC
-    lidar = d.Lidar[0].z
-    truth = d.sceneLabels.labels
+    hsi :Float32[ndarray, '325 220 64'] = d.Data
+    lidar :Float32[ndarray, '325 220 2'] = d.Lidar[0].z
+    truth :Float64[ndarray, '325 220'] = d.sceneLabels.labels
     truth[truth==-1] = 0
     truth = coo_array(truth, dtype='int')
     info :DataMetaInfo = {
@@ -43,7 +49,7 @@ def fetch_muufl(
         'homepage': 'https://github.com/GatorSense/MUUFLGulfport',
         'license': 'MIT',
         'n_channel_hsi': hsi.shape[-1],
-        'n_channel_lidar': lidar.shape[-1],
+        'n_channel_dsm': lidar.shape[-1],
         'n_class': d.sceneLabels.Materials_Type.size,
         'width': hsi.shape[1],
         'height': hsi.shape[0],

@@ -22,7 +22,7 @@ class DataMetaInfo(TypedDict):
     full_name: str
     homepage: str
     n_channel_hsi: int
-    n_channel_lidar: int
+    n_channel_dsm: int
     width: int
     height: int
     n_class: int

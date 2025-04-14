@@ -10,6 +10,7 @@ from .common import DataMetaInfo
 
 
 def fetch_augsburg(url :Union[str, List[str]]='ftp://m1657312@dataserv.ub.tum.de?m1657312/Augsburg_data_4_publication.zip'):
+    raise NotImplementedError("This dataset is implemented ")
     """
     Donwload and load the augsburg dataset.
 

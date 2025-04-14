@@ -66,7 +66,7 @@ def fetch_houston2013(
         'full_name': 'IEEE GRSS DF Contest Houston 2013',
         'homepage': 'https://machinelearning.ee.uh.edu/?page_id=459',
         'n_channel_hsi': 144,
-        'n_channel_lidar': 1,
+        'n_channel_dsm': 1,
         'n_class': 15,
         'width': 1905,
         'height': 349,
