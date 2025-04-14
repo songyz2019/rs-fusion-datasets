@@ -1,19 +1,21 @@
 # SPDX-FileCopyrightText: 2025-present songyz2023 <songyz2023dlut@outlook.com>
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import List, Union
+from typing import List, Union,Optional
+from pathlib import Path
 
 import numpy as np
 import rasterio
 from scipy.sparse import coo_array, spmatrix
 from jaxtyping import UInt16, Float32, UInt64
 
-from ..util.fileio import read_roi, zip_download_and_extract, verify_file, mirrored_download
+from ..util.fileio import read_roi, zip_download_and_extract, mirrored_download
 from .common import DataMetaInfo
 
 def fetch_houston2013(
-    url :Union[str, List[str]]='https://machinelearning.ee.uh.edu/2egf4tg8hial13gt/2013_DFTC.zip', 
-    va_url=["https://github.com/songyz2019/rs-fusion-datasets/raw/8539c932284a0d2ae60e7f968f430c42d4d1c09a/data/2013_IEEE_GRSS_DF_Contest_Samples_VA.txt", 'https://pastebin.com/raw/FJyu5SQX'],
+    url         :Union[str, List[str]]      = 'https://machinelearning.ee.uh.edu/2egf4tg8hial13gt/2013_DFTC.zip', 
+    url_lbl_val :Union[str, List[str]]      = ["https://github.com/songyz2019/rs-fusion-datasets/raw/8539c932284a0d2ae60e7f968f430c42d4d1c09a/data/2013_IEEE_GRSS_DF_Contest_Samples_VA.txt", 'https://pastebin.com/raw/FJyu5SQX'],
+    data_home   :Optional[Union[Path, str]] = None
 ) -> tuple[
     UInt16[np.ndarray, '144 349 1905'],
     Float32[np.ndarray, '1 349 1905'],
@@ -26,27 +28,26 @@ def fetch_houston2013(
     Download it if necessary. All the image are CHW formats. And the shape are typed in the return type.
     The background label is 0, and the rest are 1-15.
     
-    :param datahome: The path to store the data files, default is '~/scikit_learn_data'
-    :param download_if_missing: Whether to download the data if it is not found
-
+    :param datahome: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     :return: (hsi, dsm, train_truth, test_truth, info)
     """
-
-
-    basedir = zip_download_and_extract('houston2013', url, {
-        'houston2013.zip': 'f4d619d5cbcb09d0301038f1b8fe83def6c2d484334b7b8127740a00ecf7e245',
-        '2013_DFTC/2013_IEEE_GRSS_DF_Contest_CASI.hdr':       '869be3459978b535b873bca98b1cf05066c7acca9c160b486a86efd775005e8d',
-        '2013_DFTC/2013_IEEE_GRSS_DF_Contest_CASI.tif':       '1440f38594e8e82cc1944c084fc138ef55a70af54122828e999c4fb438574c14',
-        '2013_DFTC/2013_IEEE_GRSS_DF_Contest_LiDAR.hdr':      '053c083de1cb0d9ad51c56964b29669733ef2c7db05997d4f4e0779ab2f6aade',
-        '2013_DFTC/2013_IEEE_GRSS_DF_Contest_LiDAR.tif':      '9f4facce8876ee84642d9cb03536baf0389506de97ddc01b73366fe4521de981',
-        '2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_TR.roi': 'feedf41f7064d8f80cf2d9bda72fcbcc98b64658d01e519ad0b90b1ca88f1375',
-        '2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_TR.txt': '16c69cf216535d7b4df2045b05d49c50a078609aa6d011a5e23e54f4cd08abda',
-        '2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_VA.zip': 'aac7015c7a986063002a86eb7f7cc57ed6f14f5eaf3e9ca29c0cb1e63fd7e0d5',
-        '2013_DFTC/copyright.txt':                            '63d908383566b1ff6fd259aa202e31dab9a629808919d87d94970df7ad25180d',
-    })
+    basedir = zip_download_and_extract('houston2013', url, 
+        {
+            'houston2013.zip': 'f4d619d5cbcb09d0301038f1b8fe83def6c2d484334b7b8127740a00ecf7e245',
+            '2013_DFTC/2013_IEEE_GRSS_DF_Contest_CASI.hdr':       '869be3459978b535b873bca98b1cf05066c7acca9c160b486a86efd775005e8d',
+            '2013_DFTC/2013_IEEE_GRSS_DF_Contest_CASI.tif':       '1440f38594e8e82cc1944c084fc138ef55a70af54122828e999c4fb438574c14',
+            '2013_DFTC/2013_IEEE_GRSS_DF_Contest_LiDAR.hdr':      '053c083de1cb0d9ad51c56964b29669733ef2c7db05997d4f4e0779ab2f6aade',
+            '2013_DFTC/2013_IEEE_GRSS_DF_Contest_LiDAR.tif':      '9f4facce8876ee84642d9cb03536baf0389506de97ddc01b73366fe4521de981',
+            '2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_TR.roi': 'feedf41f7064d8f80cf2d9bda72fcbcc98b64658d01e519ad0b90b1ca88f1375',
+            '2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_TR.txt': '16c69cf216535d7b4df2045b05d49c50a078609aa6d011a5e23e54f4cd08abda',
+            '2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_VA.zip': 'aac7015c7a986063002a86eb7f7cc57ed6f14f5eaf3e9ca29c0cb1e63fd7e0d5',
+            '2013_DFTC/copyright.txt':                            '63d908383566b1ff6fd259aa202e31dab9a629808919d87d94970df7ad25180d',
+        },
+        datahome=data_home
+    )
     mirrored_download(
         basedir/'2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_VA.txt',
-        va_url,
+        url_lbl_val,
         '768bb02193d04c8020b45f1f31a49926a5b914040f77f71a81df756d6e8b8dcb'
     )
 

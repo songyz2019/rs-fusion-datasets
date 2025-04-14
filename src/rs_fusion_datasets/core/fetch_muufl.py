@@ -1,11 +1,5 @@
-import os
-from os.path import exists
 from pathlib import Path
-from typing import List, Union
-from zipfile import ZipFile
-import urllib
-import urllib.request
-import logging
+from typing import List, Union, Optional
 
 import numpy as np
 import scipy.io
@@ -16,7 +10,10 @@ from ..util.fileio import zip_download_and_extract
 from .common import DataMetaInfo
 
 
-def fetch_muufl(url :Union[str, List[str]]='https://github.com/GatorSense/MUUFLGulfport/archive/refs/tags/v0.1.zip'):
+def fetch_muufl(
+        url :Union[str, List[str]]='https://github.com/GatorSense/MUUFLGulfport/archive/refs/tags/v0.1.zip', 
+        data_home:Optional[Union[Path, str]]=None
+        ):
     """
     Donwload and load the MUUFL Gulfport dataset.
 
@@ -26,7 +23,7 @@ def fetch_muufl(url :Union[str, List[str]]='https://github.com/GatorSense/MUUFLG
     basedir = zip_download_and_extract('muufl', url, {
         'muufl.zip'      :'2219e6259e3ad80521a8a7ff879916624efa61eb6df1bfd80538f6f2d4befa2c',
         "MUUFLGulfport-0.1/MUUFLGulfportSceneLabels/muufl_gulfport_campus_1_hsi_220_label.mat": "69420a72866dff4a858ae503e6e2981af46f406a4ad8f4dd642efa43feb59edc"
-    })
+    }, datahome=data_home)
 
     d = scipy.io.loadmat(
         basedir / 'MUUFLGulfport-0.1/MUUFLGulfportSceneLabels/muufl_gulfport_campus_1_hsi_220_label.mat',

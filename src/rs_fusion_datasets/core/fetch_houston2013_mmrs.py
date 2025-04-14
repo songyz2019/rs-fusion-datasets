@@ -10,12 +10,8 @@ from ..util.fileio import zip_download_and_extract
 
 
 
-def _fetch_houston2013mmrs(url :Union[str, List[str]]='http://10.7.36.2:5000/dataset/houston2013mmrs.zip'):
+def fetch_houston2013mmrs(url :Union[str, List[str]]='https://github.com/songyz2019/rs-fusion-datasets-dist/releases/download/v1.0.0/houston2013mmrs.zip', datahome=None):
     """
-
-    Image array format: CHW
-    You are not supposed to use this function because the Houston2013_mmcr dataset is not public available in a direct link, and you should host
-    your dataset and provide the link. The default link is only for internal test. 
     """
     basedir = zip_download_and_extract('houston2013mmrs', url, {
         'houston2013mmrs.zip'     : '7a2d719d12f49f1984e6f28821254cd6b217ba85599780a093ed3388ae1fd762',
@@ -24,7 +20,7 @@ def _fetch_houston2013mmrs(url :Union[str, List[str]]='http://10.7.36.2:5000/dat
         'Houston2013/LiDAR.mat'   : '7aa956e7c371fd29a495f0cb9bb8f572aaa4065fcfeda2b3e854a5cef74b35ad',
         'Houston2013/TRLabel.mat' : '96ce863eaf4dc548c3140a480dee33c812d46194ae5ed345fed6e71a3d72b527',
         'Houston2013/TSLabel.mat' : '46bd849d556c80ed67b33f23dd288eafa7ac9f97a847390be373b702b0bf5a45',
-    })
+    },datahome=datahome)
 
 
     # 3.加载数据

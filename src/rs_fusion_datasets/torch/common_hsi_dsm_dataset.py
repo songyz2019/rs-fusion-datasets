@@ -1,19 +1,24 @@
 # Assume that torch exists
-from typing import Callable, Literal, Optional
+from typing import Literal
 
 from scipy.sparse import coo_array
 from torchvision.datasets.vision import VisionDataset
 import torch
 import numpy as np
-import warnings
+from numpy import ndarray
+from jaxtyping import Num
 
 from ..core.common import DataMetaInfo
 
 class CommonHsiDsmDataset(VisionDataset):
     def __init__(self,
-                 data_fetch: Callable[[],tuple[np.ndarray,np.ndarray,coo_array,coo_array, DataMetaInfo]],
+                 hsi :Num[ndarray, 'c h w'], 
+                 dsm :Num[ndarray, '1 h w'],
+                 lbl_train :Num[ndarray, 'h w'],
+                 lbl_test :Num[ndarray, 'h w'],
+                 info: DataMetaInfo,
                  subset: Literal['train', 'test', 'full'], 
-                 patch_size: int = 11,  # I prefer patch_radius, but patch_size is more popular and maintance two pathc_xxx is to complex...
+                 patch_size: int = 11,  # I prefer patch_radius, but patch_size is more popular and maintance two patch_xxx is too complex...
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -25,7 +30,7 @@ class CommonHsiDsmDataset(VisionDataset):
         self.patch_size = patch_size
         self.patch_radius = patch_size // 2 # if patch_size is odd, it should be (patch_size - w_center)/2, but some user will use on-odd patch size
 
-        self.HSI, self.LIDAR, train_truth, test_truth, self.INFO = data_fetch()
+        self.HSI, self.LIDAR, train_truth, test_truth, self.INFO = hsi, dsm, lbl_train, lbl_test, info
         self.n_class = self.INFO['n_class']
         self.n_channel_hsi   = self.INFO['n_channel_hsi']
         self.n_channel_lidar = self.INFO['n_channel_lidar']

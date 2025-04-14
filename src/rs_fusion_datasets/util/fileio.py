@@ -1,28 +1,32 @@
 from ftplib import FTP
 import logging
 import os
-from os.path import expanduser, join
 from pathlib import Path
 import re
-from typing import List, Union
+from typing import List, Union, Optional, Tuple, Dict
 import warnings
 import hashlib
 from io import StringIO
 from zipfile import ZipFile
 
 import numpy as np
-from scipy.sparse import coo_array
+from scipy.sparse import coo_array, sparray
+from jaxtyping import UInt16
 import urllib
 
-def get_data_home(data_home=None) -> str:
+
+def get_data_home(data_home :Optional[Union[Path, str]]=None) -> Path:
     if data_home is None:
-        data_home = os.environ.get("SCIKIT_LEARN_DATA", join("~", "scikit_learn_data"))
-    data_home = expanduser(data_home)
-    os.makedirs(data_home, exist_ok=True)
+        data_home = os.environ.get("SCIKIT_LEARN_DATA", os.path.join("~", "scikit_learn_data")) # Not neat but works
+        data_home = Path(data_home)
+    elif isinstance(data_home, str):
+        data_home = Path(data_home)
+    data_home = data_home.expanduser()
+    data_home.mkdir(parents=True, exist_ok=True)
     return data_home
 
 
-def read_roi(path :Path, shape) -> coo_array:
+def read_roi(path :Path, shape :Tuple[int, int]) -> UInt16[sparray, 'h w']:
     """
     读取ENVI软件导出roi文件得到的txt文件,得到一个稀疏矩阵图像
 
@@ -33,7 +37,7 @@ def read_roi(path :Path, shape) -> coo_array:
     """
     warnings.simplefilter("ignore", category=UserWarning) # Supress loadtxt's warning when data is empty
 
-    img = coo_array(shape, dtype='uint')
+    img = coo_array(shape, dtype='uint16')
     buf = ""
     cid = 1
     
@@ -45,7 +49,7 @@ def read_roi(path :Path, shape) -> coo_array:
 
             # Seprator
             if line.lstrip().startswith("1 "): # magick string for compatibility
-                data=np.loadtxt(StringIO(buf), usecols=(2, 1), comments=';', dtype='uint')
+                data=np.loadtxt(StringIO(buf), usecols=(2, 1), comments=';', dtype='uint16', converters=float)
                 buf = ""
                 if data.size > 0:
                     rows,cols = data.T
@@ -60,7 +64,7 @@ def read_roi(path :Path, shape) -> coo_array:
 
         # Read last block  
         if buf!="":
-            data=np.loadtxt(StringIO(buf), usecols=(2, 1), comments=';', dtype='uint')
+            data=np.loadtxt(StringIO(buf), usecols=(2, 1), comments=';', dtype='uint16')
             buf = ""
             if data.size > 0:
                 rows,cols = data.T
@@ -98,7 +102,7 @@ def verify_file(path: Path, expected_sha256: str) -> bool:
     logging.debug(f"PASS")
     return True
 
-def zip_download_and_extract(dir_name, url :Union[str, List[str]], required_files :dict, datahome = None) -> None:
+def zip_download_and_extract(dir_name :str, url :Union[str, List[str]], required_files :Dict[str, str], datahome :Optional[Union[str,Path]] = None) -> None:
     """
     Download a zip file from url and extract it to datahome
 
@@ -143,7 +147,7 @@ def zip_download_and_extract(dir_name, url :Union[str, List[str]], required_file
 
     return basedir
 
-def _ftp_download(path :Path, url, sha256: str):
+def _ftp_download(path :Path, url, sha256: str) -> None:
     """Only simple case url supported ftp://username@host.com?password/aug.zip"""
     grp = re.match(r'ftp://(\w+)@([\w\.]+)\?([\w\.]+)/([\w\.]+)', url)
     ftp_username, ftp_host, ftp_password, ftp_file_name = grp.groups()
@@ -173,7 +177,7 @@ def _ftp_download(path :Path, url, sha256: str):
 
 
 
-def mirrored_download(path :Path, url :Union[str, List[str]], sha256: str):
+def mirrored_download(path :Path, url :Union[str, List[str]], sha256: str) -> None:
     """Download a file from urls, and check the sha256 hash. If the download fails, try the next url.
 
     :param path: The path to save the file
