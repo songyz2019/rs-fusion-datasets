@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2025-present songyz2023 <songyz2023dlut@outlook.com>
 # SPDX-License-Identifier: Apache-2.0
 
-import logging
 import unittest
 
 import numpy as np
@@ -13,7 +12,6 @@ from itertools import product
 from hsi2rgb import hsi2rgb
 
 from typing import get_type_hints
-
 
 
 def is_typeddict_instance(obj, typeddict_cls):
