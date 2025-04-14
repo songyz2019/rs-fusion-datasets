@@ -6,7 +6,7 @@ import unittest
 
 import numpy as np
 import skimage
-from rs_fusion_datasets import fetch_houston2013_mmrs, _Houston2013Mmrs, fetch_houston2018
+from rs_fusion_datasets import fetch_houston2013_mmr, _Houston2013Mmrs, fetch_houston2018
 from torch.utils.data import DataLoader
 from itertools import product
 from hsi2rgb import hsi2rgb
@@ -70,7 +70,7 @@ class Test(unittest.TestCase):
         skimage.io.imsave(f"dist/{info['name']}_{subset}.png", img, check_contrast=False)
 
     def test_fetch_houston2013(self):
-        casi, lidar, train_truth, test_truth, info = fetch_houston2013_mmrs()
+        casi, lidar, train_truth, test_truth, info = fetch_houston2013_mmr()
         H, W = 349, 1905
         C_H, C_L = 144, 1
         self.assertEqual(train_truth.data.max(), info['n_class'])

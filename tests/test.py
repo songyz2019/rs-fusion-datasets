@@ -6,7 +6,7 @@ import unittest
 
 import numpy as np
 import skimage
-from rs_fusion_datasets import fetch_houston2013, fetch_muufl, split_spmatrix, fetch_trento, Muufl, Houston2013, Houston2018Ouc, Trento, DataMetaInfo, lbl2rgb
+from rs_fusion_datasets import fetch_houston2013, fetch_muufl, split_spmatrix, fetch_trento, Muufl, Houston2013, Houston2018Ouc, Trento, DataMetaInfo, lbl2rgb, AugsburgOuc, BerlinOuc
 import torch
 from torch.utils.data import DataLoader
 from itertools import product
@@ -14,7 +14,6 @@ from hsi2rgb import hsi2rgb
 
 from typing import get_type_hints
 
-from rs_fusion_datasets.torch.datasets import AugsburgOuc, BerlinOuc
 
 
 def is_typeddict_instance(obj, typeddict_cls):

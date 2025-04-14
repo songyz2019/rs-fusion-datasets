@@ -20,10 +20,13 @@ def fetch_trento(
         UInt8[coo_array, '166 600'],
         DataMetaInfo
     ]:
-    """
-    Donwload and load the Trento dataset.
+    """Fetch and load the Trento dataset.
 
-    Use CHW format
+    The background is 0, and the labels start from 1. All images are CHW formats.
+    
+    :param url: The URL to download the dataset. Use a list to specify multiple mirrored URLs.
+    :param data_home: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
+    :return: (hsi, lidar, train_labels, train_labels, info)
     """
 
     basedir = zip_download_and_extract('trento', url, {

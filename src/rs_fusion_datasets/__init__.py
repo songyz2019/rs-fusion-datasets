@@ -2,7 +2,7 @@ import logging
 
 from .core.fetch_houston2013 import fetch_houston2013
 from .core._fetch_houston2018 import fetch_houston2018
-from .core.fetch_houston2013_mmrs import fetch_houston2013_mmrs
+from .core.fetch_houston2013_mmrs import fetch_houston2013_mmr
 from .core.fetch_muufl import fetch_muufl
 from .core.fetch_trento import fetch_trento
 from .core.fetch_augsburg_ouc import fetch_augsburg_ouc
@@ -16,7 +16,7 @@ from .util.fileio import read_roi
 
 __all__ = [
     'fetch_houston2013', 
-    'fetch_houston2013_mmrs', 
+    'fetch_houston2013_mmr', 
     'fetch_houston2018',
     'fetch_muufl', 
     'fetch_trento', 
@@ -42,12 +42,12 @@ else:
     __all__ += [
         'CommonHsiDsmDataset', 
         'Houston2013',
-        '_Houston2013Mmrs', 
         'Muufl', 
         'Trento', 
         'BerlinOuc', 
         'AugsburgOuc',
         'Houston2018Ouc',
+        '_Houston2013Mmrs', 
         'lbl2rgb'
     ]
 

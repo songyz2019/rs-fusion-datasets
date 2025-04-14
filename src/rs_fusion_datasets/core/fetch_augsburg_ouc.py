@@ -22,10 +22,13 @@ def fetch_augsburg_ouc(
         UInt8[coo_array, '332 485'],
         DataMetaInfo
     ]:
-    """
-    Donwload and load the Trento dataset.
+    """Fetch and load the Augsburg (ouc) dataset. 
 
-    Use CHW format. 0 means background, the labels starts from 1.
+    The background is 0, and the labels start from 1. All images are CHW formats.
+    
+    :param url: The URL to download the dataset. Use a list to specify multiple mirrored URLs.
+    :param data_home: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
+    :return: (hsi, lidar, train_labels, train_labels, info)
     """
 
     basedir = zip_download_and_extract('augsburg-ouc', url, {

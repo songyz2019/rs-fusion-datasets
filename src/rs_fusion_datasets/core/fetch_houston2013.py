@@ -23,13 +23,14 @@ def fetch_houston2013(
     UInt64[spmatrix, '349 1905'],
     DataMetaInfo
 ]:
-    """Load the Houston2013 data-set in scikit-learn style
+    """Fetch and load the Houston2013 dataset.
 
-    Download it if necessary. All the image are CHW formats. And the shape are typed in the return type.
-    The background label is 0, and the rest are 1-15.
+    The background is 0, and the labels start from 1. All images are CHW formats.
     
-    :param datahome: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
-    :return: (hsi, dsm, train_truth, test_truth, info)
+    :param url: The URL to download the dataset. Use a list to specify multiple mirrored URLs.
+    :param url_lbl_val: The URL to download the validation labels of the dataset. Use a list to specify multiple mirrored URLs.
+    :param data_home: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
+    :return: (hsi, lidar, train_labels, train_labels, info)
     """
     basedir = zip_download_and_extract('houston2013', url, 
         {
