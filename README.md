@@ -16,12 +16,16 @@ fs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint cl
 ![screenshot](screenshot.jpg)
 
 ## Supported Datasets
-1. Houston 2013: `fetch_houston2013`
-2. Trento: `fetch_trento`
-3. Muufl: `fetch_muufl`
-4. Houston 2018 (Experimental): `fetch_houston2018_ouc`
-5. Augsberg (Experimental): `fetch_augsberg_ouc`
-6. Berlin (Experimental): `fetch_berlin_ouc`
+
+|Dataset|Fetcher Function|Torch Dataset| Note|
+|---|---|---|---|
+|Houston 2013|`fetch_houston2013`|`Houston2013`| |
+|Trento|`fetch_trento`|`Trento`| |
+|Muufl|`fetch_muufl`|`Muufl`| |
+|Houston 2018|`fetch_houston2018_ouc`|`Houston2018Ouc`| Experimental |
+|Augsburg|`fetch_augsburg_ouc`|`AugsburgOuc`| Experimental |
+|Berlin|`fetch_berlin_ouc`|`BerlinOuc`| Experimental |
+
 
 
 ## Quick Start
