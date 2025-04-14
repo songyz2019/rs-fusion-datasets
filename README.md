@@ -1,4 +1,4 @@
-# Remote Sensing Datasets for Joint Classification of Hyperspectral and LiDAR data
+# fs-fusion-datasets
 
 [![PyPI - Version](https://img.shields.io/pypi/v/rs-fusion-datasets.svg)](https://pypi.org/project/rs-fusion-datasets)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/rs-fusion-datasets)](https://pypi.org/project/rs-fusion-datasets)
@@ -8,9 +8,9 @@
 
 
 
-Download and load remote sensing datasets easily and swiftly. rs-fusion-datasets (formerly known as fetch_houston2013) is a Python package that:
-1. Automatically downloads and load many multimodel remote sensing datasets (houston2013, muufl, trento, houston2018, augsburg, etc.)
-2. Provides ready-to-use torch dataloaders for datasets
+fs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint classification of hyperspectral and lidar data. rs-fusion-datasets (formerly known as fetch_houston2013) is a Python package that:
+1. Automatically downloads and load many multimodel remote sensing datasets (houston, muufl, trento, berlin, augsburg, etc.)
+2. Provides ready-to-use torch dataloaders
 3. Provides some utils for visulization, dataset spilit, etc.
 
 ![screenshot](screenshot.jpg)
@@ -34,12 +34,11 @@ pip install rs-fusion-datasets
 from rs_fusion_datasets import fetch_houston2013, fetch_muufl, fetch_trento, split_spmatrix
 # For Houston 2013
 hsi, dsm, train_label, test_label, info = fetch_houston2013()
-# For Muufl
+# For Muufl and Trento
 casi, lidar, truth, info = fetch_muufl()
 train_label, test_label = split_spmatrix(truth, 20)
-# For Trento
-casi, lidar, truth, info = fetch_trento()
-train_label, test_label = split_spmatrix(truth, 20)
+# For fetch_houston2018_ouc, fetch_augsberg_ouc, fetch_berlin_ouc
+hsi, dsm, train_label, test_label, all_label, info = fetch_houston2018_ouc()
 ```
 3. Tips: train_label and test_label are [sparse matrix](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html), you can either convert them to np.array easily by
 ```python
@@ -60,7 +59,7 @@ or directly use them for getting the value in a very fast way:
 ### torch
 Ready-to-use Torch vison datasets.
 ```python
-from rs_fusion_datasets import Houston2013, Trento, Muufl
+from rs_fusion_datasets import Houston2013, Trento, Muufl, Houston2018Ouc, BerlinOuc, AugsburgOuc
 dataset = Muufl(subset='train', patch_size=11)
 x_h, x_l, y, extras = dataset[0]
 ```
