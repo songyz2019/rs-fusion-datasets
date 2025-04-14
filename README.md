@@ -1,4 +1,4 @@
-# Remote Sensing Fusion Datasets
+# Remote Sensing Datasets for Joint Classification of Hyperspectral and LiDAR data
 
 [![PyPI - Version](https://img.shields.io/pypi/v/rs-fusion-datasets.svg)](https://pypi.org/project/rs-fusion-datasets)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/rs-fusion-datasets)](https://pypi.org/project/rs-fusion-datasets)
@@ -19,8 +19,9 @@ Download and load remote sensing datasets easily and swiftly. rs-fusion-datasets
 1. Houston 2013
 2. Trento
 3. Muufl
-4. Houston 2018 (WIP)
-4. Augsberg (WIP)
+4. Houston 2018 (Working in progress)
+5. Augsberg (Working in progress)
+6. Berlin (Working in progress)
 
 
 ## Quick Start
