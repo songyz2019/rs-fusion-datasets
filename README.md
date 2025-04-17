@@ -64,7 +64,7 @@ or directly use them for getting the value in a very fast way:
 Ready-to-use Torch vison datasets.
 ```python
 from rs_fusion_datasets import Houston2013, Trento, Muufl, Houston2018Ouc, BerlinOuc, AugsburgOuc
-dataset = Muufl(subset='train', patch_size=11)
+dataset = Muufl('train', patch_size=11)
 x_h, x_l, y, extras = dataset[0]
 ```
 ### utils
