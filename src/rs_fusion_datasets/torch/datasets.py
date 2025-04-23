@@ -34,6 +34,7 @@ class BerlinOuc(CommonHsiDsmDataset):
     """
     def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, *args, **kwargs):
         hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_berlin_ouc(data_home=root)
+        dsm = dsm[::-1, :, :] # The first 3 channels are mostly black, so put the last channel to the first channel; TODO: check if the 3 dark channel are normal map or something important
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
 class AugsburgOuc(CommonHsiDsmDataset):
@@ -46,6 +47,7 @@ class AugsburgOuc(CommonHsiDsmDataset):
     """
     def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, *args, **kwargs):
         hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_augsburg_ouc(data_home=root)
+        dsm = dsm[::-1, :, :] # The first 3 channels are mostly black, so put the last channel to the first channel; TODO: check if the 3 dark channel are normal map or something important
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
 class Houston2013(CommonHsiDsmDataset):

@@ -49,17 +49,16 @@ class Test(unittest.TestCase):
                 raise ValueError(f"fetch function {datafetch} should return 4 or 5 or 6 elements, but got {len(r)}")
             self.generate_lbl2rgb(train_label, info, split='train')
             self.generate_lbl2rgb(test_label, info, split='test')
-            hsi = hsi.astype(np.float32)
-            hsi = (hsi - hsi.min()) / (hsi.max() - hsi.min())
-            rgb = hsi2rgb(hsi, wavelength=info['wavelength'], input_format='CHW', output_format='HWC')
-            skimage.io.imsave(f"dist/{info['name']}_hsi.png", (rgb * 255.0).astype(np.uint8))
-            for i,dsm in enumerate(dsm):
-                dsm_img = (dsm - dsm.min()) / (dsm.max() - dsm.min()) * 255.0
-                # dsm_img = skimage.exposure.equalize_adapthist(dsm_img, clip_limit=0.03)
-                skimage.io.imsave(f"dist/{info['name']}_dsm{i}.png", dsm_img.astype(np.uint8))
+
 
 
     def torch_dataloader_test(self, dataset):
+        rgb = hsi2rgb(dataset.hsi, wavelength=dataset.INFO['wavelength'], input_format='CHW', output_format='HWC')
+        skimage.io.imsave(f"dist/torch_{dataset.INFO['name']}_hsi.png", (rgb * 255.0).numpy().astype(np.uint8))
+        for i,dsm in enumerate(dataset.dsm):
+            dsm *= 255.0
+            skimage.io.imsave(f"dist/torch_{dataset.INFO['name']}_dsm{i}.png", dsm.numpy().astype(np.uint8))
+
         b = 8
         dataloader = DataLoader(dataset, batch_size=b, shuffle=True, drop_last=True)
         x_h, x_l, y, extras = next(iter(dataloader))
