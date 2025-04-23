@@ -47,8 +47,8 @@ class Test(unittest.TestCase):
                 train_label, test_label = split_spmatrix(label, 100)
             else:
                 raise ValueError(f"fetch function {datafetch} should return 4 or 5 or 6 elements, but got {len(r)}")
-            self.generate_lbl2rgb(train_label, info, subset='train')
-            self.generate_lbl2rgb(test_label, info, subset='test')
+            self.generate_lbl2rgb(train_label, info, split='train')
+            self.generate_lbl2rgb(test_label, info, split='test')
             hsi = hsi.astype(np.float32)
             hsi = (hsi - hsi.min()) / (hsi.max() - hsi.min())
             rgb = hsi2rgb(hsi, wavelength=info['wavelength'], input_format='CHW', output_format='HWC')
@@ -82,7 +82,7 @@ class Test(unittest.TestCase):
             else:
                 n_test -= 1
 
-    def generate_lbl2rgb(self, truth, info, subset):
+    def generate_lbl2rgb(self, truth, info, split):
         h,w = truth.shape
         y = np.eye(info['n_class']+1)[truth.todense()].transpose(2, 0, 1) # One Hot
         self.assertEqual(y.shape, (info['n_class']+1, h, w))
@@ -93,7 +93,7 @@ class Test(unittest.TestCase):
         self.assertGreaterEqual(rgb.min(), 0.0)
 
         img = (rgb*255.0).astype(np.uint8).transpose(1, 2, 0)
-        skimage.io.imsave(f"dist/{info['name']}_{subset}.png", img, check_contrast=False)
+        skimage.io.imsave(f"dist/{info['name']}_{split}.png", img, check_contrast=False)
 
     def test_fetch_houston2013(self):
         casi, lidar, train_truth, test_truth, info = self.houston2013
@@ -156,16 +156,16 @@ class Test(unittest.TestCase):
         self.assertTrue(is_typeddict_instance(info, DataMetaInfo))
 
     def test_torch_datasets(self):
-        for Dataset, subset, patch_size in product([Houston2018Ouc, BerlinOuc,AugsburgOuc,Houston2013, Muufl, Trento], ['train', 'test', 'full'], [1, 6, 9]):
-            dataset = Dataset(subset=subset, patch_size=patch_size)
+        for Dataset, split, patch_size in product([Houston2018Ouc, BerlinOuc,AugsburgOuc,Houston2013, Muufl, Trento], ['train', 'test', 'full'], [1, 6, 9]):
+            dataset = Dataset(split=split, patch_size=patch_size)
             self.torch_dataloader_test(dataset)
-            if Dataset in [Muufl, Trento] and subset == 'train':
+            if Dataset in [Muufl, Trento] and split == 'train':
                 n_train_perclass = 50
-                self.assertEqual(dataset.n_class*n_train_perclass, len(Dataset(subset=subset, patch_size=5, n_train_perclass=n_train_perclass)))
+                self.assertEqual(dataset.n_class*n_train_perclass, len(Dataset(split=split, patch_size=5, n_train_perclass=n_train_perclass)))
 
     def test_datahome(self):
         fetch_trento(data_home='./tmp/')
-        Trento(subset='train', patch_size=5, data_home='./tmp/')
+        Trento(split='train', patch_size=5, data_home='./tmp/')
                     
 
 if __name__ == '__main__':

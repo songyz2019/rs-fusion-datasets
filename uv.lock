@@ -670,7 +670,7 @@ wheels = [
 
 [[package]]
 name = "rs-fusion-datasets"
-version = "0.10.0"
+version = "0.11.0"
 source = { editable = "." }
 dependencies = [
     { name = "jaxtyping", version = "0.2.36", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },

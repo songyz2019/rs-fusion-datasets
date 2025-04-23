@@ -16,13 +16,13 @@ class CommonHsiDsmDataset(VisionDataset):
                  lbl_train :Num[ndarray, 'h w'],
                  lbl_test :Num[ndarray, 'h w'],
                  info: DataMetaInfo,
-                 subset: Literal['train', 'test', 'full'], 
+                 split: Literal['train', 'test', 'full'], 
                  patch_size: int = 5,  # I prefer patch_radius, but patch_size is more popular and maintance two patch_xxx is too complex...
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Load truth
-        self.subset = subset
+        self.subset = split
         if self.subset == 'train':
             self.lbl = lbl_train
         elif self.subset == 'test':
@@ -30,7 +30,7 @@ class CommonHsiDsmDataset(VisionDataset):
         elif self.subset == 'full':
             self.lbl = coo_array(-1*np.ones_like(lbl_train.todense(), dtype=np.int16), dtype='int')
         else:
-            raise ValueError(f"Unknown subset: {subset}")
+            raise ValueError(f"Unknown subset: {split}")
 
         # Load patch size
         if patch_size % 2 != 1:
