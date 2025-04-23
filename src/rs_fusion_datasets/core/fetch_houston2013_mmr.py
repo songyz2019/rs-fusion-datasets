@@ -10,7 +10,7 @@ from ..util.fileio import zip_download_and_extract
 
 
 
-def fetch_houston2013_mmr(url :Union[str, List[str]]='https://github.com/songyz2019/rs-fusion-datasets-dist/releases/download/v1.0.0/houston2013mmrs.zip', datahome=None):
+def fetch_houston2013_mmr(url :Union[str, List[str]]='https://github.com/songyz2019/rs-fusion-datasets-dist/releases/download/v1.0.0/houston2013mmrs.zip', data_home=None):
     """
     """
     basedir = zip_download_and_extract('houston2013mmrs', url, {
@@ -20,7 +20,7 @@ def fetch_houston2013_mmr(url :Union[str, List[str]]='https://github.com/songyz2
         'Houston2013/LiDAR.mat'   : '7aa956e7c371fd29a495f0cb9bb8f572aaa4065fcfeda2b3e854a5cef74b35ad',
         'Houston2013/TRLabel.mat' : '96ce863eaf4dc548c3140a480dee33c812d46194ae5ed345fed6e71a3d72b527',
         'Houston2013/TSLabel.mat' : '46bd849d556c80ed67b33f23dd288eafa7ac9f97a847390be373b702b0bf5a45',
-    },datahome=datahome)
+    },data_home=data_home)
     """Fetch and load the Houston2013 (mmr) dataset. 
 
     The background is 0, and the labels start from 1. All images are CHW formats.

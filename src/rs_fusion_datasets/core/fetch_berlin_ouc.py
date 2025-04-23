@@ -37,7 +37,7 @@ def fetch_berlin_ouc(
         'Berlin/berlin_hsi.mat'  : '580f397d9f249b4ec3f02b8cc570d910d765afa9f77b17d8a4f4799edee94b1f',
         'Berlin/berlin_index.mat': '1a66ec454ea95bbf5782525d9fcf9a04412a948b7b3aa6919ed324516d42a8b5',
         'Berlin/berlin_sar.mat'  : 'a6cf2f86db7f1a02c340e813a7b46f9c6c58e297e1eb9b5fa19ed49244b2b8a7'
-    }, datahome=data_home)
+    }, data_home=data_home)
 
 
     # 3. 数据加载

@@ -1,7 +1,7 @@
 import logging
 
 from .core.fetch_houston2013 import fetch_houston2013
-from .core.fetch_houston2013_mmrs import fetch_houston2013_mmr
+from .core.fetch_houston2013_mmr import fetch_houston2013_mmr
 from .core.fetch_muufl import fetch_muufl
 from .core.fetch_trento import fetch_trento
 from .core.fetch_augsburg_ouc import fetch_augsburg_ouc
@@ -24,7 +24,8 @@ __all__ = [
     'fetch_houston2018_ouc',
     'split_spmatrix', 
     'read_roi', 
-    'DataMetaInfo'
+    'hsi2rgb',
+    'DataMetaInfo',
 ]
 
 

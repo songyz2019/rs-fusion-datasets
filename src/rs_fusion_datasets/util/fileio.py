@@ -102,7 +102,7 @@ def verify_file(path: Path, expected_sha256: str) -> bool:
     logging.debug(f"PASS")
     return True
 
-def zip_download_and_extract(dir_name :str, url :Union[str, List[str]], required_files :Dict[str, str], datahome :Optional[Union[str,Path]] = None) -> None:
+def zip_download_and_extract(dir_name :str, url :Union[str, List[str]], required_files :Dict[str, str], data_home :Optional[Union[str,Path]] = None) -> None:
     """
     Download a zip file from url and extract it to datahome
 
@@ -115,7 +115,7 @@ def zip_download_and_extract(dir_name :str, url :Union[str, List[str]], required
     # breakpoint()
     dir_name = dir_name.removesuffix('/')
     if isinstance(dir_name, str):
-        basedir = Path(get_data_home(datahome))/dir_name
+        basedir = Path(get_data_home(data_home))/dir_name
         basedir.mkdir(parents=True, exist_ok=True)
     else:
         raise ValueError(f"dir_name is not a valid string or Path: {dir_name}")

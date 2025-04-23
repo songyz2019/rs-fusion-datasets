@@ -44,7 +44,7 @@ def fetch_houston2013(
             '2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_VA.zip': 'aac7015c7a986063002a86eb7f7cc57ed6f14f5eaf3e9ca29c0cb1e63fd7e0d5',
             '2013_DFTC/copyright.txt':                            '63d908383566b1ff6fd259aa202e31dab9a629808919d87d94970df7ad25180d',
         },
-        datahome=data_home
+        data_home=data_home
     )
     mirrored_download(
         basedir/'2013_DFTC/2013_IEEE_GRSS_DF_Contest_Samples_VA.txt',

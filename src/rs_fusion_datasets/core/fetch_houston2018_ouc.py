@@ -37,7 +37,7 @@ def fetch_houston2018_ouc(
         'Houston2018/houston_hsi.mat'  : '35a4a9a2bad193740274c6388f18284fc586a2ef5bde579368796fbeec2a58ea',
         'Houston2018/houston_index.mat': '2d513db197f105b6b82e7039909878862fbe48750a93184017f22ab8f288d0b3',
         'Houston2018/houston_lidar.mat': 'a55fa2d99684078dd0d8039b2ca1349190d86766426a25e8dff7fbd5df036d9b',
-    }, datahome=data_home)
+    }, data_home=data_home)
 
 
     # 3. 数据加载

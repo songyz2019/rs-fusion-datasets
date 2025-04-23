@@ -37,7 +37,7 @@ def fetch_augsburg_ouc(
         'Augsburg/augsburg_hsi.mat'   : '2f13839d7840b32f55e0489d6934776dcfded7f678e23a9d8c2c092573946583',
         'Augsburg/augsburg_index.mat' : '8bc57037447cb42dbf3a8478d42d4bc217a53a6a0b349c2d67db8c660bef2f43',
         'Augsburg/augsburg_sar.mat'   : 'cd1dbfad2346f47e51d105b05e11aaefc872fe487a94bdc2913f4eaee3f8e82b'
-    }, datahome=data_home)
+    }, data_home=data_home)
 
 
     # 3. 数据加载

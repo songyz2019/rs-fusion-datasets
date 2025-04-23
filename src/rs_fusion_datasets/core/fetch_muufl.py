@@ -32,7 +32,7 @@ def fetch_muufl(
     basedir = zip_download_and_extract('muufl', url, {
         'muufl.zip'      :'2219e6259e3ad80521a8a7ff879916624efa61eb6df1bfd80538f6f2d4befa2c',
         "MUUFLGulfport-0.1/MUUFLGulfportSceneLabels/muufl_gulfport_campus_1_hsi_220_label.mat": "69420a72866dff4a858ae503e6e2981af46f406a4ad8f4dd642efa43feb59edc"
-    }, datahome=data_home)
+    }, data_home=data_home)
 
     d = scipy.io.loadmat(
         basedir / 'MUUFLGulfport-0.1/MUUFLGulfportSceneLabels/muufl_gulfport_campus_1_hsi_220_label.mat',
