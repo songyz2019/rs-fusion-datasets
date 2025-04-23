@@ -165,7 +165,7 @@ class Test(unittest.TestCase):
 
     def test_datahome(self):
         fetch_trento(data_home='./tmp/')
-        Trento(split='train', patch_size=5, data_home='./tmp/')
+        Trento(split='train', patch_size=5, root='./tmp/')
                     
 
 if __name__ == '__main__':
