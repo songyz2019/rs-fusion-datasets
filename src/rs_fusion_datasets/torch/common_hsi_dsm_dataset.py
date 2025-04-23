@@ -9,6 +9,17 @@ from jaxtyping import Num, Float
 
 from ..core.common import DataMetaInfo
 
+def _channel_wise_normalize(x: Float[ndarray, 'c h w']) -> Float[ndarray, 'c h w']:
+    """
+    Normalize each channel of the input image to the range [0, 1].
+    :param x: Input image with shape (c, h, w).
+    :return: Normalized image with shape (c, h, w).
+    """
+    x = x.astype(np.float32)
+    min_val = np.min(x, axis=(-1, -2), keepdims=True)
+    max_val = np.max(x, axis=(-1, -2), keepdims=True)
+    return (x - min_val) / (max_val - min_val)  # Avoid division by zero
+
 class CommonHsiDsmDataset(VisionDataset):
     def __init__(self,
                  hsi :Num[ndarray, 'c h w'], 
@@ -47,17 +58,13 @@ class CommonHsiDsmDataset(VisionDataset):
 
         # Preprocess HSI
         pad_shape = ((0, 0), (self.patch_radius, self.patch_radius), (self.patch_radius, self.patch_radius))
-        self.hsi = self.HSI
-        min_hsi = self.hsi.min(axis=-1, keepdims=True).min(axis=-2, keepdims=True)
-        max_hsi = self.hsi.max(axis=-1, keepdims=True).max(axis=-2, keepdims=True)
-        self.hsi = (self.hsi - min_hsi) / (max_hsi - min_hsi)
-        self.hsi = np.pad(self.hsi,   pad_shape, 'symmetric')
+        self.hsi = _channel_wise_normalize(self.HSI)
+        self.hsi = np.pad(self.hsi, pad_shape, mode='reflect')
         self.hsi = torch.from_numpy(self.hsi).float()
 
         # Preprocess DSM
-        self.dsm = self.DSM
-        self.dsm = (self.dsm - self.dsm.min()) / (self.dsm.max() - self.dsm.min())
-        self.dsm = np.pad(self.dsm, pad_shape, 'symmetric')
+        self.dsm = _channel_wise_normalize(self.DSM)
+        self.dsm = np.pad(self.dsm, pad_shape, mode='reflect')
         self.dsm = torch.from_numpy(self.dsm).float()
 
 
