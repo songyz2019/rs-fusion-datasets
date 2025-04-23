@@ -41,7 +41,7 @@ def fetch_houston2013_mmr(url :Union[str, List[str]]='https://github.com/songyz2
     te = coo_array(te, dtype='int')
 
     info :DataMetaInfo = {
-        'name': 'houston2013mmrs',
+        'name': 'houston2013-mmr',
         'full_name': 'MMRS version of IEEE GRSS DF Contest Houston 2013',
         'homepage': 'https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit',
         'n_channel_hsi': 144,
