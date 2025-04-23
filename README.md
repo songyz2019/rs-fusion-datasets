@@ -29,11 +29,19 @@ rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint cl
 
 
 ## Quick Start
-1. Install this package
+### Install
 ```bash
 pip install rs-fusion-datasets
 ```
-2. import and get the dataset
+
+### Use with torch
+```python
+from rs_fusion_datasets import Houston2013, Trento, Muufl, Houston2018Ouc, BerlinOuc, AugsburgOuc
+dataset = Muufl('train', patch_size=11)
+x_h, x_l, y, extras = dataset[0]
+```
+
+### Get the raw image and labels
 ```python
 from rs_fusion_datasets import fetch_houston2013, fetch_muufl, fetch_trento, split_spmatrix
 # For Houston 2013
@@ -44,30 +52,26 @@ train_label, test_label = split_spmatrix(truth, 20)
 # For fetch_houston2018_ouc, fetch_augsberg_ouc, fetch_berlin_ouc
 hsi, dsm, train_label, test_label, all_label, info = fetch_houston2018_ouc()
 ```
-3. Tips: train_label and test_label are [sparse matrix](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html), you can either convert them to np.array easily by
-```python
-train_label=train_label.todense()
-test_label =test_label.todense()
-```
-or directly use them for getting the value in a very fast way:
-```python
-    def __getitem__(self, index):
-      i = self.truth.row[index]
-      j = self.truth.col[index]
-      label = self.truth.data[index].item()
-      x_hsi = self.hsi[:, i, j]
-      x_dsm = self.dsm[:, i, j]
-      return x_hsi, x_dsm, label
-```
 
-### torch
-Ready-to-use Torch vison datasets.
-```python
-from rs_fusion_datasets import Houston2013, Trento, Muufl, Houston2018Ouc, BerlinOuc, AugsburgOuc
-dataset = Muufl('train', patch_size=11)
-x_h, x_l, y, extras = dataset[0]
-```
-### utils
+> [!TIP]
+> The labels returned are [sparse matrix](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html), you can either convert them to np.array easily by
+> ```python
+> train_label=train_label.todense()
+> test_label =test_label.todense()
+> ```
+> Or directly use them for getting the value in a very fast way:
+> ```python
+>     def __getitem__(self, index):
+>       i = self.truth.row[index]
+>       j = self.truth.col[index]
+>       label = self.truth.data[index].item()
+>       x_hsi = self.hsi[:, i, j]
+>       x_dsm = self.dsm[:, i, j]
+>       return x_hsi, x_dsm, label
+> ```
+
+
+### Utils
 1. lbl2rgb: convert the label dataset to rgb image
 2. read_roi: read exported `.txt` file of ENVI roi to sparse matrix
 3. split_spmatrix: split a sparse to get the train dataset and test dataset
