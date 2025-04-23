@@ -25,7 +25,7 @@ class MyModel(Module):
 
 if __name__=='__main__':
     # Train
-    trainset = Houston2013(subset='train', patch_size=5)
+    trainset = Houston2013('train', patch_size=5)
     model = MyModel(n_class=trainset.INFO['n_class'])
     optimizer = Adam(model.parameters(), lr=0.005)
     for epoch in range(10):
