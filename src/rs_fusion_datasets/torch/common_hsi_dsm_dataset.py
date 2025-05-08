@@ -97,5 +97,12 @@ class CommonHsiDsmDataset(VisionDataset):
         return x_hsi, x_dsm, y, extras
 
     @property
+    def uid(self) -> str:
+        '''a uid for logging and batch training'''
+        return f"{self.INFO['name']}-patchsize{self.patch_size}-len{len(self)}-{self.subset}"
+
+    @property
     def truth(self) -> coo_array:
+        '''alias for depreacted property'''
         return self.lbl
+    
