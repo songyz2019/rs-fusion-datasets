@@ -57,7 +57,7 @@ else:
         '_MuuflMat', 
         '_TrentoMat', 
         '_Houston2013Mmrs',
-        '_Houston2013Mat'
+        '_Houston2013Mat',
         'lbl2rgb'
     ]
 
