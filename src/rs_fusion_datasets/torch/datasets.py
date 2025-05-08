@@ -131,9 +131,8 @@ class _TrentoMat(CommonHsiDsmDataset):
 
     :param split: 'train', 'test', 'full'. 'full' means the whole map, usually used for visualization.
     :param patch_size: The size of patches. Default is 5.
-    :param n_train_perclass: The number of training samples per class. Default is 100.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, *args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None,  *args, **kwargs):
         hsi, dsm, lbl_train, lbl_test, info = _fetch_trento_mat(data_home=root)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
