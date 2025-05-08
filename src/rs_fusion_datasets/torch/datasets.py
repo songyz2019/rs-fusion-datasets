@@ -11,6 +11,7 @@ from ..core.fetch_berlin_ouc import fetch_berlin_ouc
 from ..core.fetch_houston2018_ouc import fetch_houston2018_ouc
 from ..core._fetch_muufl_mat import _fetch_muufl_mat
 from ..core._fetch_trento_mat import _fetch_trento_mat
+from ..core._fetch_houston2013_mat import _fetch_houston2013_mat
 from ..util.split_spmatrix import split_spmatrix
 from .common_hsi_dsm_dataset import CommonHsiDsmDataset
 
@@ -69,6 +70,12 @@ class Houston2013Mmr(CommonHsiDsmDataset):
     """This is only for internal test."""
     def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, *args, **kwargs):
         hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013_mmr(data_home=root)
+        super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
+
+class _Houston2013Mat(CommonHsiDsmDataset):
+    """This is only for internal test."""
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, *args, **kwargs):
+        hsi, dsm, lbl_train, lbl_test, info = _fetch_houston2013_mat(data_home=root)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
 class _Houston2013Mmrs(Houston2013Mmr):

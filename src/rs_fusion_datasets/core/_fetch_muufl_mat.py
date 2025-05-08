@@ -29,8 +29,8 @@ def _fetch_muufl_mat(
     :return: (hsi, lidar, train_labels, train_labels, info)
     """
 
-    basedir = zip_download_and_extract('muufl_mat', url, {
-        'muufl_mat.zip'       : '95cd1235a5f02df69cd384de5fb83d0d14fa37ac5776081caf9d477368e9a291',
+    basedir = zip_download_and_extract('muufl-mat', url, {
+        'muufl-mat.zip'       : '95cd1235a5f02df69cd384de5fb83d0d14fa37ac5776081caf9d477368e9a291',
         'muufl_mat/HSI.mat'   : 'adf5934333753b2e05cf244392b43d86b432aa8dac039964ce1f409c96c65edd',
         'muufl_mat/labels.mat': 'a114cec5f9b51c91fac3041426a7142e6dbc0e6d895af9b3b5cf7819e7c415b0',
         'muufl_mat/Lidar.mat' : '31a9f7d6b2e9ab6507304c72b7b99ec975565fd5961ea9523827443690bb7194'

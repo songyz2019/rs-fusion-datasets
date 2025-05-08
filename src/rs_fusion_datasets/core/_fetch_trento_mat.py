@@ -29,8 +29,8 @@ def _fetch_trento_mat(
     :return: (hsi, lidar, train_labels, train_labels, info)
     """
 
-    basedir = zip_download_and_extract('trento_mat', url, {
-        'trento_mat.zip'        : 'ae8a2e498a51ca0aad8995e86f1533390c880197a8a9cd96b7d28fe6e962274b',
+    basedir = zip_download_and_extract('trento-mat', url, {
+        'trento-mat.zip'        : 'ae8a2e498a51ca0aad8995e86f1533390c880197a8a9cd96b7d28fe6e962274b',
         'Trento/HSI.mat'    : '44a84b4fe8bab9b2f5ec11af32602436ccc97653b7ae8c3283334da7d221c053',
         'Trento/LiDAR.mat'  : 'd99347532e7b18982c9537fd4de43574dd64f9b35ccab251459e7b483ddd43df',
         'Trento/TRLabel.mat': '593976a1bef4edf06ec543926811509f997454557aa9313ed6165b3012c26e07',

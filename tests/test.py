@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 import skimage
 from rs_fusion_datasets import fetch_augsburg_ouc, fetch_berlin_ouc, fetch_houston2018_ouc
-from rs_fusion_datasets import fetch_houston2013, fetch_muufl, split_spmatrix, fetch_trento, Muufl, Houston2013, Houston2018Ouc, Trento, DataMetaInfo, lbl2rgb, AugsburgOuc, BerlinOuc
+from rs_fusion_datasets import fetch_houston2013, fetch_muufl, split_spmatrix, fetch_trento, Muufl, Houston2013, Houston2018Ouc, Trento, DataMetaInfo, lbl2rgb, AugsburgOuc, BerlinOuc, Houston2013Mmr,_TrentoMat
 import torch
 from torch.utils.data import DataLoader
 from itertools import product
@@ -155,7 +155,7 @@ class Test(unittest.TestCase):
         self.assertTrue(is_typeddict_instance(info, DataMetaInfo))
 
     def test_torch_datasets(self):
-        for Dataset, split, patch_size in product([Houston2018Ouc, BerlinOuc,AugsburgOuc,Houston2013, Muufl, Trento], ['train', 'test', 'full'], [1, 6, 9]):
+        for Dataset, split, patch_size in product([Houston2018Ouc, BerlinOuc,AugsburgOuc,Houston2013, Muufl, Trento, Houston2013Mmr, _TrentoMat], ['train', 'test', 'full'], [1, 6, 9]):
             dataset = Dataset(split=split, patch_size=patch_size)
             self.torch_dataloader_test(dataset)
             if Dataset in [Muufl, Trento] and split == 'train':

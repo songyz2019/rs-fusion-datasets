@@ -2,6 +2,7 @@ import logging
 
 from .core.fetch_houston2013 import fetch_houston2013
 from .core.fetch_houston2013_mmr import fetch_houston2013_mmr
+from .core._fetch_houston2013_mat import _fetch_houston2013_mat
 from .core.fetch_muufl import fetch_muufl
 from .core.fetch_trento import fetch_trento
 from .core.fetch_augsburg_ouc import fetch_augsburg_ouc
@@ -26,6 +27,7 @@ __all__ = [
     'fetch_houston2018_ouc',
     '_fetch_trento_mat',
     '_fetch_muufl_mat',
+    '_fetch_houston2013_mat',
     'split_spmatrix', 
     'read_roi', 
     'hsi2rgb',
@@ -39,7 +41,7 @@ try:
 except ImportError:
     pass
 else:
-    from .torch.datasets import Houston2013, Muufl, Trento, Houston2013Mmr, _Houston2013Mmrs, BerlinOuc, AugsburgOuc, Houston2018Ouc, _MuuflMat, _TrentoMat
+    from .torch.datasets import Houston2013, Muufl, Trento, Houston2013Mmr, _Houston2013Mmrs, BerlinOuc, AugsburgOuc, Houston2018Ouc, _MuuflMat, _TrentoMat, _Houston2013Mat
     from .torch.common_hsi_dsm_dataset import CommonHsiDsmDataset
     from .util.lbl2rgb import lbl2rgb
 
@@ -54,7 +56,8 @@ else:
         'Houston2018Ouc',
         '_MuuflMat', 
         '_TrentoMat', 
-        '_Houston2013Mmrs', 
+        '_Houston2013Mmrs',
+        '_Houston2013Mat'
         'lbl2rgb'
     ]
 
