@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Optional, Union, Literal
 import warnings
+
+from rs_fusion_datasets.core import _fetch_muufl_mat
 from ..core.fetch_houston2013 import fetch_houston2013
 from ..core.fetch_houston2013_mmr import fetch_houston2013_mmr
 from ..core.fetch_muufl import fetch_muufl
@@ -62,13 +64,16 @@ class Houston2013(CommonHsiDsmDataset):
         hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013(data_home=root)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
-class _Houston2013Mmrs(CommonHsiDsmDataset):
+class Houston2013Mmr(CommonHsiDsmDataset):
     """This is only for internal test."""
     def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, *args, **kwargs):
         hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013_mmr(data_home=root)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
-
+class _Houston2013Mmrs(Houston2013Mmr):
+    def __init__(self, *args, **kwargs):
+        warnings.warn("_Houston2013Mmrs is deprecated, please use Houston2013Mmr instead.", DeprecationWarning)
+        super().__init__(*args, **kwargs)
 
 class Muufl(CommonHsiDsmDataset):
     """
@@ -84,6 +89,20 @@ class Muufl(CommonHsiDsmDataset):
         lbl_train, lbl_test = split_spmatrix(lbl, n_train_perclass)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
+
+class _MuuflMat(CommonHsiDsmDataset):
+    """
+    A preprocessed torch dataset for the official Muufl dataset.
+
+    :param split: 'train', 'test', 'full'. 'full' means the whole map, usually used for visualization.
+    :param patch_size: The size of patches. Default is 5.
+    :param n_train_perclass: The number of training samples per class. Default is 100.
+    :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
+    """
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, *args, **kwargs):
+        hsi, dsm, lbl_train, lbl_test, info = _fetch_muufl_mat(data_home=root)
+        super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)        
+
 class Trento(CommonHsiDsmDataset):
     """
     A preprocessed torch dataset for the Trento dataset.
@@ -98,7 +117,15 @@ class Trento(CommonHsiDsmDataset):
         lbl_train, lbl_test = split_spmatrix(lbl, n_train_perclass)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
+class _TrentoMat(CommonHsiDsmDataset):
+    """
+    A preprocessed torch dataset for the Trento dataset.
 
-
-
-__all__ = ['Houston2013', 'Muufl', 'Trento', '_Houston2013Mmrs']
+    :param split: 'train', 'test', 'full'. 'full' means the whole map, usually used for visualization.
+    :param patch_size: The size of patches. Default is 5.
+    :param n_train_perclass: The number of training samples per class. Default is 100.
+    :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
+    """
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, *args, **kwargs):
+        hsi, dsm, lbl_train, lbl_test, info = fetch_trento(data_home=root)
+        super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)

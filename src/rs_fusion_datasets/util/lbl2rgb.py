@@ -30,7 +30,9 @@ def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], '... C H W'], palette, ki
         'houston2013': ('forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan'),
         'houston2013-mmr': ('forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan'),
         'muufl': ('forestgreen', 'limegreen', 'lightblue', 'papayawhip', 'red', 'blue', 'purple', 'pink','orangered', 'yellow', 'brown'),
+        'muufl-mat': ('forestgreen', 'limegreen', 'lightblue', 'papayawhip', 'red', 'blue', 'purple', 'pink','orangered', 'yellow', 'brown'),
         'trento': ('royalblue','lightblue' , 'limegreen', 'yellow', 'red', 'brown'),
+        'trento-mat': ('royalblue','lightblue' , 'limegreen', 'yellow', 'red', 'brown'),
         'houston2018-ouc': placeholder_palette, #TODO
         'augsburg-ouc':    placeholder_palette, #TODO
         'berlin-ouc':      placeholder_palette, #TODO

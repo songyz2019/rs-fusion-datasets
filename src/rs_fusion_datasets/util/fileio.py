@@ -10,6 +10,7 @@ from io import StringIO
 from zipfile import ZipFile
 
 import numpy as np
+import scipy
 from scipy.sparse import coo_array, sparray
 from jaxtyping import UInt16
 import urllib
@@ -217,3 +218,8 @@ def mirrored_download(path :Path, url :Union[str, List[str]], sha256: str) -> No
         return
 
 
+def load_one_key_mat(path :Path, *args, **kwargs):
+    mat = scipy.io.loadmat(path, squeeze_me=True, mat_dtype=True, struct_as_record=False, *args, **kwargs)
+    keys = [x for x in mat.keys() if not x.startswith('__') and not x.endswith('__')]
+    assert len(keys) == 1, f"Mat file {path} has more than one key: {keys}, please load it manually"
+    return mat[keys[0]]

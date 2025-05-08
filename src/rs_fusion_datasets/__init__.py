@@ -7,6 +7,8 @@ from .core.fetch_trento import fetch_trento
 from .core.fetch_augsburg_ouc import fetch_augsburg_ouc
 from .core.fetch_berlin_ouc import fetch_berlin_ouc
 from .core.fetch_houston2018_ouc import fetch_houston2018_ouc
+from .core._fetch_trento_mat import _fetch_trento_mat
+from .core._fetch_muufl_mat import _fetch_muufl_mat
 from .core.common import DataMetaInfo
 
 from .util.split_spmatrix import split_spmatrix
@@ -20,8 +22,10 @@ __all__ = [
     'fetch_muufl', 
     'fetch_trento', 
     'fetch_berlin_ouc',
-    'fetch_augsburg_ouc' 
+    'fetch_augsburg_ouc', 
     'fetch_houston2018_ouc',
+    '_fetch_trento_mat',
+    '_fetch_muufl_mat',
     'split_spmatrix', 
     'read_roi', 
     'hsi2rgb',
@@ -35,18 +39,21 @@ try:
 except ImportError:
     pass
 else:
-    from .torch.datasets import Houston2013, Muufl, Trento, _Houston2013Mmrs, BerlinOuc, AugsburgOuc, Houston2018Ouc
+    from .torch.datasets import Houston2013, Muufl, Trento, Houston2013Mmr, _Houston2013Mmrs, BerlinOuc, AugsburgOuc, Houston2018Ouc, _MuuflMat, _TrentoMat
     from .torch.common_hsi_dsm_dataset import CommonHsiDsmDataset
     from .util.lbl2rgb import lbl2rgb
 
     __all__ += [
         'CommonHsiDsmDataset', 
         'Houston2013',
+        'Houston2013Mmr', 
         'Muufl', 
         'Trento', 
         'BerlinOuc', 
         'AugsburgOuc',
         'Houston2018Ouc',
+        '_MuuflMat', 
+        '_TrentoMat', 
         '_Houston2013Mmrs', 
         'lbl2rgb'
     ]
