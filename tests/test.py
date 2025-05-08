@@ -11,6 +11,7 @@ import torch
 from torch.utils.data import DataLoader
 from itertools import product
 from hsi2rgb import hsi2rgb
+from rs_fusion_datasets import * # test __all__ in __init__.py
 
 from typing import get_type_hints
 
