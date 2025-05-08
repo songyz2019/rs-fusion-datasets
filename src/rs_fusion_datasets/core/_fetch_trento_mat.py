@@ -81,7 +81,7 @@ def _fetch_trento_mat(
         'wavelength': np.linspace(402.89, 989.09, hsi.shape[-1])
     }
 
-    return hsi.transpose(2,0,1), lidar.transpose(2,0,1), lbl_train, info
+    return hsi.transpose(2,0,1), lidar.transpose(2,0,1), lbl_train, lbl_test, info
 
 
 
