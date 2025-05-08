@@ -10,7 +10,7 @@ from ..util.fileio import zip_download_and_extract
 
 
 
-def fetch_houston2013_mmr(url :Union[str, List[str]]='https://github.com/songyz2019/rs-fusion-datasets-dist/releases/download/v1.0.0/houston2013mmrs.zip', data_home=None):
+def fetch_houston2013_mmr(url :Union[str, List[str]]='https://github.com/songyz2019/rs-fusion-datasets-dist/releases/download/v1.0.0/houston2013-mmr.zip', data_home=None):
     """
     """
     basedir = zip_download_and_extract('houston2013-mmr', url, {
