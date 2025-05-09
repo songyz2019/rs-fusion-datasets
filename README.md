@@ -6,8 +6,6 @@
 ![GitHub Created At](https://img.shields.io/github/created-at/songyz2019/rs-fusion-datasets)
 ![GitHub License](https://img.shields.io/github/license/songyz2019/rs-fusion-datasets)
 
-
-
 rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint classification of hyperspectral, LiDAR and SAR data. rs-fusion-datasets (formerly known as fetch_houston2013) is a Python package that:
 1. Automatically downloads and load many multimodel remote sensing datasets (houston, muufl, trento, berlin, augsburg, etc.)
 2. Provides ready-to-use torch dataloaders
@@ -15,16 +13,16 @@ rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint cl
 
 ![screenshot](screenshot.jpg)
 
-## Supported Datasets
+## Datasets
 
-|Dataset|Fetcher Function|Torch Dataset| Note|
-|---|---|---|---|
-|Houston 2013|`fetch_houston2013`|`Houston2013`| |
-|Trento|`fetch_trento`|`Trento`| |
-|Muufl|`fetch_muufl`|`Muufl`| |
-|Houston 2018|`fetch_houston2018_ouc`|`Houston2018Ouc`| Experimental |
-|Augsburg|`fetch_augsburg_ouc`|`AugsburgOuc`| Experimental |
-|Berlin|`fetch_berlin_ouc`|`BerlinOuc`| Experimental |
+|Dataset|Fetcher Function|Torch Dataset | Bands | Note|
+|---|---|---|---|---|
+|[Houston 2013](https://machinelearning.ee.uh.edu/?page_id=459)|`fetch_houston2013`|`Houston2013`| HSI,LiDAR | |
+|Trento|`fetch_trento`|`Trento`| HSI,LiDAR | |
+|[MUUFL](https://doi.org/10.5281/zenodo.1186326)|`fetch_muufl`|`Muufl`| HSI,LiDAR | |
+|[Houston 2018](https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/)|`fetch_houston2018_ouc`|`Houston2018Ouc`| HSI,LiDAR | |
+|[Augsburg](https://mediatum.ub.tum.de/1657312)|`fetch_augsburg_ouc`|`AugsburgOuc`| HSI,SAR | aka. MDAS |
+|Berlin|`fetch_berlin_ouc`|`BerlinOuc`| HSI,SAR | |
 
 
 
@@ -155,4 +153,7 @@ The suffix of dataset is only an 3-character UID. I upload these dataset AS IS, 
 `berlin-ouc`: From https://github.com/oucailab/DCMNet/
 `houston2018-ouc`: From https://github.com/oucailab/DCMNet/
 `houston2013-mmr`: From: https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit/
+
+Inspiration
+This project is inspired by torchgeo and torchrs
 ```
