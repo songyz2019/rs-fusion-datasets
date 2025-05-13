@@ -15,3 +15,5 @@ load_secrets.bash
 *.pt
 *cache/
 tmp/
+
+result.png

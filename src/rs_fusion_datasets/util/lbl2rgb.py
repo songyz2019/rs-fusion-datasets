@@ -1,8 +1,12 @@
+from colorsys import hsv_to_rgb
 from typing import Union
 import skimage
 import torch
 import numpy as np
 from jaxtyping import Float
+
+def hue_platte(n_sample :int):
+    return [hsv_to_rgb(n/n_sample, 1, 1) for n in range(n_sample)]
 
 def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], '... C H W'], palette, kind='overlay') -> Float[Union[np.ndarray,torch.Tensor], '... 3 H W']:
     """
