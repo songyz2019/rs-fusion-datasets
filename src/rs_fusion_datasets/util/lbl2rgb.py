@@ -4,11 +4,12 @@ import skimage
 import torch
 import numpy as np
 from jaxtyping import Float
+import warnings
 
 def hue_platte(n_sample :int):
     return [hsv_to_rgb(n/n_sample, 1, 1) for n in range(n_sample)]
 
-def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], '... C H W'], palette, kind='overlay') -> Float[Union[np.ndarray,torch.Tensor], '... 3 H W']:
+def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], 'C H W'], palette, kind='overlay') -> Float[Union[np.ndarray,torch.Tensor], '... 3 H W']:
     """
     符合实验室内部 格式要求的OneHot标签转图像函数
 
@@ -45,13 +46,14 @@ def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], '... C H W'], palette, ki
     if palette in palette_presets:
         palette = palette_presets[palette]
     elif not isinstance(palette, tuple):
-        raise ValueError(f"palette should be a tuple of colors, or a string in {list(palette_presets.keys())}, but got {palette}")
+        warnings.warn(f"palette not in preset, using default palette")
+        palette = placeholder_palette
     
-    if len(lbl.shape)==3:
-        if isinstance(lbl, torch.Tensor):
-            lbl = torch.argmax(lbl, dim=-3).cpu().numpy()
-        else:
-            lbl = np.argmax(lbl, axis=-3)
+    if isinstance(lbl, torch.Tensor):
+        lbl = lbl.cpu().numpy()
+    if len(lbl.shape) == 3:
+        lbl = np.argmax(lbl, axis=-3)
+
     img = skimage.color.label2rgb(
         lbl,
         channel_axis=-3,

@@ -42,7 +42,7 @@ if __name__=='__main__':
 
     # Test
     testset = Houston2013('test', patch_size=5)
-    mappper = ClassificationMapper(testset.lbl, dataset_name=testset.INFO['name'])
+    mappper = ClassificationMapper(testset.lbl, n_class=testset.n_class, dataset_name=testset.INFO['name'])
     n_correct = 0
     model.eval()
     for hsi,dsm,lbl,info in DataLoader(testset, batch_size=1):
@@ -55,7 +55,7 @@ if __name__=='__main__':
 
     # Draw The full predicted image
     fullset = Houston2013('full', patch_size=5)
-    mappper = ClassificationMapper(fullset.lbl, dataset_name=fullset.INFO['name'])
+    mappper = ClassificationMapper(fullset.lbl, n_class=fullset.n_class, dataset_name=fullset.INFO['name'])
     model.eval()
     i_batch = 0
     for hsi,dsm,_,info in DataLoader(fullset, batch_size=128, shuffle=False):
