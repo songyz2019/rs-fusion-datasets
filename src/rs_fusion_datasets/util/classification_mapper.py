@@ -11,11 +11,11 @@ class ClassificationMapper:
         self.predict = np.zeros_like(self.TRUTH)
 
     def error(self):
-        raise NotImplementedError("error() is not implemented yet")
+        raise NotImplementedError("not implemented yet")
         return self.predict != self.TRUTH
 
     def correct(self):
-        raise NotImplementedError("error() is not implemented yet")
+        raise NotImplementedError("not implemented yet")
         return np.logical_and(self.predict == self.TRUTH, self.TRUTH != 0)
 
     def predict_image(self, format='chw'):

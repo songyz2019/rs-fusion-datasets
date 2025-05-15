@@ -16,4 +16,4 @@ load_secrets.bash
 *cache/
 tmp/
 
-result.png
+result_*.png

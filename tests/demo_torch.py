@@ -39,6 +39,7 @@ if __name__=='__main__':
             optimizer.step()
             print(f"{epoch=} {loss=}")
     torch.save(model.state_dict(), 'model.pth')
+
     # Test
     testset = Houston2013('test', patch_size=5)
     mappper = ClassificationMapper(testset.lbl, dataset_name=testset.INFO['name'])
@@ -48,6 +49,19 @@ if __name__=='__main__':
         y_hat = model(hsi, dsm)
         if argmax(y_hat, dim=1) == argmax(lbl, dim=1):
             n_correct += 1
-            mappper.add_sample(info['location'], y_hat)
-            print(f"accuracy: {n_correct}/{len(testset)}")
-    skimage.io.imsave('result.png', mappper.predict_image(format='hwc'))
+        mappper.add_sample(info['location'], y_hat)
+    print(f"accuracy: {n_correct/len(testset)}")
+    skimage.io.imsave('result_test.png', mappper.predict_image(format='hwc'))
+
+    # Draw The full predicted image
+    fullset = Houston2013('full', patch_size=5)
+    mappper = ClassificationMapper(fullset.lbl, dataset_name=fullset.INFO['name'])
+    model.eval()
+    i_batch = 0
+    for hsi,dsm,_,info in DataLoader(fullset, batch_size=128, shuffle=False):
+        y_hat = model(hsi, dsm)
+        mappper.add_sample(info['location'], y_hat)
+        i_batch += 1
+        print(f"drawing {i_batch*128}/{len(fullset)}pixels")
+    skimage.io.imsave('result_full.png', mappper.predict_image(format='hwc'))
+    print("the result images are saved as result_test.png and result_full.png")
