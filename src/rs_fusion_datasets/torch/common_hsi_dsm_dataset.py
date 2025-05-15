@@ -7,6 +7,9 @@ import numpy as np
 from numpy import ndarray
 from jaxtyping import Num, Float
 
+from ..util.classification_mapper import ClassificationMapper
+from ..util.lbl2rgb import lbl2rgb
+from ..util.hsi2rgb import hsi2rgb
 from ..core.common import DataMetaInfo
 
 def _channel_wise_normalize(x: Float[ndarray, 'c h w']) -> Float[ndarray, 'c h w']:
@@ -105,4 +108,13 @@ class CommonHsiDsmDataset(VisionDataset):
     def truth(self) -> coo_array:
         '''alias for depreacted property'''
         return self.lbl
+    
+    def benchmarker(self) -> ClassificationMapper:
+        return ClassificationMapper(self.lbl, n_class=self.n_class, dataset_name=self.INFO['name'])
+    
+    def lbl2rgb(self, lbl):
+        return lbl2rgb(lbl, palette=self.INFO['name'])
+    
+    def hsi2rgb(self, hsi):
+        return hsi2rgb(hsi, wavelength=self.INFO['wavelength'])
     

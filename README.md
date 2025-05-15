@@ -9,9 +9,12 @@
 rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint classification of hyperspectral, LiDAR and SAR data. rs-fusion-datasets is a Python package that:
 1. Automatically downloads and load many multimodel remote sensing datasets (houston, muufl, trento, berlin, augsburg, etc.)
 2. Provides ready-to-use torch dataloaders
-3. Provides some utils for visulization, dataset spilit, etc.
+3. Provides utils for visulization, dataset spilit, benchmark, hsi to rgb, etc.
+
 
 ![screenshot](screenshot.jpg)
+
+> This project is still under development, API is not reiliable before v1.0.0.
 
 ## Datasets
 
@@ -70,17 +73,18 @@ hsi, dsm, train_label, test_label, all_label, info = fetch_houston2018_ouc()
 
 
 ### Utils
-1. `lbl2rgb`: convert the label of dataset to rgb image
-2. `read_roi`: read exported `.txt` file of ENVI roi to sparse matrix
-3. `split_spmatrix`: split a sparse to get the train dataset and test dataset
-4. `ClassificationMapper`: draw the predicted labels
+1. `<Dataset>.benchmarker` and `ClassificationMapper`: Draw the predicted labels, compute the confusion matrix, OA, AA, CA, Kappa. For the usage, see [demo_torch.py](tests/demo_torch.py) 
+2. `<Dataset>.lbl2rgb` and `lbl2rgb`: Convert the label of dataset to rgb image for visulization
+3. `<Dataset>.hsi2rgb` and `hsi2rgb`: Convert HSI to true color RGB
+4. `read_roi`: Read exported `.txt` file of ENVI roi to sparse matrix
+5. `split_spmatrix`: Split a sparse to get the train dataset and test dataset
 
 
 ## Help
+- [PyTorch Demo: train your model in 70 lines of code with rs-fusion-datasets](tests/demo_torch.py)
 - [User Manual](https://github.com/songyz2019/rs-fusion-datasets/wiki/Usage)
 - [Developer Manual](https://github.com/songyz2019/rs-fusion-datasets/wiki/Development)
 - [Test cases](tests/test.py)
-- [PyTorch Demo: train your model in 50 lines of code](tests/demo_torch.py)
 
 
 ## Star History

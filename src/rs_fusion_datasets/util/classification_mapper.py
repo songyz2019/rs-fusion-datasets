@@ -1,4 +1,5 @@
 from typing import List, Optional
+import warnings
 import numpy as np
 from torch import Tensor, zeros
 from torch import argmax, zeros_like
@@ -17,13 +18,14 @@ class ClassificationMapper:
         self.TRUTH = torch.from_numpy(truth.todense()).to(device)
         self.dataset_name = dataset_name
         self.device = device # TODO: add device support
+        self.confusion_matrix_enabled = True
         self.reset()
 
     def reset(self):
         self.predict = zeros_like(self.TRUTH, dtype=torch.int, device=self.device)
         self.confusion_matrix = zeros((self.n_class, self.n_class), dtype=torch.long, device=self.device)
 
-    def predict_image(self, format='chw') -> UInt8[Tensor, "C H W"]:
+    def predicted_image(self, format='chw') -> UInt8[Tensor, "C H W"]:
         img = lbl2rgb(self.predict, self.dataset_name)
         img = (img*255.0).astype(np.uint8)
         if format == 'hwc':
@@ -32,17 +34,33 @@ class ClassificationMapper:
             return img
         else:
             raise ValueError(f"Unknown format: {format}")
+    
+    def conf(self, normalize=False) -> UInt8[Tensor, "C C"]:
+        if not self.confusion_matrix_enabled:
+            raise ValueError("Can not compute confusion matrix. You should **ALWAYS** add lbl_target argument when calling add_sample to enable it.")
+        if normalize:
+            return self.confusion_matrix.float() / self.confusion_matrix.sum(dim=-1, keepdim=True)
+        else:
+            return self.confusion_matrix
 
     def ca(self) -> Float[Tensor, "C"]:
-        return self.confusion_matrix.trace() / self.confusion_matrix.sum(dim=-1)
+        if not self.confusion_matrix_enabled:
+            raise ValueError("Can not compute confusion matrix. You should **ALWAYS** add lbl_target argument when calling add_sample to enable it.")
+        return self.confusion_matrix.diag() / self.confusion_matrix.sum(dim=-1)
     
     def aa(self) -> Tensor:
+        if not self.confusion_matrix_enabled:
+            raise ValueError("Can not compute confusion matrix. You should **ALWAYS** add lbl_target argument when calling add_sample to enable it.")
         return self.ca().mean()
     
     def oa(self) -> Tensor:
-        return self.confusion_matrix.trace().sum() / self.confusion_matrix.sum()
+        if not self.confusion_matrix_enabled:
+            raise ValueError("Can not compute confusion matrix. You should **ALWAYS** add lbl_target argument when calling add_sample to enable it.")
+        return self.confusion_matrix.trace() / self.confusion_matrix.sum()
     
     def kappa(self) -> Tensor:
+        if not self.confusion_matrix_enabled:
+            raise ValueError("Can not compute confusion matrix. You should **ALWAYS** add lbl_target argument when calling add_sample to enable it.")
         """TODO: check the AI generated code"""
         total = self.confusion_matrix.sum()
         total_correct = self.confusion_matrix.trace().sum()
@@ -55,17 +73,25 @@ class ClassificationMapper:
         # preprocess arguments
         lbl_input  = argmax(lbl_input, dim=-1).to(self.device, self.confusion_matrix.dtype)            # start with 0
         if lbl_target is None:
-            lbl_target = zeros_like(lbl_input, device=self.device, dtype=self.confusion_matrix.dtype)  # mock a dummy target
-        lbl_target = argmax(lbl_target, dim=-1).to(self.device, self.confusion_matrix.dtype)           # start with 0
+            self.confusion_matrix_enabled = False
         # add to prediction image
         x, y = location[0].to(self.device, dtype=torch.int), location[1].to(self.device, dtype=torch.int)
         self.predict[x, y] = lbl_input.to(self.device, self.predict.dtype) + 1
         # add to confusion matrix
-        self.confusion_matrix[lbl_target, lbl_input] += 1
+        if self.confusion_matrix_enabled:
+            lbl_target = argmax(lbl_target, dim=-1).to(self.device, self.confusion_matrix.dtype)
+            self.confusion_matrix[lbl_target, lbl_input] += 1
 
 
     def __call__(self, location, class_id):
         self.add_sample(location, class_id)
+
+
+    def frac(self) -> dict:
+        """Not recommended for using"""
+        correct = self.confusion_matrix.diag()
+        total = self.confusion_matrix.sum(dim=-1)
+        return {k:f"{c}/{t}" for k,c,t in zip(range(self.n_class), correct, total)}
 
     def overlay_correct_image(self, underlying=None):
         """Not recommended for using"""
@@ -74,3 +100,6 @@ class ClassificationMapper:
         correct = torch.logical_and(self.predict == self.TRUTH, self.TRUTH != 0)
         return skimage.color.label2rgb(correct + 2*error, colors=['green', 'red'], alpha=0.5, bg_label=0, image=underlying)
     
+    def predict_image(self, *args, **kwargs):
+        warnings.warn("predict_image is deprecated, please use predicted_image instead.", DeprecationWarning)
+        return self.predicted_image(*args, **kwargs)

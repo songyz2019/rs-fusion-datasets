@@ -2,7 +2,6 @@
 # if you're using v0.12.3 and before, you should remove ClassificationMapper and its related code to make it work
 import skimage
 import torch
-from torch import argmax
 from torch.nn import Sequential, LazyConv2d, ReLU, LazyBatchNorm2d, Module, LazyLinear
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
@@ -25,11 +24,12 @@ class MyModel(Module):
     def forward(self, hsi, dsm):
         x = self.conv_hsi(hsi) + self.conv_dsm(dsm)
         return self.classifier(x.flatten(start_dim=1))
+    
 if __name__=='__main__':
     # Train
     trainset = Houston2013('train', patch_size=5)
     model = MyModel(n_class=trainset.INFO['n_class'])
-    optimizer = Adam(model.parameters(), lr=0.005)
+    optimizer = Adam(model.parameters(), lr=0.01)
     for epoch in range(10):
         for hsi,dsm,lbl,info in DataLoader(trainset, batch_size=64, shuffle=True, drop_last=True):
             optimizer.zero_grad()
@@ -42,26 +42,25 @@ if __name__=='__main__':
 
     # Test
     testset = Houston2013('test', patch_size=5)
-    mappper = ClassificationMapper(testset.lbl, n_class=testset.n_class, dataset_name=testset.INFO['name'])
-    n_correct = 0
+    benchmarker = testset.benchmarker()
     model.eval()
     for hsi,dsm,lbl,info in DataLoader(testset, batch_size=1):
         y_hat = model(hsi, dsm)
-        if argmax(y_hat, dim=1) == argmax(lbl, dim=1):
-            n_correct += 1
-        mappper.add_sample(info['location'], y_hat)
-    print(f"accuracy: {n_correct/len(testset)}")
-    skimage.io.imsave('result_test.png', mappper.predict_image(format='hwc'))
+        benchmarker.add_sample(info['location'], y_hat, lbl)
+    ca,oa,aa,kappa = benchmarker.ca(), benchmarker.oa(), benchmarker.aa(), benchmarker.kappa()
+    print(f"CA: {ca.round(decimals=5)}")
+    print(f"OA: {oa:.5f}, AA: {aa:.5f}, Kappa: {kappa:.5f}")
+    skimage.io.imsave('result_test.png', benchmarker.predicted_image(format='hwc'))
 
     # Draw The full predicted image
     fullset = Houston2013('full', patch_size=5)
-    mappper = ClassificationMapper(fullset.lbl, n_class=fullset.n_class, dataset_name=fullset.INFO['name'])
+    benchmarker = fullset.benchmarker()
     model.eval()
     i_batch = 0
-    for hsi,dsm,_,info in DataLoader(fullset, batch_size=128, shuffle=False):
+    for hsi,dsm,_,info in DataLoader(fullset, batch_size=64, shuffle=False):
         y_hat = model(hsi, dsm)
-        mappper.add_sample(info['location'], y_hat)
+        benchmarker.add_sample(info['location'], y_hat)
         i_batch += 1
-        print(f"drawing {i_batch*128}/{len(fullset)}pixels")
-    skimage.io.imsave('result_full.png', mappper.predict_image(format='hwc'))
+        print(f"drawing {i_batch*64}/{len(fullset)} pixels", end='\r')
+    skimage.io.imsave('result_full.png', benchmarker.predicted_image(format='hwc'))
     print("the result images are saved as result_test.png and result_full.png")
