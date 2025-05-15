@@ -22,7 +22,7 @@ rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint cl
 |[MUUFL](https://doi.org/10.5281/zenodo.1186326)|`fetch_muufl`|`Muufl`| HSI,LiDAR | |
 |[Houston 2018](https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/)|`fetch_houston2018_ouc`|`Houston2018Ouc`| HSI,LiDAR | |
 |[Augsburg](https://mediatum.ub.tum.de/1657312)|`fetch_augsburg_ouc`|`AugsburgOuc`| HSI,SAR | aka. MDAS |
-|Berlin|`fetch_berlin_ouc`|`BerlinOuc`| HSI,SAR | |
+|[Berlin](https://gfzpublic.gfz-potsdam.de/pubman/faces/ViewItemFullPage.jsp?itemId=item_1480927_5)|`fetch_berlin_ouc`|`BerlinOuc`| HSI,SAR | |
 
 
 
@@ -70,9 +70,10 @@ hsi, dsm, train_label, test_label, all_label, info = fetch_houston2018_ouc()
 
 
 ### Utils
-1. lbl2rgb: convert the label dataset to rgb image
-2. read_roi: read exported `.txt` file of ENVI roi to sparse matrix
-3. split_spmatrix: split a sparse to get the train dataset and test dataset
+1. `lbl2rgb`: convert the label of dataset to rgb image
+2. `read_roi`: read exported `.txt` file of ENVI roi to sparse matrix
+3. `split_spmatrix`: split a sparse to get the train dataset and test dataset
+4. `ClassificationMapper`: draw the predicted labels
 
 
 ## Help
