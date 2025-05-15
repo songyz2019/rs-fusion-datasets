@@ -7,7 +7,7 @@ import numpy as np
 from numpy import ndarray
 from jaxtyping import Num, Float
 
-from ..util.classification_mapper import ClassificationMapper
+from ..util.benchmarker import Benckmarker
 from ..util.lbl2rgb import lbl2rgb
 from ..util.hsi2rgb import hsi2rgb
 from ..core.common import DataMetaInfo
@@ -109,8 +109,8 @@ class CommonHsiDsmDataset(VisionDataset):
         '''alias for depreacted property'''
         return self.lbl
     
-    def benchmarker(self) -> ClassificationMapper:
-        return ClassificationMapper(self.lbl, n_class=self.n_class, dataset_name=self.INFO['name'])
+    def benchmarker(self) -> Benckmarker:
+        return Benckmarker(self.lbl, n_class=self.n_class, dataset_name=self.INFO['name'])
     
     def lbl2rgb(self, lbl):
         return lbl2rgb(lbl, palette=self.INFO['name'])

@@ -9,7 +9,7 @@ from jaxtyping import UInt8, Float
 from scipy.sparse import spmatrix
 
 
-class ClassificationMapper:
+class Benckmarker:
     def __init__(self, truth: spmatrix, n_class:Optional[int]=None, dataset_name :Optional[str]=None, device='cpu'):
         if n_class is None:
             self.n_class = truth.max().item()
@@ -93,13 +93,28 @@ class ClassificationMapper:
         total = self.confusion_matrix.sum(dim=-1)
         return {k:f"{c}/{t}" for k,c,t in zip(range(self.n_class), correct, total)}
 
-    def overlay_correct_image(self, underlying=None):
+    def error_image(self, underlying=None):
         """Not recommended for using"""
         import skimage
         error = self.predict != self.TRUTH
         correct = torch.logical_and(self.predict == self.TRUTH, self.TRUTH != 0)
-        return skimage.color.label2rgb(correct + 2*error, colors=['green', 'red'], alpha=0.5, bg_label=0, image=underlying)
+        img = correct + 2*error
+        img = img.cpu().numpy()
+        return skimage.color.label2rgb(img, colors=['green', 'red'], alpha=0.5, bg_label=0, image=underlying)
     
     def predict_image(self, *args, **kwargs):
         warnings.warn("predict_image is deprecated, please use predicted_image instead.", DeprecationWarning)
         return self.predicted_image(*args, **kwargs)
+    
+    def confusion_image(self):
+        """Not recommended for using"""
+        import matplotlib.pyplot as pl
+        fig, ax = pl.subplots(figsize=(10, 10))
+        ax.matshow(self.confusion_matrix.cpu().numpy(), cmap=pl.cm.Blues)
+        ax.set_xlabel("Predicted")
+        ax.set_ylabel("True")
+        ax.set_title("Confusion Matrix")
+        return fig.gcf()
+    
+    def aio4paper(self):
+        return f"OA: {self.oa().round(decimals=4)*100:.02f}% \nAA: {self.aa().round(decimals=4)*100:.02f}% \nKappa: {self.kappa().round(decimals=4)*100:.02f}% \nCA: {' '.join(['%.02f%%' % x for x in self.ca().round(decimals=4)*100])}")

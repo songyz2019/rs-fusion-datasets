@@ -6,7 +6,7 @@ from torch.nn import Sequential, LazyConv2d, ReLU, LazyBatchNorm2d, Module, Lazy
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 from torch.utils.data import DataLoader
-from rs_fusion_datasets import Houston2013, Trento, Muufl, ClassificationMapper
+from rs_fusion_datasets import Houston2013, Trento, Muufl, Benckmarker
 
 class MyModel(Module):
     def __init__(self, n_class):
