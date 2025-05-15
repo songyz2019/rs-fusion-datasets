@@ -1,4 +1,5 @@
 from typing import Literal,Tuple, Dict
+import warnings
 
 from scipy.sparse import coo_array
 from torchvision.datasets.vision import VisionDataset
@@ -101,12 +102,13 @@ class CommonHsiDsmDataset(VisionDataset):
 
     @property
     def uid(self) -> str:
-        '''a uid for logging and batch training'''
+        '''an uid for logging and batch training'''
         return f"{self.INFO['name']}-patchsize{self.patch_size}-len{len(self)}-{self.subset}"
 
     @property
     def truth(self) -> coo_array:
         '''alias for depreacted property'''
+        warnings.warn("`truth` is deprecated, use `lbl` instead", DeprecationWarning)
         return self.lbl
     
     def benchmarker(self) -> Benchmarker:
