@@ -1,6 +1,7 @@
 from typing import List, Optional
 import warnings
 import numpy as np
+import skimage
 from torch import Tensor, zeros
 from torch import argmax, zeros_like
 import torch
@@ -15,7 +16,7 @@ class Benchmarker:
             self.n_class = truth.max().item()
         else:
             self.n_class = n_class
-        self.TRUTH = torch.from_numpy(truth.todense()).to(device)
+        self.TRUTH = torch.from_numpy(truth.todense()).to(device, torch.int)
         self.dataset_name = dataset_name
         self.device = device # TODO: add device support
         self.confusion_matrix_enabled = True
@@ -93,9 +94,11 @@ class Benchmarker:
         total = self.confusion_matrix.sum(dim=-1)
         return {k:f"{c}/{t}" for k,c,t in zip(range(self.n_class), correct, total)}
 
-    def error_image(self, underlying=None):
-        """Not recommended for using"""
-        import skimage
+    def error_image(self, underlying :Optional[UInt8[np.ndarray, 'C H W']]=None):
+        """
+        Not recommended for using
+        """
+        underlying = underlying.transpose(1, 2, 0)
         error = self.predict != self.TRUTH
         correct = torch.logical_and(self.predict == self.TRUTH, self.TRUTH != 0)
         img = correct + 2*error
@@ -106,15 +109,21 @@ class Benchmarker:
         warnings.warn("predict_image is deprecated, please use predicted_image instead.", DeprecationWarning)
         return self.predicted_image(*args, **kwargs)
     
-    def confusion_image(self):
-        """Not recommended for using"""
+    def confusion_plot(self):
+        """
+        Not recommended for using
+        Return a matplotlib figure, we can't add type notions because we use matplotlib as a soft dependency
+        This method depends on skimage and matplotlib softly, you need to install them manually
+        """
         import matplotlib.pyplot as pl
-        fig, ax = pl.subplots(figsize=(10, 10))
-        ax.matshow(self.confusion_matrix.cpu().numpy(), cmap=pl.cm.Blues)
-        ax.set_xlabel("Predicted")
-        ax.set_ylabel("True")
-        ax.set_title("Confusion Matrix")
-        return fig.gcf()
+        from sklearn.metrics import ConfusionMatrixDisplay
+        fig, ax = pl.subplots(figsize=(20,20))
+        confusion = self.conf.compute()
+        disp = ConfusionMatrixDisplay(confusion.int().numpy())
+        disp.plot(ax=ax)
+        r = pl.gcf()
+        pl.close(fig)
+        return r
     
     def aio4paper(self):
-        return f"OA: {self.oa().round(decimals=4)*100:.02f}% \nAA: {self.aa().round(decimals=4)*100:.02f}% \nKappa: {self.kappa().round(decimals=4)*100:.02f}% \nCA: {' '.join(['%.02f%%' % x for x in self.ca().round(decimals=4)*100])}")
+        return f"OA: {self.oa().round(decimals=4)*100:.02f}% \nAA: {self.aa().round(decimals=4)*100:.02f}% \nKappa: {self.kappa().round(decimals=4)*100:.02f}% \nCA: {' '.join(['%.02f%%' % x for x in self.ca().round(decimals=4)*100])}"

@@ -69,6 +69,8 @@ exclude_lines = [
 [dependency-groups]
 dev = [
     "hsi2rgb>=0.1.1",
+    "matplotlib>=3.9.4",
+    "scikit-learn>=1.6.1",
     "torch>=2.5.1",
     "torchvision>=0.20.1",
 ]
