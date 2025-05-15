@@ -9,7 +9,7 @@ from jaxtyping import UInt8, Float
 from scipy.sparse import spmatrix
 
 
-class Benckmarker:
+class Benchmarker:
     def __init__(self, truth: spmatrix, n_class:Optional[int]=None, dataset_name :Optional[str]=None, device='cpu'):
         if n_class is None:
             self.n_class = truth.max().item()

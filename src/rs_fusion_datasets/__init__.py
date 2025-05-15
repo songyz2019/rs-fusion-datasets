@@ -44,7 +44,7 @@ else:
     from .torch.datasets import Houston2013, Muufl, Trento, Houston2013Mmr, _Houston2013Mmrs, BerlinOuc, AugsburgOuc, Houston2018Ouc, _MuuflMat, _TrentoMat, _Houston2013Mat
     from .torch.common_hsi_dsm_dataset import CommonHsiDsmDataset
     from .util.lbl2rgb import lbl2rgb
-    from .util.benchmarker import Benckmarker
+    from .util.benchmarker import Benchmarker
 
     __all__ += [
         'CommonHsiDsmDataset', 
@@ -60,7 +60,7 @@ else:
         '_Houston2013Mmrs',
         '_Houston2013Mat',
         'lbl2rgb',
-        'Benckmarker'
+        'Benchmarker'
     ]
 
 

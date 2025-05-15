@@ -7,7 +7,7 @@ import numpy as np
 from numpy import ndarray
 from jaxtyping import Num, Float
 
-from ..util.benchmarker import Benckmarker
+from ..util.benchmarker import Benchmarker
 from ..util.lbl2rgb import lbl2rgb
 from ..util.hsi2rgb import hsi2rgb
 from ..core.common import DataMetaInfo
@@ -109,12 +109,19 @@ class CommonHsiDsmDataset(VisionDataset):
         '''alias for depreacted property'''
         return self.lbl
     
-    def benchmarker(self) -> Benckmarker:
-        return Benckmarker(self.lbl, n_class=self.n_class, dataset_name=self.INFO['name'])
+    def benchmarker(self) -> Benchmarker:
+        return Benchmarker(self.lbl, n_class=self.n_class, dataset_name=self.INFO['name'])
     
-    def lbl2rgb(self, lbl):
-        return lbl2rgb(lbl, palette=self.INFO['name'])
+    def lbl2rgb(self, lbl, *args, **kwarg):
+        return lbl2rgb(lbl, palette=self.INFO['name'], *args, **kwarg)
     
-    def hsi2rgb(self, hsi):
-        return hsi2rgb(hsi, wavelength=self.INFO['wavelength'])
+    def hsi2rgb(self, hsi, *args, **kwargs):
+        return hsi2rgb(hsi, wavelength=self.INFO['wavelength'], input_format='CHW', *args, **kwargs)
     
+    @property
+    def composed_rgb(self) -> Float[ndarray, 'c h w']:
+        """
+        The composed RGB image from HSI.
+        :return: RGB image with shape (h, w, c).
+        """
+        return self.hsi2rgb(self.HSI)
