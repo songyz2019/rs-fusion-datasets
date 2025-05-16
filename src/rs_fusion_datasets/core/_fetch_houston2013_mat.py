@@ -17,8 +17,8 @@ def _fetch_houston2013_mat(
 ) -> tuple[
     UInt16[np.ndarray, '144 349 1905'],
     Float32[np.ndarray, '1 349 1905'],
-    UInt64[spmatrix, '349 1905'],
-    UInt64[spmatrix, '349 1905'],
+    UInt16[spmatrix, '349 1905'],
+    UInt16[spmatrix, '349 1905'],
     DataMetaInfo
 ]:
     """Fetch and load the Houston2013 dataset.
@@ -53,16 +53,15 @@ def _fetch_houston2013_mat(
     )
     lidar = np.expand_dims(lidar, axis=-1)
 
-    lbl_train :Float64[np.ndarray, '349 1905'] = load_one_key_mat(
-        basedir / 'Houston2013/TR.mat',
-    )
+    lbl_train :Float64[np.ndarray, '349 1905'] = load_one_key_mat(basedir / 'Houston2013/TR.mat',)
+    lbl_train = np.int16(lbl_train)
     lbl_train[lbl_train == -1] = 0
-    lbl_train = coo_array(np.int16(lbl_train))
-    lbl_test :Float64[np.ndarray, '349 1905'] = load_one_key_mat(
-        basedir / 'Houston2013/TE.mat',
-    )
+    lbl_train = coo_array(np.uint16(lbl_train), dtype=np.uint16)
+
+    lbl_test :Float64[np.ndarray, '349 1905'] = load_one_key_mat(basedir / 'Houston2013/TE.mat',)
+    lbl_test = np.int16(lbl_test)
     lbl_test[lbl_test == -1] = 0
-    lbl_test = coo_array(np.int16(lbl_test))
+    lbl_test = coo_array(np.uint16(lbl_test), dtype=np.uint16)
 
     
     info :DataMetaInfo = {

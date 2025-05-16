@@ -11,19 +11,21 @@ from scipy.sparse import spmatrix
 
 
 class Benchmarker:
-    def __init__(self, truth: spmatrix, n_class: Optional[int] = None, dataset_name: Optional[str] = None, device='cpu'):
+    def __init__(self, truth: spmatrix, n_class: Optional[int] = None, dataset_name: Optional[str] = None, device='cpu', dtype=torch.int):
         if n_class is None:
             self.n_class = truth.max().item()
         else:
             self.n_class = n_class
-        self.TRUTH = torch.from_numpy(truth.todense()).to(device, torch.int)
-        self.dataset_name = dataset_name
         self.device = device  # TODO: add device support
+        self.dtype = dtype  # TODO: add device support
+        self.TRUTH = torch.from_numpy(truth.todense()).to(device, self.dtype) # 0==background real_labels starts from 1
+        self.TRUTH[self.TRUTH == -1] = 0 # Well, wierd bug: sometimes truth.todense() returns -1 and sometimes 0
+        self.dataset_name = dataset_name
         self.confusion_matrix_enabled = True  # row is truth, column is prediction
         self.reset()
 
     def reset(self):
-        self.predict = zeros_like(self.TRUTH, dtype=torch.int, device=self.device)
+        self.predict = zeros_like(self.TRUTH, dtype=self.dtype, device=self.device)  # 0==background real_labels starts from 1
         self.confusion_matrix = zeros((self.n_class, self.n_class), dtype=torch.long, device=self.device)
 
     def predicted_image(self) -> UInt8[Tensor, "C H W"]:
@@ -79,7 +81,7 @@ class Benchmarker:
                 self.confusion_matrix_enabled = False
             # add to prediction image
             x, y = location[0].to(self.device, dtype=torch.int), location[1].to(self.device, dtype=torch.int)
-            self.predict[x, y] = lbl_input.to(self.device, self.predict.dtype) + 1
+            self.predict[x, y] = lbl_input.to(self.device, self.dtype) + 1
             # add to confusion matrix
             if self.confusion_matrix_enabled:
                 lbl_target = argmax(lbl_target, dim=-1).to(self.device, self.confusion_matrix.dtype)
