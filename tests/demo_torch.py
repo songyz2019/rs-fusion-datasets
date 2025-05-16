@@ -50,7 +50,7 @@ if __name__=='__main__':
     ca,oa,aa,kappa = benchmarker.ca(), benchmarker.oa(), benchmarker.aa(), benchmarker.kappa()
     print(f"CA: {ca.round(decimals=5)}")
     print(f"OA: {oa:.5f}, AA: {aa:.5f}, Kappa: {kappa:.5f}")
-    skimage.io.imsave('result_test.png', benchmarker.predicted_image(format='hwc'))
+    skimage.io.imsave('result_prd.png',  benchmarker.predicted_image().transpose(1,2,0) ) # We use CHW in our API by default, skimage uses CHW
 
     # Draw The full predicted image
     fullset = Houston2013('full', patch_size=5)
@@ -62,5 +62,5 @@ if __name__=='__main__':
         benchmarker.add_sample(info['location'], y_hat)
         i_batch += 1
         print(f"drawing {i_batch*64}/{len(fullset)} pixels", end='\r')
-    skimage.io.imsave('result_full.png', benchmarker.predicted_image(format='hwc'))
+    skimage.io.imsave('result_ful.png', benchmarker.predicted_image().transpose(1,2,0) )
     print("the result images are saved as result_test.png and result_full.png")
