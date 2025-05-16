@@ -56,10 +56,12 @@ def _fetch_houston2013_mat(
     lbl_train :Float64[np.ndarray, '349 1905'] = load_one_key_mat(
         basedir / 'Houston2013/TR.mat',
     )
+    lbl_train[lbl_train == -1] = 0
     lbl_train = coo_array(np.int16(lbl_train))
     lbl_test :Float64[np.ndarray, '349 1905'] = load_one_key_mat(
         basedir / 'Houston2013/TE.mat',
     )
+    lbl_test[lbl_test == -1] = 0
     lbl_test = coo_array(np.int16(lbl_test))
 
     
