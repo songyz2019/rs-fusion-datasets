@@ -16,10 +16,10 @@ def split_spmatrix(a :coo_array, n_sample_perclass=100, seed=0x0d00) -> Tuple[co
     with fixed_seed_rng(seed) as rng:
         train = coo_array(([],([],[])),a.shape, dtype='int')
         n_class = a.data.max()
+        if isinstance(n_sample_perclass, float) and n_sample_perclass < 1.0:
+            n_sample_perclass = int(N * n_sample_perclass)
         for cid in range(1,n_class+1):
             N = len(a.data[a.data==cid])
-            if isinstance(n_sample_perclass, float) and n_sample_perclass < 1.0:
-                n_sample_perclass = int(N * n_sample_perclass)
             indice = rng.choice(N, n_sample_perclass, replace=False)
             row = a.row[a.data==cid][indice]
             col = a.col[a.data==cid][indice]

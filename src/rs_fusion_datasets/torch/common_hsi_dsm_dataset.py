@@ -1,7 +1,7 @@
 from typing import Literal,Tuple, Dict
 import warnings
 
-from scipy.sparse import coo_array
+from scipy.sparse import coo_array, spmatrix
 from torchvision.datasets.vision import VisionDataset
 import torch
 import numpy as np
@@ -28,8 +28,8 @@ class CommonHsiDsmDataset(VisionDataset):
     def __init__(self,
                  hsi :Num[ndarray, 'c h w'], 
                  dsm :Num[ndarray, 'd h w'],
-                 lbl_train :Num[ndarray, 'h w'],
-                 lbl_test :Num[ndarray, 'h w'],
+                 lbl_train :Num[spmatrix, 'h w'],
+                 lbl_test :Num[spmatrix, 'h w'],
                  info: DataMetaInfo,
                  split: Literal['train', 'test', 'full'], 
                  patch_size: int = 5,  # I prefer patch_radius, but patch_size is more popular and maintance two patch_xxx is too complex...
