@@ -9,7 +9,18 @@ import warnings
 def hue_platte(n_sample :int):
     return [hsv_to_rgb(n/n_sample, 1, 1) for n in range(n_sample)]
 
-def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], 'C H W'], palette, kind='overlay') -> Float[Union[np.ndarray,torch.Tensor], '... 3 H W']:
+
+def hex2rgb(x :str):
+    if not x.startswith("#"):
+        return x
+    x = x.removeprefix("#")
+    r = int(x[:2],  base=16) / 255.0
+    g = int(x[2:4], base=16) / 255.0
+    b = int(x[4:6], base=16) / 255.0
+    return [r,g,b]
+
+
+def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], 'C H W'], palette='default', kind='overlay') -> Float[Union[np.ndarray,torch.Tensor], '... 3 H W']:
     """
     符合实验室内部 格式要求的OneHot标签转图像函数
 
@@ -17,14 +28,6 @@ def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], 'C H W'], palette, kind='
     :param lbl B C H W格式的图像batch, C为OneHot编码格式
     :return: B 3 H W格式的RGB图像, 取值范围为0~1
     """
-    def hex2rgb(x :str):
-        if not x.startswith("#"):
-            return x
-        x = x.removeprefix("#")
-        r = int(x[:2],  base=16) / 255.0
-        g = int(x[2:4], base=16) / 255.0
-        b = int(x[4:6], base=16) / 255.0
-        return [r,g,b]
     placeholder_palette = [
         "#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0", "#f032e6",
         "#bcf60c", "#fabebe", "#008080", "#e6beff", "#9a6324", "#fffac8", "#800000", "#aaffc3",
@@ -42,6 +45,7 @@ def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], 'C H W'], palette, kind='
         'houston2018-ouc': placeholder_palette, #TODO
         'augsburg-ouc':    placeholder_palette, #TODO
         'berlin-ouc':      placeholder_palette, #TODO
+        'default':      placeholder_palette
     }
     if palette in palette_presets:
         palette = palette_presets[palette]
