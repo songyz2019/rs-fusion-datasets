@@ -69,7 +69,8 @@ def _hsi2rgb(hsi, wavelength):
 
 
 # This should be a wrapper for _hsi2rgb, make it user-friendly and compatible with many inputs.
-def hsi2rgb(hsi, wavelength_range=(350,1000), wavelength=None, input_format: Literal['CHW', 'HWC'] = 'CHW', output_format: Literal['CHW', 'HWC', 'Same'] = 'Same', xyz_to_rgb=True, gamma=2.2):
+# hsi2rgb should not return uint8, or at least it should support float32 by default. Because it may also be used during training.
+def hsi2rgb(hsi, wavelength_range=(350,1000), wavelength=None, input_format: Literal['CHW', 'HWC'] = 'CHW', output_format: Literal['CHW', 'HWC', 'Same'] = 'Same', xyz_to_rgb=True, gamma=2.2, to_u8np=False):
     """
     Converts a hyperspectral image (HSI) to an RGB image. 
     Parameters:
@@ -91,6 +92,8 @@ def hsi2rgb(hsi, wavelength_range=(350,1000), wavelength=None, input_format: Lit
             Whether to normalize and apply gamma correction to the RGB output. Defaults to True.
         gamma (float, optional): 
             The gamma correction factor to apply if `xyz_to_rgb` is True. Defaults to 2.2.
+        to_u8np (bool, optional):
+            If True, the output will be converted to a uint8 numpy array. Defaults to False.
     Returns:
         numpy.ndarray, torch.Tensor, or jax.numpy.ndarray: 
             The converted RGB image in the specified `output_format`. The type of the output 
@@ -121,14 +124,6 @@ def hsi2rgb(hsi, wavelength_range=(350,1000), wavelength=None, input_format: Lit
                 tensor_type = 'torch'
         except ImportError:
             pass
-    if not isinstance(hsi, np.ndarray):    
-        try:
-            import jax
-            if isinstance(hsi, jax.numpy.ndarray):
-                hsi = np.array(hsi)
-                tensor_type = 'jax'
-        except ImportError:
-            pass
     if not isinstance(hsi, np.ndarray): 
         raise ValueError("hsi should be a numpy array, a torch tensor or a jax array")
 
@@ -156,15 +151,18 @@ def hsi2rgb(hsi, wavelength_range=(350,1000), wavelength=None, input_format: Lit
         rgb = (rgb - min_rgb)/(max_rgb-min_rgb)
         rgb = np.power(rgb/float(np.max(rgb)), 1/gamma) if gamma != 1 else rgb
     # --------- HWC End -----------
-
     # Note that rgb is always hwc here
     if output_format=='CHW':
         rgb = np.transpose(rgb, (*b, -1, -3, -2))
-
+    
     if tensor_type == 'torch':
         import torch
         rgb = torch.from_numpy(rgb)
-    elif tensor_type == 'jax':
-        import jax
-        rgb = jax.device_put(rgb)
-    return rgb
+        return rgb
+    
+    if to_u8np:
+        # Convert to uint8 numpy array
+        rgb *= 255.0
+        return rgb.astype(np.uint8)
+    else:
+        return rgb

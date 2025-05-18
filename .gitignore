@@ -17,3 +17,4 @@ load_secrets.bash
 tmp/
 
 result_*.png
+tests/demo_torch_full.py

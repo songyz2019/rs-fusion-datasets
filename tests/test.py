@@ -5,12 +5,11 @@ import unittest
 
 import numpy as np
 import skimage
-from rs_fusion_datasets import fetch_augsburg_ouc, fetch_berlin_ouc, fetch_houston2018_ouc
+from rs_fusion_datasets import fetch_augsburg_ouc, fetch_berlin_ouc, fetch_houston2018_ouc, hsi2rgb
 from rs_fusion_datasets import fetch_houston2013, fetch_muufl, split_spmatrix, fetch_trento, Muufl, Houston2013, Houston2018Ouc, Trento, DataMetaInfo, lbl2rgb, AugsburgOuc, BerlinOuc, Houston2013Mmr
 import torch
 from torch.utils.data import DataLoader
 from itertools import product
-from hsi2rgb import hsi2rgb
 from rs_fusion_datasets import * # test __all__ in __init__.py
 
 from typing import get_type_hints
@@ -55,7 +54,7 @@ class Test(unittest.TestCase):
 
     def torch_dataloader_test(self, dataset):
         rgb = hsi2rgb(dataset.hsi, wavelength=dataset.INFO['wavelength'], input_format='CHW', output_format='HWC')
-        skimage.io.imsave(f"dist/torch_{dataset.INFO['name']}_hsi.png", (rgb * 255.0).numpy().astype(np.uint8))
+        skimage.io.imsave(f"dist/torch_{dataset.INFO['name']}_hsi.png", rgb.numpy().astype(np.uint8))
         for i,dsm in enumerate(dataset.dsm):
             dsm *= 255.0
             skimage.io.imsave(f"dist/torch_{dataset.INFO['name']}_dsm{i}.png", dsm.numpy().astype(np.uint8))
@@ -92,7 +91,7 @@ class Test(unittest.TestCase):
         self.assertLessEqual(rgb.max(), 1.0)
         self.assertGreaterEqual(rgb.min(), 0.0)
 
-        img = (rgb*255.0).astype(np.uint8).transpose(1, 2, 0)
+        img = rgb.transpose(1, 2, 0)
         skimage.io.imsave(f"dist/{info['name']}_{split}.png", img, check_contrast=False)
 
     def test_fetch_houston2013(self):

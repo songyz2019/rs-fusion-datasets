@@ -114,11 +114,15 @@ class CommonHsiDsmDataset(VisionDataset):
     def benchmarker(self) -> Benchmarker:
         return Benchmarker(self.lbl, n_class=self.n_class, dataset_name=self.INFO['name'])
     
-    def lbl2rgb(self, lbl, *args, **kwarg):
+    def lbl2rgb(self, lbl=None, *args, **kwarg):
+        if lbl is None:
+            lbl = self.lbl
         return lbl2rgb(lbl, palette=self.INFO['name'], *args, **kwarg)
     
-    def hsi2rgb(self, hsi, *args, **kwargs):
-        return hsi2rgb(hsi, wavelength=self.INFO['wavelength'], input_format='CHW', *args, **kwargs)
+    def hsi2rgb(self, hsi=None, to_u8np=True,*args, **kwargs):
+        if hsi is None:
+            hsi = self.HSI
+        return hsi2rgb(hsi, wavelength=self.INFO['wavelength'], input_format='CHW', output_format='CHW', to_u8np=to_u8np, *args, **kwargs)
     
     @property
     def composed_rgb(self) -> Float[ndarray, 'c h w']:
@@ -126,4 +130,5 @@ class CommonHsiDsmDataset(VisionDataset):
         The composed RGB image from HSI.
         :return: RGB image with shape (h, w, c).
         """
+        warnings.warn("`composed_rgb` is deprecated, use `hsi2rgb()` instead", DeprecationWarning)
         return self.hsi2rgb(self.HSI)

@@ -1,9 +1,11 @@
 from colorsys import hsv_to_rgb
 from typing import Union
+import scipy
+import scipy.sparse
 import skimage
 import torch
 import numpy as np
-from jaxtyping import Float
+from jaxtyping import UInt8, Float
 import warnings
 
 def hue_platte(n_sample :int):
@@ -20,13 +22,13 @@ def hex2rgb(x :str):
     return [r,g,b]
 
 
-def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], 'C H W'], palette='default', kind='overlay') -> Float[Union[np.ndarray,torch.Tensor], '... 3 H W']:
+def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor,scipy.sparse.spmatrix], 'C H W'], palette :Union[tuple, str]='default') -> UInt8[Union[np.ndarray,torch.Tensor], '... 3 H W']:
     """
-    符合实验室内部 格式要求的OneHot标签转图像函数
+    Convert a label image to a RGB image.
 
-    :param kind: 分割模式,如果为'overlay'则是硬分割, 'avg'则是软分割
-    :param lbl B C H W格式的图像batch, C为OneHot编码格式
-    :return: B 3 H W格式的RGB图像, 取值范围为0~1
+    :param lbl a hw label image, or a chw onehot label image with c=n_class. tensor or numpy array or scipy.sparse are supported. An extra batch dimension is allowed.
+    :param palette: a tuple of hex color strings, or a preset name. The default is a placeholder palette which works for most datasets with less than 32 classes.
+    :return: a 3HW RGB image, uint8, the background is black.
     """
     placeholder_palette = [
         "#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0", "#f032e6",
@@ -45,7 +47,7 @@ def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], 'C H W'], palette='defaul
         'houston2018-ouc': placeholder_palette, #TODO
         'augsburg-ouc':    placeholder_palette, #TODO
         'berlin-ouc':      placeholder_palette, #TODO
-        'default':      placeholder_palette
+        'default':         placeholder_palette
     }
     if palette in palette_presets:
         palette = palette_presets[palette]
@@ -55,15 +57,18 @@ def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor], 'C H W'], palette='defaul
     
     if isinstance(lbl, torch.Tensor):
         lbl = lbl.cpu().numpy()
+    elif scipy.sparse.issparse(lbl):
+        lbl = lbl.todense()
     if len(lbl.shape) == 3:
         lbl = np.argmax(lbl, axis=-3)
-
+    lbl = lbl.astype(np.int16)
     img = skimage.color.label2rgb(
         lbl,
         channel_axis=-3,
         colors=[hex2rgb(x) for x in palette],
         bg_label=0,
         bg_color=hex2rgb('#000000'),
-        kind=kind # 硬分割还是软分割
+        kind='overlay' # 硬分割还是软分割
     )
-    return img
+    img_u8 = (img * 255).astype(np.uint8)
+    return img_u8

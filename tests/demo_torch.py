@@ -41,26 +41,30 @@ if __name__=='__main__':
     torch.save(model.state_dict(), 'model.pth')
 
     # Test
-    testset = Houston2013('test', patch_size=5)
-    benchmarker = testset.benchmarker()
-    model.eval()
-    for hsi,dsm,lbl,info in DataLoader(testset, batch_size=1):
-        y_hat = model(hsi, dsm)
-        benchmarker.add_sample(info['location'], y_hat, lbl)
-    ca,oa,aa,kappa = benchmarker.ca(), benchmarker.oa(), benchmarker.aa(), benchmarker.kappa()
-    print(f"CA: {ca.round(decimals=5)}")
-    print(f"OA: {oa:.5f}, AA: {aa:.5f}, Kappa: {kappa:.5f}")
-    skimage.io.imsave('result_prd.png',  benchmarker.predicted_image().transpose(1,2,0) ) # We use CHW in our API by default, skimage uses CHW
+    with torch.no_grad():
+        testset = Houston2013('test', patch_size=5)
+        benchmarker = testset.benchmarker()
+        model.eval()
+        for hsi,dsm,lbl,info in DataLoader(testset, batch_size=1):
+            y_hat = model(hsi, dsm)
+            benchmarker.add_sample(info['location'], y_hat, lbl)
+        ca,oa,aa,kappa = benchmarker.ca(), benchmarker.oa(), benchmarker.aa(), benchmarker.kappa()
+        print(f"CA: {ca.round(decimals=5)}")
+        print(f"OA: {oa:.5f}, AA: {aa:.5f}, Kappa: {kappa:.5f}")
+        skimage.io.imsave('result_rgb.png',  testset.hsi2rgb().transpose(1,2,0) )     # We use CHW in our API by default, skimage uses CHW, so we need to transpose
+        skimage.io.imsave('result_lbl.png',  testset.lbl2rgb().transpose(1,2,0) )
+        skimage.io.imsave('result_prd.png',  benchmarker.predicted_image().transpose(1,2,0) ) 
 
     # Draw The full predicted image
-    fullset = Houston2013('full', patch_size=5)
-    benchmarker = fullset.benchmarker()
-    model.eval()
-    i_batch = 0
-    for hsi,dsm,_,info in DataLoader(fullset, batch_size=64, shuffle=False):
-        y_hat = model(hsi, dsm)
-        benchmarker.add_sample(info['location'], y_hat)
-        i_batch += 1
-        print(f"drawing {i_batch*64}/{len(fullset)} pixels", end='\r')
-    skimage.io.imsave('result_ful.png', benchmarker.predicted_image().transpose(1,2,0) )
-    print("the result images are saved as result_test.png and result_full.png")
+    with torch.no_grad():
+        fullset = Houston2013('full', patch_size=5)
+        benchmarker = fullset.benchmarker()
+        model.eval()
+        i_batch = 0
+        for hsi,dsm,_,info in DataLoader(fullset, batch_size=64, shuffle=False):
+            y_hat = model(hsi, dsm)
+            benchmarker.add_sample(info['location'], y_hat)
+            i_batch += 1
+            print(f"drawing {i_batch*64}/{len(fullset)} pixels", end='\r')
+        skimage.io.imsave('result_ful.png', benchmarker.predicted_image().transpose(1,2,0) )
+        print("the result images are saved as result_test.png and result_full.png")
