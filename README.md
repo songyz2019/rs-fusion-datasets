@@ -73,9 +73,9 @@ hsi, dsm, train_label, test_label, all_label, info = fetch_houston2018_ouc()
 
 
 ### Utils
-1. `<Dataset>.benchmarker` and `ClassificationMapper`: Draw the predicted labels, compute the confusion matrix, OA, AA, CA, Kappa. For the usage, see [demo_torch.py](tests/demo_torch.py) 
-2. `<Dataset>.lbl2rgb` and `lbl2rgb`: Convert the label of dataset to rgb image for visulization
-3. `<Dataset>.hsi2rgb` and `hsi2rgb`: Convert HSI to true color RGB
+1. `<Dataset>.benchmarker`: Draw the predicted labels, compute the confusion matrix, OA, AA, CA, Kappa. For the usage, see [demo_torch.py](tests/demo_torch.py) 
+2. `<Dataset>.lbl2rgb`: Convert the label of dataset to rgb image for visulization
+3. `<Dataset>.hsi2rgb`: Convert HSI to true color RGB
 4. `read_roi`: Read exported `.txt` file of ENVI roi to sparse matrix
 5. `split_spmatrix`: Split a sparse to get the train dataset and test dataset
 
