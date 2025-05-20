@@ -393,19 +393,6 @@ wheels = [
 ]
 
 [[package]]
-name = "hsi2rgb"
-version = "0.1.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "numpy", version = "2.2.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/32/8f/5581dd82c4f6c8480d9169d7ba16150c43e0a48a2c41d3617f878d593107/hsi2rgb-0.1.1.tar.gz", hash = "sha256:28aaa25be78f8d251919438f01104a48c4e9e128c89f06b9b2206e9baf8f2af7", size = 99032, upload-time = "2025-04-05T11:40:46.414Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a4/43/6b4517718f50977dbb35f519a32e1a61b6a463357020db0a8cfee1e81cc2/hsi2rgb-0.1.1-py3-none-any.whl", hash = "sha256:4bb759c1293cf773231f623ef76ca6fc81fb0e4bf8af01143bfcf74b13832b4e", size = 8035, upload-time = "2025-04-05T11:40:44.914Z" },
-]
-
-[[package]]
 name = "imageio"
 version = "2.37.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1381,7 +1368,6 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "hsi2rgb" },
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "matplotlib", version = "3.10.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "scikit-learn" },
@@ -1401,7 +1387,6 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "hsi2rgb", specifier = ">=0.1.1" },
     { name = "matplotlib", specifier = ">=3.9.4" },
     { name = "scikit-learn", specifier = ">=1.6.1" },
     { name = "tensorboard", specifier = ">=2.19.0" },

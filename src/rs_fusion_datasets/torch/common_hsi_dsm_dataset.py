@@ -1,9 +1,11 @@
-from typing import Literal,Tuple, Dict
+from typing import Literal,Tuple, Dict, Union, Callable
 import warnings
 
 from scipy.sparse import coo_array, spmatrix
 from torchvision.datasets.vision import VisionDataset
+from torchvision.transforms.v2.functional import crop
 import torch
+from torch import Tensor
 import numpy as np
 from numpy import ndarray
 from jaxtyping import Num, Float
@@ -22,7 +24,22 @@ def _channel_wise_normalize(x: Float[ndarray, 'c h w']) -> Float[ndarray, 'c h w
     x = x.astype(np.float32)
     min_val = np.min(x, axis=(-1, -2), keepdims=True)
     max_val = np.max(x, axis=(-1, -2), keepdims=True)
-    return (x - min_val) / (max_val - min_val)  # Avoid division by zero
+    scale = max_val - min_val
+    scale[scale == 0.0] = 1e-6
+    return (x - min_val) / (max_val - min_val)
+
+def _image_wise_normalize(x: Float[ndarray, 'c h w']) -> Float[ndarray, 'c h w']:
+    """
+    Normalize each channel of the input image to the range [0, 1].
+    :param x: Input image with shape (c, h, w).
+    :return: Normalized image with shape (c, h, w).
+    """
+    x = x.astype(np.float32)
+    min_val = np.min(x, keepdims=True)
+    max_val = np.max(x, keepdims=True)
+    if min_val == max_val:
+        return x - min_val
+    return (x - min_val) / (max_val - min_val)
 
 class CommonHsiDsmDataset(VisionDataset):
     def __init__(self,
@@ -33,7 +50,14 @@ class CommonHsiDsmDataset(VisionDataset):
                  info: DataMetaInfo,
                  split: Literal['train', 'test', 'full'], 
                  patch_size: int = 5,  # I prefer patch_radius, but patch_size is more popular and maintance two patch_xxx is too complex...
+                 image_level_preprocess_hsi: Union[Literal['channel_wise_normalize', 'normalize', 'none'], Callable[ [Float[Tensor, 'C H W']], Float[Tensor, 'C H W']] ] = 'channel_wise_normalize',
+                 image_level_preprocess_dsm: Union[Literal['channel_wise_normalize', 'normalize', 'none'], Callable[ [Float[Tensor, 'C H W']], Float[Tensor, 'C H W']] ] = 'channel_wise_normalize',
                  *args, **kwargs):
+        """
+        
+        @param image_level_preprocess_hsi: image level preprocess for hsi
+        @param image_level_preprocess_dsm: image level preprocess for dsm
+        """
         super().__init__(*args, **kwargs)
 
         # Load truth
@@ -54,6 +78,7 @@ class CommonHsiDsmDataset(VisionDataset):
         self.patch_size = patch_size
         self.patch_radius = patch_size // 2 # if patch_size is odd, it should be (patch_size - w_center)/2, but some user will use on-odd patch size
 
+
         # Load basic info
         self.HSI, self.DSM, self.INFO = hsi, dsm, info
         self.n_class = self.INFO['n_class']
@@ -61,15 +86,26 @@ class CommonHsiDsmDataset(VisionDataset):
         self.n_channel_dsm = self.INFO['n_channel_dsm']
 
         # Preprocess HSI
+        preset = {
+            'channel_wise_normalize': _channel_wise_normalize,
+            'normalize': _image_wise_normalize,
+            'none': lambda x: x
+        }
+        if isinstance(image_level_preprocess_hsi, str) and image_level_preprocess_hsi in preset:
+            self.hsi_img_preprocess = preset[image_level_preprocess_hsi]
         pad_shape = ((0, 0), (self.patch_radius, self.patch_radius), (self.patch_radius, self.patch_radius))
-        self.hsi = _channel_wise_normalize(self.HSI)
+        self.hsi = self.hsi_img_preprocess(self.HSI)
         self.hsi = np.pad(self.hsi, pad_shape, mode='reflect')
         self.hsi = torch.from_numpy(self.hsi).float()
 
         # Preprocess DSM
-        self.dsm = _channel_wise_normalize(self.DSM)
+        if isinstance(image_level_preprocess_dsm, str) and image_level_preprocess_dsm in preset:
+            self.dsm_img_preprocess = preset[image_level_preprocess_dsm]
+        self.dsm = self.dsm_img_preprocess(self.DSM)
         self.dsm = np.pad(self.dsm, pad_shape, mode='reflect')
         self.dsm = torch.from_numpy(self.dsm).float()
+
+        self.onehot_eye = torch.eye(self.n_class).float()
 
 
     def __len__(self):
@@ -87,10 +123,13 @@ class CommonHsiDsmDataset(VisionDataset):
         j = self.lbl.col[index]
         cid = self.lbl.data[index].item()
 
-        x_hsi = self.hsi[:, i:i+w, j:j+w]
-        x_dsm = self.dsm[:, i:i+w, j:j+w]
-        y = np.eye(self.n_class)[cid-1]
-        y = torch.from_numpy(y).float()
+        # x_hsi = self.hsi[:, i:i+w, j:j+w]
+        # x_dsm = self.dsm[:, i:i+w, j:j+w]
+        # y = np.eye(self.n_class)[cid-1]
+        # y = torch.from_numpy(y).float()
+        x_hsi = crop(x_hsi, i, j, w, w) # since the image is padded, the i j is just the center of the patch
+        x_dsm = crop(x_dsm, i, j, w, w)
+        y = self.onehot_eye[cid-1] # cid is 1-based, so we need to -1
 
         # 额外信息: 当前点的坐标
         extras = {
@@ -124,11 +163,3 @@ class CommonHsiDsmDataset(VisionDataset):
             hsi = self.HSI
         return hsi2rgb(hsi, wavelength=self.INFO['wavelength'], input_format='CHW', output_format='CHW', to_u8np=to_u8np, *args, **kwargs)
     
-    @property
-    def composed_rgb(self) -> Float[ndarray, 'c h w']:
-        """
-        The composed RGB image from HSI.
-        :return: RGB image with shape (h, w, c).
-        """
-        warnings.warn("`composed_rgb` is deprecated, use `hsi2rgb()` instead", DeprecationWarning)
-        return self.hsi2rgb(self.HSI)
