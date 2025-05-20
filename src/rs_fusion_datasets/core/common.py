@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Optional, TypedDict
 import numpy as np
 
 class DataMetaInfo(TypedDict):
@@ -28,7 +28,9 @@ class DataMetaInfo(TypedDict):
     n_class: int
     label_name: dict[int, str]
     wavelength: np.ndarray
-
+    # n_sample: int
+    # n_train_sample: Optional[int]
+    # n_val_sample: Optional[int]
 
 __all__ = [
     'DataMetaInfo',

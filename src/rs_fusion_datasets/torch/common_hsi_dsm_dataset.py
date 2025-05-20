@@ -30,7 +30,7 @@ def _channel_wise_normalize(x: Float[ndarray, 'c h w']) -> Float[ndarray, 'c h w
 
 def _image_wise_normalize(x: Float[ndarray, 'c h w']) -> Float[ndarray, 'c h w']:
     """
-    Normalize each channel of the input image to the range [0, 1].
+    Normalize the input image to the range [0, 1].
     :param x: Input image with shape (c, h, w).
     :return: Normalized image with shape (c, h, w).
     """
@@ -43,13 +43,13 @@ def _image_wise_normalize(x: Float[ndarray, 'c h w']) -> Float[ndarray, 'c h w']
 
 class CommonHsiDsmDataset(VisionDataset):
     def __init__(self,
-                 hsi :Num[ndarray, 'c h w'], 
-                 dsm :Num[ndarray, 'd h w'],
-                 lbl_train :Num[spmatrix, 'h w'],
-                 lbl_test :Num[spmatrix, 'h w'],
-                 info: DataMetaInfo,
-                 split: Literal['train', 'test', 'full'], 
-                 patch_size: int = 5,  # I prefer patch_radius, but patch_size is more popular and maintance two patch_xxx is too complex...
+                 hsi        :Num[ndarray, 'c h w'], 
+                 dsm        :Num[ndarray, 'd h w'],
+                 lbl_train  :Num[spmatrix, 'h w'],
+                 lbl_test   :Num[spmatrix, 'h w'],
+                 info       :DataMetaInfo,
+                 split      :Literal['train', 'test', 'full'], 
+                 patch_size :int = 5,  # I prefer patch_radius, but patch_size is more popular and maintance two patch_xxx is too complex...
                  image_level_preprocess_hsi: Union[Literal['channel_wise_normalize', 'normalize', 'none'], Callable[ [Float[Tensor, 'C H W']], Float[Tensor, 'C H W']] ] = 'channel_wise_normalize',
                  image_level_preprocess_dsm: Union[Literal['channel_wise_normalize', 'normalize', 'none'], Callable[ [Float[Tensor, 'C H W']], Float[Tensor, 'C H W']] ] = 'channel_wise_normalize',
                  *args, **kwargs):
@@ -67,14 +67,11 @@ class CommonHsiDsmDataset(VisionDataset):
         elif self.subset == 'test':
             self.lbl = lbl_test
         elif self.subset == 'full':
-            self.lbl = coo_array(-1*np.ones_like(lbl_train.todense(), dtype=np.int16), dtype='int')
+            self.lbl = coo_array(-1*np.ones(lbl_test.shape, dtype=np.int16), dtype=np.int16)
         else:
             raise ValueError(f"Unknown subset: {split}")
 
         # Load patch size
-        if patch_size % 2 != 1:
-            pass
-            # warnings.warn("Non-odd patch size may cause unknown behaviors (classification pixel is at right bottom 2x2 center location). Use at your own risk.",category=UserWarning,stacklevel=2)
         self.patch_size = patch_size
         self.patch_radius = patch_size // 2 # if patch_size is odd, it should be (patch_size - w_center)/2, but some user will use on-odd patch size
 

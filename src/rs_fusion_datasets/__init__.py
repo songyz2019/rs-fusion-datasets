@@ -11,6 +11,7 @@ from .core.fetch_houston2018_ouc import fetch_houston2018_ouc
 from .core._fetch_trento_mat import _fetch_trento_mat
 from .core._fetch_muufl_mat import _fetch_muufl_mat
 from .core.common import DataMetaInfo
+from .util.patchify import patchify
 
 from .util.split_spmatrix import split_spmatrix
 from .util.fileio import read_roi
@@ -31,6 +32,7 @@ __all__ = [
     'split_spmatrix', 
     'read_roi', 
     'hsi2rgb',
+    'patchify',
     'DataMetaInfo',
 ]
 
