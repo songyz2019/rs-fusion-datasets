@@ -127,11 +127,10 @@ class CommonHsiDsmDataset(VisionDataset):
         # x_dsm = self.dsm[:, i:i+w, j:j+w]
         # y = np.eye(self.n_class)[cid-1]
         # y = torch.from_numpy(y).float()
-        x_hsi = crop(x_hsi, i, j, w, w) # since the image is padded, the i j is just the center of the patch
-        x_dsm = crop(x_dsm, i, j, w, w)
+        x_hsi = crop(self.hsi, i, j, w, w) # since the image is padded, the i j is just the top-left corner of the patch
+        x_dsm = crop(self.dsm, i, j, w, w)
         y = self.onehot_eye[cid-1] # cid is 1-based, so we need to -1
 
-        # 额外信息: 当前点的坐标
         extras = {
             "location": [i, j],
             "index": index

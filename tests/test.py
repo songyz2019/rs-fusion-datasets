@@ -88,8 +88,8 @@ class Test(unittest.TestCase):
 
         rgb = lbl2rgb(y, info['name'])
         self.assertEqual(rgb.shape, (3, h, w))
-        self.assertLessEqual(rgb.max(), 1.0)
-        self.assertGreaterEqual(rgb.min(), 0.0)
+        self.assertLessEqual(rgb.max(), 255)
+        self.assertGreaterEqual(rgb.min(), 0)
 
         img = rgb.transpose(1, 2, 0)
         skimage.io.imsave(f"dist/{info['name']}_{split}.png", img, check_contrast=False)
