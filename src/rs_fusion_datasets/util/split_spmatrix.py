@@ -30,6 +30,10 @@ def split_spmatrix(a :coo_array, n_sample_perclass :Union[int, float]=100, seed=
                 n = int(N * n_sample_perclass)
             else:
                 n = int(n_sample_perclass)
+            if n == 0:
+                continue
+            if n > N:
+                n = N
             indice = rng.choice(N, n, replace=False)
             row = a.row[a.data==cid][indice]
             col = a.col[a.data==cid][indice]
