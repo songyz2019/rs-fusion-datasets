@@ -134,4 +134,8 @@ class Benchmarker:
         return r
 
     def aio4paper(self):
+        """
+        An all-in-one string for most data needed in a paper
+        Including Overall Accuracy (OA), Average Accuracy (AA), Kappa, and CA
+        """
         return f"OA: {self.oa().round(decimals=4) * 100:.02f}% \nAA: {self.aa().round(decimals=4) * 100:.02f}% \nKappa: {self.kappa().round(decimals=4) * 100:.02f}% \nCA: {' '.join(['%.02f%%' % x for x in self.ca().round(decimals=4) * 100])}"

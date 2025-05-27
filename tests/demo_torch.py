@@ -1,5 +1,3 @@
-# understand the code of joint classification of HSI and DSM data in about 50 lines
-# if you're using v0.12.3 and before, you should remove ClassificationMapper and its related code to make it work
 import skimage
 import torch
 from torch.nn import Sequential, LazyConv2d, ReLU, LazyBatchNorm2d, Module, LazyLinear
@@ -7,6 +5,7 @@ from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 from rs_fusion_datasets import Houston2013, Trento, Muufl
+from rs_fusion_datasets import ChannelPCA
 
 class MyModel(Module):
     def __init__(self, n_class):
@@ -27,7 +26,7 @@ class MyModel(Module):
     
 if __name__=='__main__':
     # Train
-    trainset = Houston2013('train', patch_size=5)
+    trainset = Houston2013('train', patch_size=5, image_level_preprocess_hsi=ChannelPCA(32))
     model = MyModel(n_class=trainset.INFO['n_class'])
     optimizer = Adam(model.parameters(), lr=0.01)
     for epoch in range(10):
@@ -42,7 +41,7 @@ if __name__=='__main__':
 
     # Test
     with torch.no_grad():
-        testset = Houston2013('test', patch_size=5)
+        testset = Houston2013('test', patch_size=5, image_level_preprocess_hsi=ChannelPCA(32))
         benchmarker = testset.benchmarker()
         model.eval()
         for hsi,dsm,lbl,info in DataLoader(testset, batch_size=1):
@@ -51,13 +50,13 @@ if __name__=='__main__':
         ca,oa,aa,kappa = benchmarker.ca(), benchmarker.oa(), benchmarker.aa(), benchmarker.kappa()
         print(f"CA: {ca.round(decimals=5)}")
         print(f"OA: {oa:.5f}, AA: {aa:.5f}, Kappa: {kappa:.5f}")
-        skimage.io.imsave('result_rgb.png',  testset.hsi2rgb().transpose(1,2,0) )     # We use CHW in our API by default, skimage uses CHW, so we need to transpose
+        skimage.io.imsave('result_rgb.png',  testset.hsi2rgb().transpose(1,2,0) )     # We use CHW in our API by default but skimage uses HWC, so we need to transpose
         skimage.io.imsave('result_lbl.png',  testset.lbl2rgb().transpose(1,2,0) )
         skimage.io.imsave('result_prd.png',  benchmarker.predicted_image().transpose(1,2,0) ) 
 
     # Draw The full predicted image
     with torch.no_grad():
-        fullset = Houston2013('full', patch_size=5)
+        fullset = Houston2013('full', patch_size=5, image_level_preprocess_hsi=ChannelPCA(32))
         benchmarker = fullset.benchmarker()
         model.eval()
         i_batch = 0

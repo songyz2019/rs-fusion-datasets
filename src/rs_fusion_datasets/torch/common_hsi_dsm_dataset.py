@@ -2,46 +2,21 @@ from typing import Literal,Tuple, Dict, Union, Callable
 import warnings
 
 from scipy.sparse import coo_array, spmatrix
-from torchvision.datasets.vision import VisionDataset
 from torchvision.transforms.v2.functional import crop
 import torch
-from torch import Tensor
 import numpy as np
 from numpy import ndarray
 from jaxtyping import Num, Float
+
 
 from ..util.benchmarker import Benchmarker
 from ..util.lbl2rgb import lbl2rgb
 from ..util.hsi2rgb import hsi2rgb
 from ..core.common import DataMetaInfo
+from ..util.transforms import NormalizePerChannel
 
-def _channel_wise_normalize(x: Float[ndarray, 'c h w']) -> Float[ndarray, 'c h w']:
-    """
-    Normalize each channel of the input image to the range [0, 1].
-    :param x: Input image with shape (c, h, w).
-    :return: Normalized image with shape (c, h, w).
-    """
-    x = x.astype(np.float32)
-    min_val = np.min(x, axis=(-1, -2), keepdims=True)
-    max_val = np.max(x, axis=(-1, -2), keepdims=True)
-    scale = max_val - min_val
-    scale[scale == 0.0] = 1e-6
-    return (x - min_val) / (max_val - min_val)
 
-def _image_wise_normalize(x: Float[ndarray, 'c h w']) -> Float[ndarray, 'c h w']:
-    """
-    Normalize the input image to the range [0, 1].
-    :param x: Input image with shape (c, h, w).
-    :return: Normalized image with shape (c, h, w).
-    """
-    x = x.astype(np.float32)
-    min_val = np.min(x, keepdims=True)
-    max_val = np.max(x, keepdims=True)
-    if min_val == max_val:
-        return x - min_val
-    return (x - min_val) / (max_val - min_val)
-
-class CommonHsiDsmDataset(VisionDataset):
+class CommonHsiDsmDataset(torch.utils.data.Dataset):
     def __init__(self,
                  hsi        :Num[ndarray, 'c h w'], 
                  dsm        :Num[ndarray, 'd h w'],
@@ -50,16 +25,17 @@ class CommonHsiDsmDataset(VisionDataset):
                  info       :DataMetaInfo,
                  split      :Literal['train', 'test', 'full'], 
                  patch_size :int = 5,  # I prefer patch_radius, but patch_size is more popular and maintance two patch_xxx is too complex...
-                 image_level_preprocess_hsi: Union[Literal['channel_wise_normalize', 'normalize', 'none'], Callable[ [Float[Tensor, 'C H W']], Float[Tensor, 'C H W']] ] = 'channel_wise_normalize',
-                 image_level_preprocess_dsm: Union[Literal['channel_wise_normalize', 'normalize', 'none'], Callable[ [Float[Tensor, 'C H W']], Float[Tensor, 'C H W']] ] = 'channel_wise_normalize',
+                 image_level_preprocess_hsi: Callable[ [Float[ndarray, 'C H W']], Float[ndarray, 'C H W']] = NormalizePerChannel(),
+                 image_level_preprocess_dsm: Callable[ [Float[ndarray, 'C H W']], Float[ndarray, 'C H W']] = NormalizePerChannel(),
                  *args, **kwargs):
         """
         
+        @param split: 'train', 'test', 'full'. 'full' is not 'train'+'val', it means the whole map, including unclassified labels, with all lbl is -1,usually used for visualization.
         @param image_level_preprocess_hsi: image level preprocess for hsi
         @param image_level_preprocess_dsm: image level preprocess for dsm
         """
         super().__init__(*args, **kwargs)
-
+        
         # Load truth
         self.subset = split
         if self.subset == 'train':
@@ -78,32 +54,27 @@ class CommonHsiDsmDataset(VisionDataset):
 
         # Load basic info
         self.HSI, self.DSM, self.INFO = hsi, dsm, info
-        self.n_class = self.INFO['n_class']
-        self.n_channel_hsi = self.INFO['n_channel_hsi']
-        self.n_channel_dsm = self.INFO['n_channel_dsm']
 
         # Preprocess HSI
-        preset = {
-            'channel_wise_normalize': _channel_wise_normalize,
-            'normalize': _image_wise_normalize,
-            'none': lambda x: x
-        }
-        if isinstance(image_level_preprocess_hsi, str) and image_level_preprocess_hsi in preset:
-            self.hsi_img_preprocess = preset[image_level_preprocess_hsi]
+        self.image_level_preprocess_hsi = image_level_preprocess_hsi
         pad_shape = ((0, 0), (self.patch_radius, self.patch_radius), (self.patch_radius, self.patch_radius))
-        self.hsi = self.hsi_img_preprocess(self.HSI)
+        self.hsi = self.image_level_preprocess_hsi(self.HSI)
         self.hsi = np.pad(self.hsi, pad_shape, mode='reflect')
         self.hsi = torch.from_numpy(self.hsi).float()
-
+        
         # Preprocess DSM
-        if isinstance(image_level_preprocess_dsm, str) and image_level_preprocess_dsm in preset:
-            self.dsm_img_preprocess = preset[image_level_preprocess_dsm]
-        self.dsm = self.dsm_img_preprocess(self.DSM)
+        self.image_level_preprocess_dsm = image_level_preprocess_dsm
+        self.dsm = self.image_level_preprocess_dsm(self.DSM)
         self.dsm = np.pad(self.dsm, pad_shape, mode='reflect')
         self.dsm = torch.from_numpy(self.dsm).float()
 
-        self.onehot_eye = torch.eye(self.n_class).float()
 
+        # util members for users
+        self.n_class = self.INFO['n_class']
+        self.n_channel_hsi = self.hsi.shape[0]
+        self.n_channel_dsm = self.dsm.shape[0]
+        # cache for one-hot encoding in __getitem__
+        self.onehot_eye = torch.eye(self.n_class).float()
 
     def __len__(self):
         return self.lbl.count_nonzero()
@@ -114,6 +85,10 @@ class CommonHsiDsmDataset(VisionDataset):
             Float[ndarray, 'c h w'],
             Dict[str, int]
         ]:
+        """
+        Get a patch of HSI and DSM, and the corresponding label.
+        The lbl is a pesudo one-hot encoding value when split is 'full', you should only use it to avoid errors in your model if your loss and in your model.
+        """
         w = self.patch_size
 
         i = self.lbl.row[index]
