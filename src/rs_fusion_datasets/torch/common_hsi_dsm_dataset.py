@@ -13,7 +13,7 @@ from ..util.benchmarker import Benchmarker
 from ..util.lbl2rgb import lbl2rgb
 from ..util.hsi2rgb import hsi2rgb
 from ..core.common import DataMetaInfo
-from ..util.transforms import NormalizePerChannel
+from ..util.transforms import Identify, NormalizePerChannel
 
 
 class CommonHsiDsmDataset(torch.utils.data.Dataset):
@@ -24,15 +24,19 @@ class CommonHsiDsmDataset(torch.utils.data.Dataset):
                  lbl_test   :Num[spmatrix, 'h w'],
                  info       :DataMetaInfo,
                  split      :Literal['train', 'test', 'full'], 
-                 patch_size :int = 5,  # I prefer patch_radius, but patch_size is more popular and maintance two patch_xxx is too complex...
+                 patch_size :int = 5,
                  image_level_preprocess_hsi: Callable[ [Float[ndarray, 'C H W']], Float[ndarray, 'C H W']] = NormalizePerChannel(),
                  image_level_preprocess_dsm: Callable[ [Float[ndarray, 'C H W']], Float[ndarray, 'C H W']] = NormalizePerChannel(),
+                 image_level_preprocess_lbl: Callable[ [Float[spmatrix, 'H W']], Float[spmatrix, 'H W']]   = Identify(),
+                 n_class: Union[int, Literal['auto','fixed']] = 'fixed',
                  *args, **kwargs):
         """
         
-        @param split: 'train', 'test', 'full'. 'full' is not 'train'+'val', it means the whole map, including unclassified labels, with all lbl is -1,usually used for visualization.
+        @param split: 'train', 'test', 'full'. 'full' is not 'train'+'val', it means the whole map, including unclassified labels, with all lbl is -1, usually used for visualization.
         @param image_level_preprocess_hsi: image level preprocess for hsi
         @param image_level_preprocess_dsm: image level preprocess for dsm
+        @param image_level_preprocess_lbl: image level preprocess for label, usually a mapping function to convert labels to a specific format
+        @param n_class: If you do not use image_level_preprocess_lbl, leave it default.Number of classes in the dataset. If 'auto', it will be determined from the labels. If 'fixed', it will use the number of classes from the info dictionary. If an int, it will be used as the number of classes. 
         """
         super().__init__(*args, **kwargs)
         
@@ -68,11 +72,23 @@ class CommonHsiDsmDataset(torch.utils.data.Dataset):
         self.dsm = np.pad(self.dsm, pad_shape, mode='reflect')
         self.dsm = torch.from_numpy(self.dsm).float()
 
+        # Preprocess label
+        self.image_level_preprocess_lbl = image_level_preprocess_lbl
+        self.lbl = self.image_level_preprocess_lbl(self.lbl)
 
         # util members for users
-        self.n_class = self.INFO['n_class']
+        if n_class == 'auto':
+            self.n_class = self.lbl.data.max() + 1
+        elif n_class == 'fixed':
+            self.n_class = self.INFO['n_class']
+        elif isinstance(n_class, int):
+            assert n_class > 0
+            self.n_class = n_class
+        else:
+            raise ValueError(f"Unknown n_class: {n_class}, must be 'auto', 'fixed' or an int")
         self.n_channel_hsi = self.hsi.shape[0]
         self.n_channel_dsm = self.dsm.shape[0]
+
         # cache for one-hot encoding in __getitem__
         self.onehot_eye = torch.eye(self.n_class).float()
 
