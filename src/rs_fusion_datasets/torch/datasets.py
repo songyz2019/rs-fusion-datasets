@@ -16,7 +16,7 @@ from ..util.split_spmatrix import split_spmatrix
 from .common_hsi_dsm_dataset import CommonHsiDsmDataset
 
 class Houston2018Ouc(CommonHsiDsmDataset):
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, *args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :str=None, *args, **kwargs):
         """
         A preprocessed torch dataset for Houston 2018 (ouc) dataset.
 
@@ -24,7 +24,10 @@ class Houston2018Ouc(CommonHsiDsmDataset):
         :param patch_size: The size of patches. Default is 5.
         :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
         """
-        hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_houston2018_ouc(data_home=root)
+        if url is None:
+            hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_houston2018_ouc(data_home=root)
+        else:
+            hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_houston2018_ouc(data_home=root, url=url)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
 
@@ -36,8 +39,11 @@ class BerlinOuc(CommonHsiDsmDataset):
     :param patch_size: The size of patches. Default is 5.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, *args, **kwargs):
-        hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_berlin_ouc(data_home=root)
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :str=None, *args, **kwargs):
+        if url is None:
+            hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_berlin_ouc(data_home=root)
+        else:
+            hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_berlin_ouc(data_home=root, url=url)
         dsm = dsm[::-1, :, :] # The first 3 channels are mostly black, so put the last channel to the first channel; TODO: check if the 3 dark channel are normal map or something important
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
@@ -49,8 +55,11 @@ class AugsburgOuc(CommonHsiDsmDataset):
     :param patch_size: The size of patches. Default is 5.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, *args, **kwargs):
-        hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_augsburg_ouc(data_home=root)
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :str = None,*args, **kwargs):
+        if url is None:
+            hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_augsburg_ouc(data_home=root)
+        else:
+            hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_augsburg_ouc(data_home=root, url=url)
         dsm = dsm[::-1, :, :] # The first 3 channels are mostly black, so put the last channel to the first channel; TODO: check if the 3 dark channel are normal map or something important
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
@@ -62,20 +71,29 @@ class Houston2013(CommonHsiDsmDataset):
     :param patch_size: The size of patches. Default is 5.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, *args, **kwargs):
-        hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013(data_home=root)
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :str=None,*args, **kwargs):
+        if url is None:
+            hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013(data_home=root)
+        else:
+            hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013(data_home=root, url=url)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
 class Houston2013Mmr(CommonHsiDsmDataset):
     """This is only for internal test."""
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, *args, **kwargs):
-        hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013_mmr(data_home=root)
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :str=None, url_lbl_val:str=None,*args, **kwargs):
+        if url is None:
+            hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013_mmr(data_home=root)
+        else:
+            hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013_mmr(data_home=root, url=url, url_lbl_val=url_lbl_val)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
 class _Houston2013Mat(CommonHsiDsmDataset):
     """This is only for internal test."""
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, *args, **kwargs):
-        hsi, dsm, lbl_train, lbl_test, info = _fetch_houston2013_mat(data_home=root)
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url:str=None,*args, **kwargs):
+        if url is None:
+            hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013(data_home=root)
+        else:
+            hsi, dsm, lbl_train, lbl_test, info = _fetch_houston2013_mat(data_home=root, url=url)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
 class _Houston2013Mmrs(Houston2013Mmr):
@@ -92,8 +110,11 @@ class Muufl(CommonHsiDsmDataset):
     :param n_train_perclass: The number of training samples per class. Default is 100.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, *args, **kwargs):
-        hsi, dsm, lbl, info = fetch_muufl(data_home=root)
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, url:str=None,*args, **kwargs):
+        if url is None:
+            hsi, dsm, lbl, info = fetch_muufl(data_home=root)
+        else:
+            hsi, dsm, lbl, info = fetch_muufl(data_home=root, url=url)
         lbl_train, lbl_test = split_spmatrix(lbl, n_train_perclass)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
@@ -107,8 +128,11 @@ class _MuuflMat(CommonHsiDsmDataset):
     :param n_train_perclass: The number of training samples per class. Default is 100.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, *args, **kwargs):
-        hsi, dsm, lbl_train, lbl_test, info = _fetch_muufl_mat(data_home=root)
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, url:str=None, *args, **kwargs):
+        if url is None:
+            hsi, dsm, lbl_train, lbl_test, info = _fetch_muufl_mat(data_home=root)
+        else:
+            hsi, dsm, lbl_train, lbl_test, info = _fetch_muufl_mat(data_home=root, url=url)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)        
 
 class Trento(CommonHsiDsmDataset):
@@ -120,8 +144,11 @@ class Trento(CommonHsiDsmDataset):
     :param n_train_perclass: The number of training samples per class. Default is 100.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, *args, **kwargs):
-        hsi, dsm, lbl, info = fetch_trento(data_home=root)
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, url:str=None, *args, **kwargs):
+        if url is None:
+            hsi, dsm, lbl, info = fetch_trento(data_home=root)
+        else:
+            hsi, dsm, lbl, info = fetch_trento(data_home=root, url=url)
         lbl_train, lbl_test = split_spmatrix(lbl, n_train_perclass)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
@@ -133,6 +160,9 @@ class _TrentoMat(CommonHsiDsmDataset):
     :param patch_size: The size of patches. Default is 5.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None,  *args, **kwargs):
-        hsi, dsm, lbl_train, lbl_test, info = _fetch_trento_mat(data_home=root)
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None,  url:str=None, *args, **kwargs):
+        if url is None:
+            hsi, dsm, lbl_train, lbl_test, info = _fetch_trento_mat(data_home=root)
+        else:
+            hsi, dsm, lbl_train, lbl_test, info = _fetch_trento_mat(data_home=root, url=url)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)

@@ -19,15 +19,15 @@ from ..util.transforms import Identify, NormalizePerChannel
 class CommonHsiDsmDataset(torch.utils.data.Dataset):
     def __init__(self,
                  hsi        :Num[ndarray, 'c h w'], 
-                 dsm        :Num[ndarray, 'd h w'],
+                 dsm        :Num[ndarray, 'c h w'],
                  lbl_train  :Num[spmatrix, 'h w'],
                  lbl_test   :Num[spmatrix, 'h w'],
                  info       :DataMetaInfo,
                  split      :Literal['train', 'test', 'full'], 
                  patch_size :int = 5,
-                 image_level_preprocess_hsi: Callable[ [Float[ndarray, 'C H W']], Float[ndarray, 'C H W']] = NormalizePerChannel(),
+                 image_level_preprocess_hsi: Callable[ [Float[ndarray, 'C H W']], Float[ndarray, 'C H W']] = NormalizePerChannel(), # the default NormalizePerChannel will lose information of the original data, but it's the common practice.
                  image_level_preprocess_dsm: Callable[ [Float[ndarray, 'C H W']], Float[ndarray, 'C H W']] = NormalizePerChannel(),
-                 image_level_preprocess_lbl: Callable[ [Float[spmatrix, 'H W']], Float[spmatrix, 'H W']]   = Identify(),
+                 image_level_preprocess_lbl: Callable[ [Float[spmatrix, 'H W']],  Float[spmatrix, 'H W']]  = Identify(),
                  n_class: Union[int, Literal['auto','fixed']] = 'fixed',
                  *args, **kwargs):
         """
@@ -41,18 +41,18 @@ class CommonHsiDsmDataset(torch.utils.data.Dataset):
         super().__init__(*args, **kwargs)
         
         # Load truth
-        self.subset = split
-        if self.subset == 'train':
+        self.split = split
+        if self.split == 'train':
             self.lbl = lbl_train
-        elif self.subset == 'test':
+        elif self.split == 'test':
             self.lbl = lbl_test
-        elif self.subset == 'full':
+        elif self.split == 'full':
             self.lbl = coo_array(-1*np.ones(lbl_test.shape, dtype=np.int16), dtype=np.int16)
         else:
-            raise ValueError(f"Unknown subset: {split}")
+            raise ValueError(f"Unknown dataset split: {split}")
 
         # Load patch size
-        self.patch_size = patch_size
+        self.patch_size   = patch_size
         self.patch_radius = patch_size // 2 # if patch_size is odd, it should be (patch_size - w_center)/2, but some user will use on-odd patch size
 
 
@@ -85,7 +85,7 @@ class CommonHsiDsmDataset(torch.utils.data.Dataset):
             assert n_class > 0
             self.n_class = n_class
         else:
-            raise ValueError(f"Unknown n_class: {n_class}, must be 'auto', 'fixed' or an int")
+            raise ValueError(f"Unknown n_class: {n_class}, it must be 'auto', 'fixed' or an int")
         self.n_channel_hsi = self.hsi.shape[0]
         self.n_channel_dsm = self.dsm.shape[0]
 
@@ -129,7 +129,7 @@ class CommonHsiDsmDataset(torch.utils.data.Dataset):
     @property
     def uid(self) -> str:
         '''an uid for logging and batch training'''
-        return f"{self.INFO['name']}-patchsize{self.patch_size}-len{len(self)}-{self.subset}"
+        return f"{self.INFO['name']}-patchsize{self.patch_size}-len{len(self)}-{self.split}"
 
     @property
     def truth(self) -> coo_array:
