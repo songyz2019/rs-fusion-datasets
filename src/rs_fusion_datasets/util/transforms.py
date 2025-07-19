@@ -6,6 +6,7 @@ import numpy as np
 from scipy.sparse import spmatrix
 
 Preprocess = Callable[ [Float[ndarray, 'C H W']], Float[ndarray, 'C H W']]
+LblPreprocess = Callable[ [Float[spmatrix, 'C H W']], Float[spmatrix, 'C H W']]
 
 def Compose(preprocesses: List[Preprocess]) -> Preprocess:
     """
@@ -28,19 +29,19 @@ def Identify() -> Preprocess:
     """
     return identity
 
-def map_lbl(lbl: Float[spmatrix, 'H W'], mapping: Dict[int, int]) -> Float[ndarray, 'H W']:
+def map_lbl(lbl: Float[spmatrix, 'H W'], mapping: Dict[int, int]) -> Float[spmatrix, 'H W']:
     """
     Map labels in the input label array according to the provided mapping.
     :param lbl: Input label array with shape (H, W).
     :param mapping: Dictionary mapping old labels to new labels.
     :return: Mapped label array with shape (H, W).
     """
-    lbl = lbl.copy()
+    new_lbl = lbl.toarray().copy() if hasattr(lbl, "toarray") else lbl.copy()
     for old_label, new_label in mapping.items():
-        lbl[lbl == old_label] = new_label
-    return lbl  # Ensure the output is of type int16
+        new_lbl[lbl == old_label] = new_label
+    return new_lbl
     
-def MapLbl(mapping: Dict[int, int]) -> Preprocess:
+def MapLbl(mapping: Dict[int, int]) -> LblPreprocess:
     """
     Create a preprocessing function that maps labels in the input label array according to the provided mapping.
     :param mapping: Dictionary mapping old labels to new labels.
@@ -49,41 +50,48 @@ def MapLbl(mapping: Dict[int, int]) -> Preprocess:
     return partial(map_lbl, mapping=mapping)
 
 
-def normalize_per_channel(x: Float[ndarray, 'c h w']) -> Float[ndarray, 'c h w']:
-    """
-    Normalize each channel of the input image to the range [0, 1].
-    :param x: Input image with shape (c, h, w).
-    :return: Normalized image with shape (c, h, w).
-    """
-    x = x.astype(np.float32)
-    min_val = np.min(x, axis=(-1, -2), keepdims=True)
-    max_val = np.max(x, axis=(-1, -2), keepdims=True)
-    scale = max_val - min_val
-    scale[scale == 0.0] = 1e-6
-    return (x - min_val) / (max_val - min_val)
-def NormalizePerChannel() -> Preprocess:
-    return normalize_per_channel
-
-def normalize(x: Float[ndarray, 'c h w']) -> Float[ndarray, 'c h w']:
+def normalize(x: Float[ndarray, 'c h w'], axis=(-1,-2,-3)) -> Float[ndarray, 'c h w']:
     """
     Normalize the input image to the range [0, 1].
     :param x: Input image with shape (c, h, w).
     :return: Normalized image with shape (c, h, w).
     """
     x = x.astype(np.float32)
-    min_val = np.min(x, keepdims=True)
-    max_val = np.max(x, keepdims=True)
+    min_val = np.min(x, axis=axis, keepdims=True)
+    max_val = np.max(x, axis=axis, keepdims=True)
     if min_val == max_val:
         return x - min_val
     return (x - min_val) / (max_val - min_val)
 
-def Normalize() -> Preprocess:
+def Normalize(axis=(-1,-2,-3)) -> Preprocess:
     """
     Normalize the input image to the range [0, 1].
     :param x: Input image with shape (c, h, w).
     :return: Normalized image with shape (c, h, w).
     """
-    return normalize
+    return partial(normalize, axis=axis)
+
+def NormalizePerChannel() -> Preprocess:
+    return partial(normalize, axis=(-1, -2))
+
+def standardize(x: Float[ndarray, 'c h w'], axis=(-1,-2,-3)) -> Float[ndarray, 'c h w']:
+    """
+    Standardize the input image to have zero mean and unit variance.
+    :param x: Input image with shape (c, h, w).
+    :return: Standardized image with shape (c, h, w).
+    """
+    x = x.astype(np.float32)
+    mean = np.mean(x, axis=axis, keepdims=True)
+    std = np.std(x, axis=axis, keepdims=True)
+    std[std == 0.0] = 1e-6
+    return (x - mean) / std
+
+def Standardize(axis=(-1, -2, -3)) -> Preprocess:
+    """
+    Standardize the input image to have zero mean and unit variance.
+    :return: Standardization function.
+    """
+    return partial(standardize, axis=axis)
 
 def channel_pca(x: Float[ndarray, 'c h w'], n_components:int) -> Float[ndarray, 'c h w']:
     from sklearn.decomposition import PCA

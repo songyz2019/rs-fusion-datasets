@@ -13,7 +13,7 @@ from .common import DataMetaInfo
 
 def fetch_berlin_ouc(
         url       :Union[str, List[str]]      = 'https://github.com/songyz2019/rs-fusion-datasets-dist/releases/download/v1.0.0/berlin-ouc.zip', 
-        data_home :Optional[Union[Path, str]] = None
+        data_home :Optional[Union[Path, str]] = None,
     ) -> Tuple[
         UInt16[ndarray, '180 1723 476'], 
         Float64[ndarray, '4 1723 476'],
@@ -77,7 +77,7 @@ def fetch_berlin_ouc(
         'license': '',
         'n_channel_hsi': 244,
         'n_channel_dsm': 4,
-        'n_class': 9,
+        'n_class': lbl_train.data.max()+1,
         'width': 1723,
         'height': 476,
         'label_name': {

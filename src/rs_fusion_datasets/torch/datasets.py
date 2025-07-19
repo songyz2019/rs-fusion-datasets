@@ -15,6 +15,8 @@ from ..core._fetch_houston2013_mat import _fetch_houston2013_mat
 from ..util.split_spmatrix import split_spmatrix
 from .common_hsi_dsm_dataset import CommonHsiDsmDataset
 
+
+
 class Houston2018Ouc(CommonHsiDsmDataset):
     def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :str=None, *args, **kwargs):
         """
@@ -90,10 +92,8 @@ class Houston2013Mmr(CommonHsiDsmDataset):
 class _Houston2013Mat(CommonHsiDsmDataset):
     """This is only for internal test."""
     def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url:str=None,*args, **kwargs):
-        if url is None:
-            hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013(data_home=root)
-        else:
-            hsi, dsm, lbl_train, lbl_test, info = _fetch_houston2013_mat(data_home=root, url=url)
+        assert url is not None, "url must be provided for _Houston2013Mat"
+        hsi, dsm, lbl_train, lbl_test, info = _fetch_houston2013_mat(data_home=root, url=url)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
 class _Houston2013Mmrs(Houston2013Mmr):

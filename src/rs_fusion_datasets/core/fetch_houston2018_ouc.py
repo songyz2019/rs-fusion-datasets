@@ -77,7 +77,7 @@ def fetch_houston2018_ouc(
         'license': '',
         'n_channel_hsi': 50,
         'n_channel_dsm': 1,
-        'n_class': 20,
+        'n_class': lbl_train.data.max()+1,
         'width': 4768,
         'height': 1202,
         'label_name': {

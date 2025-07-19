@@ -53,8 +53,7 @@ class Test(unittest.TestCase):
 
 
     def torch_dataloader_test(self, dataset):
-        rgb = hsi2rgb(dataset.hsi, wavelength=dataset.INFO['wavelength'], input_format='CHW', output_format='HWC')
-        skimage.io.imsave(f"dist/torch_{dataset.INFO['name']}_hsi.png", rgb.numpy().astype(np.uint8))
+        skimage.io.imsave(f"dist/torch_{dataset.INFO['name']}_hsi.png", dataset.hsi2rgb().transpose(1, 2, 0))
         for i,dsm in enumerate(dataset.dsm):
             dsm *= 255.0
             skimage.io.imsave(f"dist/torch_{dataset.INFO['name']}_dsm{i}.png", dsm.numpy().astype(np.uint8))

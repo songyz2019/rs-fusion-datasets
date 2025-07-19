@@ -77,7 +77,7 @@ def fetch_augsburg_ouc(
         'license': '',
         'n_channel_hsi': 180,
         'n_channel_dsm': 4,
-        'n_class': 8,
+        'n_class': lbl_train.data.max()+1,
         'width': 485,
         'height': 332,
         'label_name': {
