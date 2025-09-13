@@ -11,7 +11,7 @@ requires-python = ">=3.9"
 license = "Apache-2.0"
 keywords = []
 authors = [
-  { name = "songyz2023", email = "songyz2023dlut@outlook.com" },
+  { name = "songyz2019", email = "songyz2023dlut@outlook.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -33,9 +33,9 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/songyz2023/rs-fusion-datasets#readme"
-Issues = "https://github.com/songyz2023/rs-fusion-datasets/issues"
-Source = "https://github.com/songyz2023/rs-fusion-datasets"
+Documentation = "https://github.com/songyz2019/rs-fusion-datasets#readme"
+Issues = "https://github.com/songyz2019/rs-fusion-datasets/issues"
+Source = "https://github.com/songyz2019/rs-fusion-datasets"
 
 [tool.hatch.version]
 path = "src/rs-fusion-datasets/__about__.py"
