@@ -59,9 +59,12 @@ def normalize(x: Float[ndarray, 'c h w'], axis=(-1,-2,-3)) -> Float[ndarray, 'c 
     x = x.astype(np.float32)
     min_val = np.min(x, axis=axis, keepdims=True)
     max_val = np.max(x, axis=axis, keepdims=True)
-    if min_val == max_val:
-        return x - min_val
-    return (x - min_val) / (max_val - min_val)
+    # This does not work for some edge cases about axis
+    # if min_val == max_val:
+        # return x - min_val
+    result = (x - min_val) / (max_val - min_val)
+    result = np.nan_to_num(result)  # convert NaN to 0
+    return result
 
 def Normalize(axis=(-1,-2,-3)) -> Preprocess:
     """

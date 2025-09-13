@@ -16,7 +16,6 @@ from .util.patchify import patchify
 from .util.split_spmatrix import split_spmatrix
 from .util.fileio import read_roi
 from .util.hsi2rgb import hsi2rgb
-from .util.hsi2pesudo_rgb import hsi2pseudo_rgb
 from .util.transforms import NormalizePerChannel, Normalize, ChannelPCA
 
 __all__ = [
@@ -32,7 +31,6 @@ __all__ = [
     '_fetch_houston2013_mat',
     'DataMetaInfo',
     'hsi2rgb',
-    'hsi2pseudo_rgb',
     'patchify',
     'NormalizePerChannel',
     'Normalize',
