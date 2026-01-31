@@ -7,7 +7,7 @@
 ![GitHub License](https://img.shields.io/github/license/songyz2019/rs-fusion-datasets)
 
 rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint classification of hyperspectral, LiDAR and SAR data. rs-fusion-datasets is a Python package that:
-1. Automatically downloads and load many multimodel remote sensing datasets (houston, muufl, trento, berlin, augsburg, etc.)
+1. Automatically downloads and load many multimodal remote sensing datasets (houston, muufl, trento, berlin, augsburg, etc.)
 2. Provides ready-to-use torch dataloaders
 3. Provides utils for visulization, dataset spilit, benchmark, hsi to rgb, etc.
 
