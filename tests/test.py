@@ -49,14 +49,16 @@ class Test(unittest.TestCase):
                 raise ValueError(f"fetch function {datafetch} should return 4 or 5 or 6 elements, but got {len(r)}")
             self.generate_lbl2rgb(train_label, info, split='train')
             self.generate_lbl2rgb(test_label, info, split='test')
+            self.generate_lbl2rgb(test_label+train_label, info, split='lbl')
 
 
 
     def torch_dataloader_test(self, dataset):
         skimage.io.imsave(f"dist/torch_{dataset.INFO['name']}_hsi.png", dataset.hsi2rgb().transpose(1, 2, 0))
-        for i,dsm in enumerate(dataset.dsm):
+        for i,dsm in enumerate(dataset.DSM):
+            dsm = ( dsm - dsm.min() ) / (dsm.max() - dsm.min())
             dsm *= 255.0
-            skimage.io.imsave(f"dist/torch_{dataset.INFO['name']}_dsm{i}.png", dsm.numpy().astype(np.uint8))
+            skimage.io.imsave(f"dist/torch_{dataset.INFO['name']}_dsm{i}.png", dsm.astype(np.uint8))
 
         b = 8
         dataloader = DataLoader(dataset, batch_size=b, shuffle=True, drop_last=True)
