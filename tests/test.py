@@ -87,7 +87,7 @@ class Test(unittest.TestCase):
         y = np.eye(info['n_class']+1)[truth.todense()].transpose(2, 0, 1) # One Hot
         self.assertEqual(y.shape, (info['n_class']+1, h, w))
 
-        rgb = lbl2rgb(y, info['name'])
+        rgb = lbl2rgb(y, info['palette'])
         self.assertEqual(rgb.shape, (3, h, w))
         self.assertLessEqual(rgb.max(), 255)
         self.assertGreaterEqual(rgb.min(), 0)
