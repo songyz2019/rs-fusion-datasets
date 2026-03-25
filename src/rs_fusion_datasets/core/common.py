@@ -1,5 +1,12 @@
-from typing import Optional, TypedDict
+from typing import NotRequired, Optional, TypedDict
 import numpy as np
+
+DEFAULT_PALETTE  = [
+    "#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0", "#f032e6",
+    "#bcf60c", "#fabebe", "#008080", "#e6beff", "#9a6324", "#fffac8", "#800000", "#aaffc3",
+    "#808000", "#ffd8b1", "#000075", "#808080", "#ffffff", "#000000", "#1f77b4", "#ff7f0e",
+    "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"
+]
 
 class DataMetaInfo(TypedDict):
     """
@@ -27,7 +34,10 @@ class DataMetaInfo(TypedDict):
     height: int
     n_class: int
     label_name: dict[int, str]
+    palette: list[str]
     wavelength: np.ndarray
+    version: NotRequired[str]
+    license: NotRequired[str]
     # n_sample: int
     # n_train_sample: Optional[int]
     # n_val_sample: Optional[int]

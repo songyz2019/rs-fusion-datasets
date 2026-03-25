@@ -8,7 +8,7 @@ from scipy.sparse import coo_array
 from jaxtyping import  UInt16, Float64, UInt8, Int8, Int4
 
 from ..util.fileio import zip_download_and_extract
-from .common import DataMetaInfo
+from .common import DEFAULT_PALETTE, DataMetaInfo
 
 
 def fetch_augsburg_ouc(
@@ -91,7 +91,8 @@ def fetch_augsburg_ouc(
             8: 'Water',
 
         },
-        'wavelength': np.linspace(410, 2500, 180) # TODO: check the wavelength
+        'wavelength': np.linspace(410, 2500, 180), # TODO: check the wavelength
+        'palette': DEFAULT_PALETTE
     }
 
     return hsi.transpose(2,0,1), sar.transpose(2,0,1), lbl_train, lbl_test, lbl_all, info

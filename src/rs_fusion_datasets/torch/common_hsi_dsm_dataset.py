@@ -138,12 +138,14 @@ class CommonHsiDsmDataset(torch.utils.data.Dataset):
         return self.lbl
     
     def benchmarker(self) -> Benchmarker:
-        return Benchmarker(self.lbl, n_class=self.n_class, dataset_name=self.INFO['name'])
-    
+        benchmarker = Benchmarker(self.lbl, n_class=self.n_class)
+        benchmarker.lbl2rgb = self.lbl2rgb # Inject
+        return benchmarker
+
     def lbl2rgb(self, lbl=None, *args, **kwarg):
         if lbl is None:
             lbl = self.lbl
-        return lbl2rgb(lbl, palette=self.INFO['name'], *args, **kwarg)
+        return lbl2rgb(lbl, palette=self.INFO['palette'], *args, **kwarg)
     
     def hsi2rgb(self, hsi=None, to_u8np=True,*args, **kwargs):
         if hsi is None:

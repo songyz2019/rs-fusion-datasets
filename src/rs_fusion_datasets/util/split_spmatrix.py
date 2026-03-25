@@ -21,6 +21,7 @@ def split_spmatrix(a :coo_array, n_sample_perclass :Union[int, float]=100, seed=
     @return: Tuple of train and test sparse matrices in COO format.
     """
     a = a.tocoo()
+
     with fixed_seed_rng(seed) as rng:
         train = coo_array(([],([],[])),a.shape, dtype='int')
         n_class = a.data.max()

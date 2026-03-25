@@ -63,7 +63,9 @@ def _fetch_muufl_mat(
         'width': hsi.shape[1],
         'height': hsi.shape[0],
         'label_name': dict(enumerate(d.sceneLabels.Materials_Type, start=1)),
-        'wavelength': d.info.wavelength
+        'wavelength': d.info.wavelength,
+        'palette': ['forestgreen', 'limegreen', 'lightblue', 'papayawhip', 'red', 'blue', 'purple', 'pink','orangered', 'yellow', 'brown']
+
     }
 
     return hsi.transpose(2,0,1), lidar.transpose(2,0,1), truth, info

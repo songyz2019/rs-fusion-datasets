@@ -9,7 +9,7 @@ from scipy.sparse import coo_array, spmatrix
 from jaxtyping import UInt16, Float32, UInt64
 
 from ..util.fileio import zip_download_and_extract
-from .common import DataMetaInfo
+from .common import DEFAULT_PALETTE, DataMetaInfo
 
 def fetch_houston2018(url :Union[str, List[str]]='http://machinelearning.ee.uh.edu/QZ23es1aMPH/2018IEEE/phase2.zip') -> tuple[
     UInt16[np.ndarray, '144 349 1905'],
@@ -86,7 +86,8 @@ def fetch_houston2018(url :Union[str, List[str]]='http://machinelearning.ee.uh.e
             889.700012,  904.000000,  918.299988,  932.599976,  946.900024,  961.200012,
             975.500000,  989.799988, 1004.200012, 1018.500000, 1032.800049, 1047.099976,
             49.000000,   50.000000
-        ])
+        ]),
+        'palette': DEFAULT_PALETTE
     }
 
     return hsi, dem, lbl, info

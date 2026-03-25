@@ -8,7 +8,7 @@ from scipy.sparse import coo_array
 from jaxtyping import  UInt16, Float32, UInt8, Int8, Int4
 
 from ..util.fileio import zip_download_and_extract
-from .common import DataMetaInfo
+from .common import DEFAULT_PALETTE, DataMetaInfo
 
 
 def fetch_houston2018_ouc(
@@ -112,7 +112,9 @@ def fetch_houston2018_ouc(
             889.700012,  904.000000,  918.299988,  932.599976,  946.900024,  961.200012,
             975.500000,  989.799988, 1004.200012, 1018.500000, 1032.800049, 1047.099976,
             49.000000,   50.000000
-        ])
+        ]),
+        'palette': DEFAULT_PALETTE
+
     }
 
     return hsi.transpose(2,0,1), lidar.transpose(2,0,1), lbl_train, lbl_test, lbl_all, info

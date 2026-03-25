@@ -26,34 +26,10 @@ def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor,scipy.sparse.spmatrix], 'C 
     """
     Convert a label image to a RGB image.
 
-    :param lbl a hw label image, or a chw onehot label image with c=n_class. tensor or numpy array or scipy.sparse are supported. An extra batch dimension is allowed.
+    :param lbl a hw label image, or a chw onehot label image with c=n_class. tensor or numpy array or scipy.sparse are supported. An extra batch dimension is allowed. Label should start form 1. 0 means background.
     :param palette: a tuple of hex color strings, or a preset name. The default is a placeholder palette which works for most datasets with less than 32 classes.
     :return: a 3HW RGB image, uint8, the background is black.
     """
-    placeholder_palette = [
-        "#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0", "#f032e6",
-        "#bcf60c", "#fabebe", "#008080", "#e6beff", "#9a6324", "#fffac8", "#800000", "#aaffc3",
-        "#808000", "#ffd8b1", "#000075", "#808080", "#ffffff", "#000000", "#1f77b4", "#ff7f0e",
-        "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"
-    ]
-    palette_presets = {
-        'houston2013': ('forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan'),
-        'houston2013-mmr': ('forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan'),
-        'houston2013-mat': ('forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan'),
-        'muufl': ('forestgreen', 'limegreen', 'lightblue', 'papayawhip', 'red', 'blue', 'purple', 'pink','orangered', 'yellow', 'brown'),
-        'muufl-mat': ('forestgreen', 'limegreen', 'lightblue', 'papayawhip', 'red', 'blue', 'purple', 'pink','orangered', 'yellow', 'brown'),
-        'trento': ('royalblue','lightblue' , 'limegreen', 'yellow', 'red', 'brown'),
-        'trento-mat': ('royalblue','lightblue' , 'limegreen', 'yellow', 'red', 'brown'),
-        'houston2018-ouc': placeholder_palette, #TODO
-        'augsburg-ouc':    placeholder_palette, #TODO
-        'berlin-ouc':      placeholder_palette, #TODO
-        'default':         placeholder_palette
-    }
-    if palette in palette_presets:
-        palette = palette_presets[palette]
-    elif not isinstance(palette, tuple):
-        warnings.warn(f"palette not in preset, using default palette")
-        palette = placeholder_palette
     
     if isinstance(lbl, torch.Tensor):
         lbl = lbl.cpu().numpy()

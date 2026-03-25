@@ -113,7 +113,9 @@ def fetch_houston2013(
             964.799988,  969.599976,  974.400024,  979.200012,  983.900024,  988.700012,
             993.500000,  998.299988,  1003.099976, 1007.799988, 1012.599976, 1017.400024,
             1022.200012, 1026.900024, 1031.699951, 1036.500000, 1041.300049, 1046.099976
-        ])
+        ]),
+        'palette': ['forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan']
+
     }
 
     return casi, lidar, train_truth, test_truth, info

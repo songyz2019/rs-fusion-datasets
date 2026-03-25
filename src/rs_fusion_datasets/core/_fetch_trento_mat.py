@@ -78,7 +78,8 @@ def _fetch_trento_mat(
             5: "Vineyard",
             6: "Roads"
         },
-        'wavelength': np.linspace(402.89, 989.09, hsi.shape[-1])
+        'wavelength': np.linspace(402.89, 989.09, hsi.shape[-1]),
+        'palette': ['royalblue','lightblue' , 'limegreen', 'yellow', 'red', 'brown']
     }
 
     return hsi.transpose(2,0,1), lidar.transpose(2,0,1), lbl_train, lbl_test, info

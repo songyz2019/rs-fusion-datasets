@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union, Callable
 import warnings
 import numpy as np
 import skimage
@@ -11,17 +11,17 @@ from scipy.sparse import spmatrix
 
 
 class Benchmarker:
-    def __init__(self, truth: spmatrix, n_class: Optional[int] = None, dataset_name: Optional[str] = None, device='cpu', dtype=torch.int):
+    def __init__(self, truth: spmatrix, n_class: Optional[int] = None, device='cpu', dtype=torch.int):
         if n_class is None:
             self.n_class = truth.max().item()
         else:
             self.n_class = n_class
-        self.device = device  # TODO: add device support
-        self.dtype = dtype  # TODO: add device support
+        self.device = device 
+        self.dtype = dtype 
         self.TRUTH = torch.from_numpy(truth.todense()).to(device, self.dtype) # 0==background real_labels starts from 1
-        self.TRUTH[self.TRUTH == -1] = 0 # Well, wierd bug: sometimes truth.todense() returns -1 and sometimes 0
-        self.dataset_name = dataset_name
+        self.TRUTH[self.TRUTH == -1] = 0 # Wierd bug: sometimes truth.todense() returns -1 and sometimes 0
         self.confusion_matrix_enabled = True  # row is truth, column is prediction
+        self.lbl2rgb :Union[None, Callable] = None # this should be injected by external
         self.reset()
 
     def reset(self):
@@ -30,8 +30,12 @@ class Benchmarker:
 
     def predicted_image(self) -> UInt8[Tensor, "C H W"]:
         with torch.no_grad():
-            img = lbl2rgb(self.predict, self.dataset_name)
-            img = (img * 255.0).astype(np.uint8)
+            if self.lbl2rgb is not None:
+                img = self.lbl2rgb(self.TRUTH)
+            else:
+                # Fallback to general colors
+                img = lbl2rgb(self.TRUTH)
+            # img = (img * 255.0).astype(np.uint8) # THIS BUG TAKES ME MONTHS!
             return img
 
     def conf(self, normalize=False) -> UInt8[Tensor, "C C"]:
@@ -112,10 +116,6 @@ class Benchmarker:
             img = skimage.color.label2rgb(img, colors=['green', 'red'], alpha=0.5, bg_label=0, image=underlying, channel_axis=-3)
             img = (img * 255.0).astype(np.uint8)
             return img
-
-    def predict_image(self, *args, **kwargs):
-        warnings.warn("predict_image is deprecated, please use predicted_image instead.", DeprecationWarning)
-        return self.predicted_image(*args, **kwargs)
 
     def confusion_plot(self):
         """
