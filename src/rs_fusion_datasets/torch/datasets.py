@@ -98,8 +98,8 @@ class _Houston2013Mat(CommonHsiDsmDataset):
     def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url:str=None, n_train_perclass:Union[int, float, None]=None,*args, **kwargs):
         assert url is not None, "url must be provided for _Houston2013Mat"
         hsi, dsm, lbl_train, lbl_test, info = _fetch_houston2013_mat(data_home=root, url=url)
-            if n_train_perclass is not None:
-        lbl_train, lbl_test = split_spmatrix(lbl_train+lbl_test, n_train_perclass)
+        if n_train_perclass is not None:
+            lbl_train, lbl_test = split_spmatrix(lbl_train+lbl_test, n_train_perclass)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
 class Muufl(CommonHsiDsmDataset):
