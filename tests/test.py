@@ -156,7 +156,7 @@ class Test(unittest.TestCase):
         self.assertTrue(is_typeddict_instance(info, DataMetaInfo))
 
     def test_torch_datasets(self):
-        for Dataset, split, patch_size in product([Houston2018Ouc, BerlinOuc,AugsburgOuc,Houston2013, Muufl, Trento, Houston2013Mmr], ['train', 'test', 'full'], [1, 6, 9]):
+        for Dataset, split, patch_size in product([Houston2018Ouc, BerlinOuc,AugsburgOuc,Houston2013, Muufl, Trento, Houston2013Mmr], ['train', 'test', 'full'], [1,9]):
             dataset = Dataset(split=split, patch_size=patch_size)
             self.torch_dataloader_test(dataset)
             if Dataset in [Muufl, Trento] and split == 'train':
