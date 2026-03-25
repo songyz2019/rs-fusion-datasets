@@ -1,5 +1,10 @@
-from typing import NotRequired, Optional, TypedDict
+from typing import Optional, TypedDict
 import numpy as np
+# It's ugly, but it's for compatibility
+try:
+    from typing import NotRequired
+except ImportError:
+    from typing_extensions import NotRequired
 
 DEFAULT_PALETTE  = [
     "#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0", "#f032e6",
