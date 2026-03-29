@@ -13,29 +13,29 @@ from scipy.sparse import spmatrix
 class Benchmarker:
     def __init__(self, truth: spmatrix, n_class: Optional[int] = None, device='cpu', dtype=torch.int):
         if n_class is None:
-            self.n_class = truth.max().item()
+            self.n_class :int = truth.max().item()
         else:
-            self.n_class = n_class
+            self.n_class :int = n_class
         self.device = device 
         self.dtype = dtype 
-        self.TRUTH = torch.from_numpy(truth.todense()).to(device, self.dtype) # 0==background real_labels starts from 1
+        self.TRUTH :Tensor = torch.from_numpy(truth.todense()).to(device, self.dtype) # 0==background real_labels starts from 1
         self.TRUTH[self.TRUTH == -1] = 0 # Wierd bug: sometimes truth.todense() returns -1 and sometimes 0
         self.confusion_matrix_enabled = True  # row is truth, column is prediction
-        self.lbl2rgb :Union[None, Callable] = None # this should be injected by external
+        self.lbl2rgb :Union[None, Callable[ Float[Union[np.ndarray,Tensor]], UInt8[Tensor, '... 3 H W']]] = None # this should be injected by external
         self.reset()
 
     def reset(self):
-        self.predict = zeros_like(self.TRUTH, dtype=self.dtype, device=self.device)  # 0==background real_labels starts from 1
-        self.confusion_matrix = zeros((self.n_class, self.n_class), dtype=torch.long, device=self.device)
+        self.predict :Tensor = zeros_like(self.TRUTH, dtype=self.dtype, device=self.device)  # 0==background real_labels starts from 1
+        self.confusion_matrix :Tensor = zeros((self.n_class, self.n_class), dtype=torch.long, device=self.device)
 
     def predicted_image(self) -> UInt8[Tensor, "C H W"]:
         with torch.no_grad():
             if self.lbl2rgb is not None:
-                img = self.lbl2rgb(self.TRUTH)
+                img :UInt8[Tensor, '... 3 H W'] = self.lbl2rgb(self.predict)
             else:
                 # Fallback to general colors
-                img = lbl2rgb(self.TRUTH)
-            # img = (img * 255.0).astype(np.uint8) # THIS BUG TAKES ME MONTHS!
+                img :UInt8[Tensor, '... 3 H W'] = lbl2rgb(self.predict)
+            # img = (img * 255.0).astype(np.uint8) # THIS BUG TAKES ME MONTHS TO FIX!
             return img
 
     def conf(self, normalize=False) -> UInt8[Tensor, "C C"]:

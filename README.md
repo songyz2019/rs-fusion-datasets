@@ -14,7 +14,8 @@ rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint cl
 
 ![screenshot](screenshot.jpg)
 
-> This project is still under development, API is not reiliable before v1.0.0.
+> [!IMPORTANT] 
+> 1. `version <=0.18.3` has a [serious bug](https://github.com/songyz2019/rs-fusion-datasets/releases/tag/v0.18.3) when you're using `benchmarker.predicted_image()`. This is fixed in the later versions.
 
 ## Datasets
 
