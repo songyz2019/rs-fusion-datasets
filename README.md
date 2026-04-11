@@ -12,7 +12,7 @@ rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint cl
 3. Provides utils for visulization, dataset spilit, benchmark, hsi to rgb, etc.
 
 
-![screenshot](screenshot.jpg)
+![screenshot](screenshot.webp)
 
 > [!IMPORTANT] 
 > 1. `version <=0.18.3` has a [serious bug](https://github.com/songyz2019/rs-fusion-datasets/releases/tag/v0.18.3) when you're using `benchmarker.predicted_image()`. This is fixed in the later versions.
