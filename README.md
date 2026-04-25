@@ -22,9 +22,10 @@ rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint cl
 |[Houston 2013](https://machinelearning.ee.uh.edu/?page_id=459)|`fetch_houston2013`|`Houston2013`| HSI,LiDAR | |
 |Trento|`fetch_trento`|`Trento`| HSI,LiDAR | |
 |[MUUFL](https://doi.org/10.5281/zenodo.1186326)|`fetch_muufl`|`Muufl`| HSI,LiDAR | |
-|[Houston 2018](https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/)|`fetch_houston2018_ouc`|`Houston2018Ouc`| HSI,LiDAR | |
-|[Augsburg](https://mediatum.ub.tum.de/1657312)|`fetch_augsburg_ouc`|`AugsburgOuc`| HSI,SAR | aka. MDAS |
-|[Berlin](https://gfzpublic.gfz-potsdam.de/pubman/faces/ViewItemFullPage.jsp?itemId=item_1480927_5)|`fetch_berlin_ouc`|`BerlinOuc`| HSI,SAR | |
+|[Houston 2018](https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/)|`fetch_houston2018_ouc`|`Houston2018Ouc`| HSI,LiDAR | It's the processed version in [DCMNet](https://github.com/oucailab/DCMNet) and may have different channel numbers from the offical one. See [#12](https://github.com/songyz2019/rs-fusion-datasets/issues/12) |
+|[Augsburg](https://mediatum.ub.tum.de/1657312)|`fetch_augsburg_ouc`|`AugsburgOuc`| HSI,SAR | It's the processed version in [DCMNet](https://github.com/oucailab/DCMNet) |
+|[Berlin](https://gfzpublic.gfz-potsdam.de/pubman/faces/ViewItemFullPage.jsp?itemId=item_1480927_5)|`fetch_berlin_ouc`|`BerlinOuc`| HSI,SAR | It's the processed version in [DCMNet](https://github.com/oucailab/DCMNet) |
+
 
 # Known Issues
 > [!IMPORTANT] 
@@ -99,7 +100,7 @@ We welcome all contributions, including issues, pull requests, feature requests 
 
 ## License
 ```text
-Copyright 2023-2025 songyz2019
+Copyright 2023-2026 songyz2019
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -114,54 +115,47 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-## Credits
-```text
-Augsburg:
-The data is publicly available at 10.14459/2022mp1657312. If you use this data set, please cite our paper.
-@article{hu2022mdas,
-  title={MDAS: A New Multimodal Benchmark Dataset for Remote Sensing},
-  author={Hu, Jingliang and Liu, Rong and Hong, Danfeng and Camero, Andr{\'e}s and Yao, Jing and Schneider, Mathias and Kurz, Franz and Segl, Karl and Zhu, Xiao Xiang},
-  journal={Earth System Science Data Discussions},
-  pages={1--26},
-  year={2022},
-  publisher={Copernicus GmbH},
-  doi={10.5194/essd-2022-155}
-}
 
-Berlin:
-Okujeni, A.; Van Der Linden, S.; Hostert, P. Berlin-Urban-Gradient dataset 2009—An EnMAP Preparatory Flight
- Campaign (Datasets); GFZ Data Services: Potsdam, Germany, 2016.
 
-Houston2018: 
-https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/
-The dataset can be downloaded here subject to the terms and conditions listed below. If you wish to use the data, please be sure to email us and provide your Name, Contact information, affiliation (University, research lab etc.), and an acknowledgement that you will cite this dataset and its source appropriately, as well as provide an acknowledgement to the IEEE GRSS IADF and the Hyperspectral Image Analysis Lab at the University of Houston, in any manuscript(s) resulting from it.
+## Acknowledgments
+We gratefully acknowledge the following individuals and organizations for making this project possible:
+- The authors of [DCMNet](https://github.com/oucailab/DCMNet) for making their processed datasets available. Their efforts in significantly minimizing the distribution size made it possible for us to efficiently distribute and utilize the data.
+- The authors of the [Augsburg](https://mediatum.ub.tum.de/1657312) dataset.
+  ```bibtex
+  @article{hu2022mdas,
+    title={MDAS: A New Multimodal Benchmark Dataset for Remote Sensing},
+    author={Hu, Jingliang and Liu, Rong and Hong, Danfeng and Camero, Andr{\'e}s and Yao, Jing and Schneider, Mathias and Kurz, Franz and Segl, Karl and Zhu, Xiao Xiang},
+    journal={Earth System Science Data Discussions},
+    pages={1--26},
+    year={2022},
+    publisher={Copernicus GmbH},
+    doi={10.5194/essd-2022-155}}
+  ```
+- The authors of the [Berlin](https://gfzpublic.gfz-potsdam.de/pubman/faces/ViewItemFullPage.jsp?itemId=item_1480927_5) dataset.
+  ```text
+  Okujeni, A.; Van Der Linden, S.; Hostert, P. Berlin-Urban-Gradient dataset 2009—An EnMAP Preparatory Flight Campaign (Datasets); GFZ Data Services: Potsdam, Germany, 2016.
+  ```
+- The authors of the [Houston 2018](https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/) dataset.
+  ```text
+  The dataset can be downloaded here subject to the terms and conditions listed below. If you wish to use the data, please be sure to email us and provide your Name, Contact information, affiliation (University, research lab etc.), and an acknowledgement that you will cite this dataset and its source appropriately, as well as provide an acknowledgement to the IEEE GRSS IADF and the Hyperspectral Image Analysis Lab at the University of Houston, in any manuscript(s) resulting from it.
+  ```
+- The authors of the [Houston2013](https://machinelearning.ee.uh.edu/?page_id=459) dataset. The `2013_IEEE_GRSS_DF_Contest_Samples_VA.txt` in this repo is exported from original `2013_IEEE_GRSS_DF_Contest_Samples_VA.roi`.
+  ```text
+  The dataset was collected by NCALM at the University of Houston (UH) in June 2012, covering the University of Houston campus. The data was prepared and pre-processed with the assistance of Xiong Zhou, Minshan Cui, Abhinav Singhania and Dr. Juan Carlos Fernández Díaz.
+  The Data Fusion Technical Committee would like to express its great appreciation to NCALM for providing the data, to UH students, staff and faculty for preparing the data, and to GRSS and DigitalGlobe Inc. for their continuous support in providing funding and resources for the Data Fusion Contest.
+  ```
+- The authors of the [Muufl](https://doi.org/10.5281/zenodo.1186326) dataset.
+  ```text
+  Note: If this data is used in any publication or presentation the following reference must be cited:
+  P. Gader, A. Zare, R. Close, J. Aitken, G. Tuell, “MUUFL Gulfport Hyperspectral and LiDAR Airborne Data Set,” University of Florida, Gainesville, FL, Tech. Rep. REP-2013-570, Oct. 2013.
+  If the scene labels are used in any publication or presentation, the following reference must be cited:
+  X. Du and A. Zare, “Technical Report: Scene Label Ground Truth Map for MUUFL Gulfport Data Set,” University of Florida, Gainesville, FL, Tech. Rep. 20170417, Apr. 2017. Available: http://ufdc.ufl.edu/IR00009711/00001.
+  If any of this scoring or detection code is used in any publication or presentation, the following reference must be cited:
+  T. Glenn, A. Zare, P. Gader, D. Dranishnikov. (2016). Bullwinkle: Scoring Code for Sub-pixel Targets (Version 1.0) [Software]. Available from https://github.com/GatorSense/MUUFLGulfport/.
+  ```
+- The authors of the Trento dataset. Dafault url of Trento dataset is `https://github.com/tyust-dayu/Trento/tree/b4afc449ce5d6936ddc04fe267d86f9f35536afd`
+- The authors of [S2ENet](https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit/) for making their processed Houston 2013 dataset available. 
+- GitHub for hosting some dataset files. [rs-fusion-datasets-dist](https://github.com/songyz2019/rs-fusion-datasets-dist) host some dataset files that are public available for download but have no direct link found for automatically downloading (for example, the author uploads it via net disk apps). The suffix of dataset is only an 3-character UID. I upload these dataset AS IS, without editing anything, making sure it is just a mirror.
+- The authors of [torchgeo](https://github.com/torchgeo/torchgeo). This project is inspired by torchgeo
+- The authors of [torchrs](https://github.com/isaaccorley/torchrs). This project is inspired by torchrs
 
-Houston2013: 
-https://machinelearning.ee.uh.edu/?page_id=459
-The 2013_IEEE_GRSS_DF_Contest_Samples_VA.txt in this repo is exported from original 2013_IEEE_GRSS_DF_Contest_Samples_VA.roi.
-The dataset was collected by NCALM at the University of Houston (UH) in June 2012, covering the University of Houston campus. The data was prepared and pre-processed with the assistance of Xiong Zhou, Minshan Cui, Abhinav Singhania and Dr. Juan Carlos Fernández Díaz.
-The Data Fusion Technical Committee would like to express its great appreciation to NCALM for providing the data, to UH students, staff and faculty for preparing the data, and to GRSS and DigitalGlobe Inc. for their continuous support in providing funding and resources for the Data Fusion Contest.
-
-Muufl:
-https://github.com/GatorSense/MUUFLGulfport
-Note: If this data is used in any publication or presentation the following reference must be cited:
-P. Gader, A. Zare, R. Close, J. Aitken, G. Tuell, “MUUFL Gulfport Hyperspectral and LiDAR Airborne Data Set,” University of Florida, Gainesville, FL, Tech. Rep. REP-2013-570, Oct. 2013.
-If the scene labels are used in any publication or presentation, the following reference must be cited:
-X. Du and A. Zare, “Technical Report: Scene Label Ground Truth Map for MUUFL Gulfport Data Set,” University of Florida, Gainesville, FL, Tech. Rep. 20170417, Apr. 2017. Available: http://ufdc.ufl.edu/IR00009711/00001.
-If any of this scoring or detection code is used in any publication or presentation, the following reference must be cited:
-T. Glenn, A. Zare, P. Gader, D. Dranishnikov. (2016). Bullwinkle: Scoring Code for Sub-pixel Targets (Version 1.0) [Software]. Available from https://github.com/GatorSense/MUUFLGulfport/.
-
-Trento:
-Dafault url of Trento dataset is https://github.com/tyust-dayu/Trento/tree/b4afc449ce5d6936ddc04fe267d86f9f35536afd
-
-About GitHub hosted dataset in rs-fusion-datasets-dist:
-All datasets are public available for download but I can't find any direct link for automatically loading (for example, the author uploads it via net disk apps).
-The suffix of dataset is only an 3-character UID. I upload these dataset AS IS, without editing anything, and make sure it is just a mirror.
-`augsburg-ouc`: From https://github.com/oucailab/DCMNet/
-`berlin-ouc`: From https://github.com/oucailab/DCMNet/
-`houston2018-ouc`: From https://github.com/oucailab/DCMNet/
-`houston2013-mmr`: From: https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit/
-
-Inspiration
-This project is inspired by torchgeo and torchrs
-```
