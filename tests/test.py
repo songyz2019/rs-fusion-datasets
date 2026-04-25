@@ -166,6 +166,20 @@ class Test(unittest.TestCase):
     def test_datahome(self):
         fetch_trento(data_home='./tmp/')
         Trento(split='train', patch_size=5, root='./tmp/')
+
+
+    def test_cross_verify_houston(self):
+        hsi,dsm,tr,va,info = fetch_houston2013()
+        hsi_mmr,dsm_mmr,tr_mmr,va_mmr,info_mmr = fetch_houston2013_mmr()
+        print(tr.max(), tr_mmr.max())
+        print(tr.min(), tr_mmr.min())
+        print(tr.dtype, tr_mmr.dtype)
+        self.assertEqual(hsi.shape , hsi_mmr.shape)
+        self.assertEqual(dsm.shape , dsm_mmr.shape)
+        self.assertEqual(tr.shape , tr_mmr.shape)
+        self.assertTrue((tr.todense()==tr_mmr.todense()).all())
+        self.assertEqual(len(tr.data), 2832)        
+        self.assertEqual(len(va.data), 12197)       
                     
 
 if __name__ == '__main__':

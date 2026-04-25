@@ -31,10 +31,10 @@ def read_roi(path :Path, shape :Tuple[int, int]) -> UInt16[sparray, 'h w']:
     Read the txt file exported by ENVI software for roi, and get a sparse matrix image
 
     :param path: File path
-    :return: An coo_array image representing the ROI file
+    :return: An int coo_array image representing the ROI file
     """
-    
-    img = coo_array(shape, dtype='uint16')
+
+    img = coo_array(shape, dtype='int')
     cid = 0 # Class ID, start from 1, 0 is for background
     sid = 0 # Sample ID
     with open(path, 'r') as file:
@@ -46,7 +46,9 @@ def read_roi(path :Path, shape :Tuple[int, int]) -> UInt16[sparray, 'h w']:
                 continue
 
             sid,x,y = int(parts[0]),int(parts[1]),int(parts[2])
-
+            x -= 1 # ENVI's coordinate starts from 1, but we want it to start from 0
+            y -= 1
+            
             if sid == 1: # Use sid to separate different blocks of points, which is more robust than the magick string in the original code
                 cid += 1
             

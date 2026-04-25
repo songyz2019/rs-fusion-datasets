@@ -67,6 +67,4 @@ def _fetch_muufl_mat(
     return hsi.transpose(2,0,1), lidar.transpose(2,0,1), truth, info
 
 
-
-
 __all__ = ['fetch_muufl', 'split_spmatrix']

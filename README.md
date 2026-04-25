@@ -14,8 +14,6 @@ rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint cl
 
 ![screenshot](screenshot.webp)
 
-> [!IMPORTANT] 
-> 1. `version <=0.18.3` has a [serious bug](https://github.com/songyz2019/rs-fusion-datasets/releases/tag/v0.18.3) when you're using `benchmarker.predicted_image()`. This is fixed in the later versions.
 
 ## Datasets
 
@@ -28,7 +26,10 @@ rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint cl
 |[Augsburg](https://mediatum.ub.tum.de/1657312)|`fetch_augsburg_ouc`|`AugsburgOuc`| HSI,SAR | aka. MDAS |
 |[Berlin](https://gfzpublic.gfz-potsdam.de/pubman/faces/ViewItemFullPage.jsp?itemId=item_1480927_5)|`fetch_berlin_ouc`|`BerlinOuc`| HSI,SAR | |
 
-
+# Known Issues
+> [!IMPORTANT] 
+> 1. `version <=0.18.3` has a [serious bug](https://github.com/songyz2019/rs-fusion-datasets/releases/tag/v0.18.3) when using `benchmarker.predicted_image()`. This is fixed in the later versions.
+> 2. `version <= 0.18.4` has a [critical bug](https://github.com/songyz2019/rs-fusion-datasets/issues/14) when using `fetch_houston2013` and `Houston2013` with 30 samples not loaded. `fetch_houston2013_mmr` and `Houston2013Mmr` is not affected. This is fixed in the later versions.
 
 ## Quick Start
 ### Install
