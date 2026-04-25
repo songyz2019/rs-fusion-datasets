@@ -131,9 +131,10 @@ class _MuuflMat(CommonHsiDsmDataset):
     """
     def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, url:str=None, *args, **kwargs):
         if url is None:
-            hsi, dsm, lbl_train, lbl_test, info = _fetch_muufl_mat(data_home=root)
+            hsi, dsm, lbl, info = _fetch_muufl_mat(data_home=root)
         else:
-            hsi, dsm, lbl_train, lbl_test, info = _fetch_muufl_mat(data_home=root, url=url)
+            hsi, dsm, lbl, info = _fetch_muufl_mat(data_home=root, url=url)
+        lbl_train, lbl_test = split_spmatrix(lbl, n_train_perclass)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)        
 
 class Trento(CommonHsiDsmDataset):

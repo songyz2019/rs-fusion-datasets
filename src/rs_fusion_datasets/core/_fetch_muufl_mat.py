@@ -5,14 +5,15 @@ from numpy import ndarray
 import scipy.io
 
 from scipy.sparse import coo_array
-from ..util.fileio import zip_download_and_extract
+from ..util.fileio import zip_download_and_extract, load_one_key_mat
 from .common import DataMetaInfo
 from jaxtyping import  UInt16, Float32, UInt8, Float64
+import numpy as np
 
 
 
 def _fetch_muufl_mat(
-        url :Union[str, List[str]]='http://10.7.36.2:5000/dataset/muufl_mat.zip', 
+        url :Union[str, List[str]]='http://10.7.13.126:5000/dataset/muufl_mat.zip', 
         data_home:Optional[Union[Path, str]]=None
         ) -> Tuple[
         Float32[ndarray, '64 325 220'], 
@@ -30,26 +31,21 @@ def _fetch_muufl_mat(
     """
 
     basedir = zip_download_and_extract('muufl-mat', url, {
-        'muufl-mat.zip'       : '95cd1235a5f02df69cd384de5fb83d0d14fa37ac5776081caf9d477368e9a291',
-        'muufl_mat/HSI.mat'   : 'adf5934333753b2e05cf244392b43d86b432aa8dac039964ce1f409c96c65edd',
-        'muufl_mat/labels.mat': 'a114cec5f9b51c91fac3041426a7142e6dbc0e6d895af9b3b5cf7819e7c415b0',
-        'muufl_mat/Lidar.mat' : '31a9f7d6b2e9ab6507304c72b7b99ec975565fd5961ea9523827443690bb7194'
+        'muufl-mat.zip'       : '985a764108c9ee924dd6888e60d70875cc2f30743215bfe6821bfa2a78612434',
+        'MUUFL/HSI.mat'   : 'adf5934333753b2e05cf244392b43d86b432aa8dac039964ce1f409c96c65edd',
+        'MUUFL/labels.mat': 'a114cec5f9b51c91fac3041426a7142e6dbc0e6d895af9b3b5cf7819e7c415b0',
+        'MUUFL/Lidar.mat' : '31a9f7d6b2e9ab6507304c72b7b99ec975565fd5961ea9523827443690bb7194'
     }, data_home=data_home)
 
-    hsi :Float32[ndarray, '325 220 64'] = scipy.io.loadmat(
-        basedir / 'muufl_mat/HSI.mat',
-        squeeze_me=True,
-        mat_dtype=True,
-        struct_as_record=False
-    )['HSI']
-    lidar :Float32[ndarray, '325 220 2'] = scipy.io.loadmat(
-        basedir / 'muufl_mat/Lidar.mat',
-        squeeze_me=True,
-        mat_dtype=True,
-        struct_as_record=False
-    )['Lidar']
-    truth :Float64[ndarray, '325 220'] = d.sceneLabels.labels
-    truth[truth==-1] = 0
+    hsi :Float32[ndarray, '325 220 64'] = load_one_key_mat(
+        basedir / 'MUUFL/HSI.mat'
+    )
+    lidar :Float32[ndarray, '325 220 2'] = load_one_key_mat(
+        basedir / 'MUUFL/Lidar.mat'
+    )
+    truth :Float64[ndarray, '325 220'] = load_one_key_mat(
+        basedir / 'MUUFL/labels.mat'
+    )
     truth = coo_array(truth, dtype='int')
     info :DataMetaInfo = {
         'name': 'muufl-mat',
@@ -59,11 +55,11 @@ def _fetch_muufl_mat(
         'license': 'MIT',
         'n_channel_hsi': hsi.shape[-1],
         'n_channel_dsm': lidar.shape[-1],
-        'n_class': d.sceneLabels.Materials_Type.size,
+        'n_class': 11,
         'width': hsi.shape[1],
         'height': hsi.shape[0],
-        'label_name': dict(enumerate(d.sceneLabels.Materials_Type, start=1)),
-        'wavelength': d.info.wavelength,
+        'label_name': ['Trees', 'Grass Pure', 'Grass Groundsurface', 'Dirt and Sand', 'Road Materials', 'Water', 'Shadow Building', 'Buildings', 'Sidewalk', 'Yellowcurb', 'Cloth Panels'],
+        'wavelength': np.linspace(400, 1000, hsi.shape[-1]),
         'palette': ['forestgreen', 'limegreen', 'lightblue', 'papayawhip', 'red', 'blue', 'purple', 'pink','orangered', 'yellow', 'brown']
 
     }

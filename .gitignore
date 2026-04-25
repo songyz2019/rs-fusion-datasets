@@ -18,3 +18,5 @@ tmp/
 
 result_*.png
 runs/
+
+private/

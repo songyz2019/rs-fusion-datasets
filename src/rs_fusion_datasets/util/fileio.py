@@ -26,56 +26,87 @@ def get_data_home(data_home :Optional[Union[Path, str]]=None) -> Path:
     data_home.mkdir(parents=True, exist_ok=True)
     return data_home
 
-
 def read_roi(path :Path, shape :Tuple[int, int]) -> UInt16[sparray, 'h w']:
     """
-    读取ENVI软件导出roi文件得到的txt文件,得到一个稀疏矩阵图像
+    Read the txt file exported by ENVI software for roi, and get a sparse matrix image
 
-    用起来像字典
-
-    :param path: 文件路径
-    :return: An coo_array image representing the ROI
+    :param path: File path
+    :return: An coo_array image representing the ROI file
     """
-    warnings.simplefilter("ignore", category=UserWarning) # Supress loadtxt's warning when data is empty
-
-    img = coo_array(shape, dtype='uint16')
-    buf = ""
-    cid = 1
     
-    with open(path, 'r') as f:
-        for line in f:
-            # Comments
-            if line.startswith(";") or line.isspace():
+    img = coo_array(shape, dtype='uint16')
+    cid = 0 # Class ID, start from 1, 0 is for background
+    sid = 0 # Sample ID
+    with open(path, 'r') as file:
+        for line in file:
+            if line.startswith(";") or not line.strip():
+                continue
+            parts = line.split()
+            if len(parts) <= 2:
                 continue
 
-            # Seprator
-            if line.lstrip().startswith("1 "): # magick string for compatibility
-                data=np.loadtxt(StringIO(buf), usecols=(2, 1), comments=';', dtype='uint16', converters=float)
-                buf = ""
-                if data.size > 0:
-                    rows,cols = data.T
-                    vals = cid*np.ones_like(rows)
-                    cid += 1
-                    # breakpoint()
-                    img += coo_array((vals,(rows,cols)), shape=shape) # There may be duplicate points in roi file, so these steps are essential
-                    img.data[img.data>cid] = 0  # 清除重复像素点
-            # Data
-            else:
-                buf += line
+            sid,x,y = int(parts[0]),int(parts[1]),int(parts[2])
 
-        # Read last block  
-        if buf!="":
-            data=np.loadtxt(StringIO(buf), usecols=(2, 1), comments=';', dtype='uint16')
-            buf = ""
-            if data.size > 0:
-                rows,cols = data.T
-                vals = cid*np.ones_like(rows)
-                img += coo_array((vals,(rows,cols)), shape=shape)
+            if sid == 1: # Use sid to separate different blocks of points, which is more robust than the magick string in the original code
+                cid += 1
+            
+            assert img[y,x] == 0, f"Duplicate point in roi file: ({x}, {y})"
 
-
-    warnings.resetwarnings()
-
+            img[y,x] = cid
+        
     return img.tocoo()
+
+
+
+# def read_roi(path :Path, shape :Tuple[int, int]) -> UInt16[sparray, 'h w']:
+#     """
+#     读取ENVI软件导出roi文件得到的txt文件,得到一个稀疏矩阵图像
+
+#     用起来像字典
+
+#     :param path: 文件路径
+#     :return: An coo_array image representing the ROI
+#     """
+#     warnings.simplefilter("ignore", category=UserWarning) # Supress loadtxt's warning when data is empty
+
+#     img = coo_array(shape, dtype='uint16')
+#     buf = ""
+#     cid = 1
+    
+#     with open(path, 'r') as f:
+#         for line in f:
+#             # Comments
+#             if line.startswith(";") or line.isspace():
+#                 continue
+
+#             # Seprator
+#             if line.lstrip().startswith("1 "): # magick string for compatibility
+#                 data=np.loadtxt(StringIO(buf), usecols=(2, 1), comments=';', dtype='uint16', converters=float)
+#                 buf = ""
+#                 if data.size > 0:
+#                     rows,cols = data.T
+#                     vals = cid*np.ones_like(rows)
+#                     cid += 1
+#                     # breakpoint()
+#                     img += coo_array((vals,(rows,cols)), shape=shape) # There may be duplicate points in roi file, so these steps are essential
+#                     img.data[img.data>cid] = 0  # 清除重复像素点
+#             # Data
+#             else:
+#                 buf += line
+
+#         # Read last block  
+#         if buf!="":
+#             data=np.loadtxt(StringIO(buf), usecols=(2, 1), comments=';', dtype='uint16')
+#             buf = ""
+#             if data.size > 0:
+#                 rows,cols = data.T
+#                 vals = cid*np.ones_like(rows)
+#                 img += coo_array((vals,(rows,cols)), shape=shape)
+
+
+#     warnings.resetwarnings()
+
+#     return img.tocoo()
 
 def verify_file(path: Path, expected_sha256: str) -> bool:
     def _quick_sha256(path):
