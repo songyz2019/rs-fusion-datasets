@@ -12,7 +12,7 @@ from zipfile import ZipFile
 import numpy as np
 import scipy
 from scipy.sparse import coo_array, sparray
-from jaxtyping import UInt16
+from jaxtyping import Int
 import urllib
 
 
@@ -26,7 +26,7 @@ def get_data_home(data_home :Optional[Union[Path, str]]=None) -> Path:
     data_home.mkdir(parents=True, exist_ok=True)
     return data_home
 
-def read_roi(path :Path, shape :Tuple[int, int]) -> UInt16[sparray, 'h w']:
+def read_roi(path :Path, shape :Tuple[int, int]) -> Int[sparray, 'h w']:
     """
     Read the txt file exported by ENVI software for roi, and get a sparse matrix image
 
@@ -34,7 +34,7 @@ def read_roi(path :Path, shape :Tuple[int, int]) -> UInt16[sparray, 'h w']:
     :return: An int coo_array image representing the ROI file
     """
 
-    img = coo_array(shape, dtype='int')
+    img = np.zeros(shape, dtype='int')
     cid = 0 # Class ID, start from 1, 0 is for background
     sid = 0 # Sample ID
     with open(path, 'r') as file:
@@ -48,7 +48,7 @@ def read_roi(path :Path, shape :Tuple[int, int]) -> UInt16[sparray, 'h w']:
             sid,x,y = int(parts[0]),int(parts[1]),int(parts[2])
             x -= 1 # ENVI's coordinate starts from 1, but we want it to start from 0
             y -= 1
-            
+
             if sid == 1: # Use sid to separate different blocks of points, which is more robust than the magick string in the original code
                 cid += 1
             
@@ -56,7 +56,7 @@ def read_roi(path :Path, shape :Tuple[int, int]) -> UInt16[sparray, 'h w']:
 
             img[y,x] = cid
         
-    return img.tocoo()
+    return coo_array(img, dtype='int')
 
 
 
