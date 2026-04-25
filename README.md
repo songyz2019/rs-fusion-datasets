@@ -17,14 +17,15 @@ rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint cl
 
 ## Datasets
 
-|Dataset|Fetcher Function|Torch Dataset | Bands | Note|
-|---|---|---|---|---|
-|[Houston 2013](https://machinelearning.ee.uh.edu/?page_id=459)|`fetch_houston2013`|`Houston2013`| HSI,LiDAR | |
-|Trento|`fetch_trento`|`Trento`| HSI,LiDAR | |
-|[MUUFL](https://doi.org/10.5281/zenodo.1186326)|`fetch_muufl`|`Muufl`| HSI,LiDAR | |
-|[Houston 2018](https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/)|`fetch_houston2018_ouc`|`Houston2018Ouc`| HSI,LiDAR | It's the processed version in [DCMNet](https://github.com/oucailab/DCMNet) and may have different channel numbers from the offical one. See [#12](https://github.com/songyz2019/rs-fusion-datasets/issues/12) |
-|[Augsburg](https://mediatum.ub.tum.de/1657312)|`fetch_augsburg_ouc`|`AugsburgOuc`| HSI,SAR | It's the processed version in [DCMNet](https://github.com/oucailab/DCMNet) |
-|[Berlin](https://gfzpublic.gfz-potsdam.de/pubman/faces/ViewItemFullPage.jsp?itemId=item_1480927_5)|`fetch_berlin_ouc`|`BerlinOuc`| HSI,SAR | It's the processed version in [DCMNet](https://github.com/oucailab/DCMNet) |
+|Dataset|Source|Fetcher Function|Torch Dataset | Modals | Note |
+|---|---|---|---|---|---|
+|[Houston 2013](https://machinelearning.ee.uh.edu/?page_id=459)| [Official Website](https://machinelearning.ee.uh.edu/?page_id=459) |`fetch_houston2013`|`Houston2013`| HSI,LiDAR |  |
+|[Houston 2013](https://machinelearning.ee.uh.edu/?page_id=459)| [S2ENet](https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit/) |`fetch_houston2013_mmr`|`Houston2013Mmr`| HSI,LiDAR | |
+|Trento| [tyust-dayu](https://github.com/tyust-dayu/Trento/tree/b4afc449ce5d6936ddc04fe267d86f9f35536afd) |`fetch_trento`|`Trento`| HSI,LiDAR | |
+|[MUUFL](https://doi.org/10.5281/zenodo.1186326)| [Official GitHub](https://github.com/GatorSense/MUUFLGulfport/tree/v0.1) |`fetch_muufl`|`Muufl`| HSI,LiDAR | |
+|[Houston 2018](https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/)| [DCMNet](https://github.com/oucailab/DCMNet) |`fetch_houston2018_ouc`|`Houston2018Ouc`| HSI,LiDAR | May have [different channel numbers](https://github.com/songyz2019/rs-fusion-datasets/issues/12) |
+|[Augsburg](https://mediatum.ub.tum.de/1657312)|[DCMNet](https://github.com/oucailab/DCMNet)|`fetch_augsburg_ouc`|`AugsburgOuc`| HSI,SAR |  |
+|[Berlin](https://gfzpublic.gfz-potsdam.de/pubman/faces/ViewItemFullPage.jsp?itemId=item_1480927_5)|[DCMNet](https://github.com/oucailab/DCMNet)|`fetch_berlin_ouc`|`BerlinOuc`| HSI,SAR |  |
 
 
 # Known Issues
@@ -120,6 +121,7 @@ limitations under the License.
 ## Acknowledgments
 We gratefully acknowledge the following individuals and organizations for making this project possible:
 - The authors of [DCMNet](https://github.com/oucailab/DCMNet) for making their processed datasets available. Their efforts in significantly minimizing the distribution size made it possible for us to efficiently distribute and utilize the data.
+- The authors of [S2ENet](https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit/) for making their processed Houston 2013 dataset available. 
 - The authors of the [Augsburg](https://mediatum.ub.tum.de/1657312) dataset.
   ```bibtex
   @article{hu2022mdas,
@@ -154,7 +156,6 @@ We gratefully acknowledge the following individuals and organizations for making
   T. Glenn, A. Zare, P. Gader, D. Dranishnikov. (2016). Bullwinkle: Scoring Code for Sub-pixel Targets (Version 1.0) [Software]. Available from https://github.com/GatorSense/MUUFLGulfport/.
   ```
 - The authors of the Trento dataset. Dafault url of Trento dataset is `https://github.com/tyust-dayu/Trento/tree/b4afc449ce5d6936ddc04fe267d86f9f35536afd`
-- The authors of [S2ENet](https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit/) for making their processed Houston 2013 dataset available. 
 - GitHub for hosting some dataset files. [rs-fusion-datasets-dist](https://github.com/songyz2019/rs-fusion-datasets-dist) host some dataset files that are public available for download but have no direct link found for automatically downloading (for example, the author uploads it via net disk apps). The suffix of dataset is only an 3-character UID. I upload these dataset AS IS, without editing anything, making sure it is just a mirror.
 - The authors of [torchgeo](https://github.com/torchgeo/torchgeo). This project is inspired by torchgeo
 - The authors of [torchrs](https://github.com/isaaccorley/torchrs). This project is inspired by torchrs
