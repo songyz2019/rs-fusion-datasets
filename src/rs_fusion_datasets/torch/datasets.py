@@ -18,7 +18,7 @@ from .common_hsi_dsm_dataset import CommonHsiDsmDataset
 
 
 class Houston2018Ouc(CommonHsiDsmDataset):
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :str=None, *args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :Optional[str]=None, *args, **kwargs):
         """
         A preprocessed torch dataset for Houston 2018 (ouc) dataset.
 
@@ -41,7 +41,7 @@ class BerlinOuc(CommonHsiDsmDataset):
     :param patch_size: The size of patches. Default is 5.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :str=None, *args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :Optional[str]=None, *args, **kwargs):
         if url is None:
             hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_berlin_ouc(data_home=root)
         else:
@@ -57,7 +57,7 @@ class AugsburgOuc(CommonHsiDsmDataset):
     :param patch_size: The size of patches. Default is 5.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :str = None,*args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :Optional[str] = None,*args, **kwargs):
         if url is None:
             hsi, dsm, lbl_train, lbl_test, lbl_all,info = fetch_augsburg_ouc(data_home=root)
         else:
@@ -73,7 +73,7 @@ class Houston2013(CommonHsiDsmDataset):
     :param patch_size: The size of patches. Default is 5.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :str=None, n_train_perclass:Union[int, float, None]=None,*args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :Optional[str]=None, n_train_perclass:Union[int, float, None]=None,*args, **kwargs):
         if url is None:
             hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013(data_home=root)
         else:
@@ -84,18 +84,18 @@ class Houston2013(CommonHsiDsmDataset):
 
 class Houston2013Mmr(CommonHsiDsmDataset):
     """This is only for internal test."""
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :str=None, url_lbl_val:str=None, n_train_perclass:Union[int, float, None]=None,*args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url :Optional[str]=None, n_train_perclass:Union[int, float, None]=None,*args, **kwargs):
         if url is None:
             hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013_mmr(data_home=root)
         else:
-            hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013_mmr(data_home=root, url=url, url_lbl_val=url_lbl_val)
+            hsi, dsm, lbl_train, lbl_test, info = fetch_houston2013_mmr(data_home=root, url=url)
         if n_train_perclass is not None:
             lbl_train, lbl_test = split_spmatrix(lbl_train+lbl_test, n_train_perclass)
         super().__init__(hsi, dsm, lbl_train, lbl_test, info, split, patch_size, *args, **kwargs)
 
 class _Houston2013Mat(CommonHsiDsmDataset):
     """This is only for internal test."""
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url:str=None, n_train_perclass:Union[int, float, None]=None,*args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, url:Optional[str]=None, n_train_perclass:Union[int, float, None]=None,*args, **kwargs):
         assert url is not None, "url must be provided for _Houston2013Mat"
         hsi, dsm, lbl_train, lbl_test, info = _fetch_houston2013_mat(data_home=root, url=url)
         if n_train_perclass is not None:
@@ -111,7 +111,7 @@ class Muufl(CommonHsiDsmDataset):
     :param n_train_perclass: The number of training samples per class. Default is 100.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, url:str=None,*args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, url:Optional[str]=None,*args, **kwargs):
         if url is None:
             hsi, dsm, lbl, info = fetch_muufl(data_home=root)
         else:
@@ -129,7 +129,7 @@ class _MuuflMat(CommonHsiDsmDataset):
     :param n_train_perclass: The number of training samples per class. Default is 100.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, url:str=None, *args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, url:Optional[str]=None, *args, **kwargs):
         if url is None:
             hsi, dsm, lbl, info = _fetch_muufl_mat(data_home=root)
         else:
@@ -146,7 +146,7 @@ class Trento(CommonHsiDsmDataset):
     :param n_train_perclass: The number of training samples per class. Default is 100.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, url:str=None, *args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, url:Optional[str]=None, *args, **kwargs):
         if url is None:
             hsi, dsm, lbl, info = fetch_trento(data_home=root)
         else:
@@ -162,7 +162,7 @@ class _TrentoMat(CommonHsiDsmDataset):
     :param patch_size: The size of patches. Default is 5.
     :param root: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
     """
-    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None,  url:str=None, *args, **kwargs):
+    def __init__(self, split: Literal['train', 'test', 'full'], patch_size=5, root :Optional[Union[Path,str]]=None, n_train_perclass:Union[int, float]=100, url:Optional[str]=None, *args, **kwargs):
         if url is None:
             hsi, dsm, lbl_train, lbl_test, info = _fetch_trento_mat(data_home=root)
         else:

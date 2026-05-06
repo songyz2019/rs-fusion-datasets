@@ -19,8 +19,8 @@ def fetch_houston2013(
 ) -> tuple[
     UInt16[np.ndarray, '144 349 1905'],
     Float32[np.ndarray, '1 349 1905'],
-    UInt64[spmatrix, '349 1905'],
-    UInt64[spmatrix, '349 1905'],
+    UInt64[coo_array, '349 1905'],
+    UInt64[coo_array, '349 1905'],
     DataMetaInfo
 ]:
     """Fetch and load the Houston2013 dataset.
@@ -114,7 +114,7 @@ def fetch_houston2013(
             993.500000,  998.299988,  1003.099976, 1007.799988, 1012.599976, 1017.400024,
             1022.200012, 1026.900024, 1031.699951, 1036.500000, 1041.300049, 1046.099976
         ]),
-        'palette': ['forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan']
+        'palette': ('forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan')
 
     }
 

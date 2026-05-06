@@ -26,7 +26,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "jaxtyping>=0.3.0",
+  "jaxtyping>=0.2.0",
   "numpy>=1.24.0",
   "scipy>=1.10.0",
   "rasterio>=1.2.0",

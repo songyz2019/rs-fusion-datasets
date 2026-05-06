@@ -5,7 +5,7 @@ from typing import List, Union,Optional
 from pathlib import Path
 
 import numpy as np
-from scipy.sparse import coo_array, spmatrix
+from scipy.sparse import coo_array
 from jaxtyping import UInt16, Float32, UInt64, Float64
 
 from ..util.fileio import load_one_key_mat, zip_download_and_extract
@@ -17,8 +17,8 @@ def _fetch_houston2013_mat(
 ) -> tuple[
     UInt16[np.ndarray, '144 349 1905'],
     Float32[np.ndarray, '1 349 1905'],
-    UInt16[spmatrix, '349 1905'],
-    UInt16[spmatrix, '349 1905'],
+    UInt16[coo_array, '349 1905'],
+    UInt16[coo_array, '349 1905'],
     DataMetaInfo
 ]:
     """Fetch and load the Houston2013 dataset.
@@ -116,7 +116,7 @@ def _fetch_houston2013_mat(
             993.500000,  998.299988,  1003.099976, 1007.799988, 1012.599976, 1017.400024,
             1022.200012, 1026.900024, 1031.699951, 1036.500000, 1041.300049, 1046.099976
         ]),
-        'palette': ['forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan']
+        'palette': ('forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan')
     }
 
     return hsi.transpose(2,0,1), lidar.transpose(2,0,1), lbl_train, lbl_test, info

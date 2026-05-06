@@ -6,14 +6,15 @@ import re
 from typing import List, Union, Optional, Tuple, Dict
 import warnings
 import hashlib
-from io import StringIO
 from zipfile import ZipFile
 
 import numpy as np
 import scipy
-from scipy.sparse import coo_array, sparray
+from scipy.sparse import coo_array
 from jaxtyping import Int
 import urllib
+import urllib.request
+import urllib.error
 
 
 def get_data_home(data_home :Optional[Union[Path, str]]=None) -> Path:
@@ -26,7 +27,7 @@ def get_data_home(data_home :Optional[Union[Path, str]]=None) -> Path:
     data_home.mkdir(parents=True, exist_ok=True)
     return data_home
 
-def read_roi(path :Path, shape :Tuple[int, int]) -> Int[sparray, 'h w']:
+def read_roi(path :Path, shape :Tuple[int, int]) -> Int[coo_array, 'h w']:
     """
     Read the txt file exported by ENVI software for roi, and get a sparse matrix image
 
@@ -136,7 +137,7 @@ def verify_file(path: Path, expected_sha256: str) -> bool:
     logging.debug(f"PASS")
     return True
 
-def zip_download_and_extract(dir_name :str, url :Union[str, List[str]], required_files :Dict[str, str], data_home :Optional[Union[str,Path]] = None) -> None:
+def zip_download_and_extract(dir_name :str, url :Union[str, List[str]], required_files :Dict[str, str], data_home :Optional[Union[str,Path]] = None) -> Path:
     """
     Download a zip file from url and extract it to datahome
 
@@ -184,6 +185,7 @@ def zip_download_and_extract(dir_name :str, url :Union[str, List[str]], required
 def _ftp_download(path :Path, url, sha256: str) -> None:
     """Only simple case url supported ftp://username@host.com?password/aug.zip"""
     grp = re.match(r'ftp://(\w+)@([\w\.]+)\?([\w\.]+)/([\w\.]+)', url)
+    assert grp is not None, f"FTP URL {url} is not in the correct format"
     ftp_username, ftp_host, ftp_password, ftp_file_name = grp.groups()
 
     if verify_file(path, sha256):
@@ -194,7 +196,9 @@ def _ftp_download(path :Path, url, sha256: str) -> None:
     ftp.login(user=ftp_username, passwd=ftp_password)
     ftp.voidcmd('TYPE I')
 
-    size_mb = ftp.size(ftp_file_name) / 1024 / 1024
+    result_size = ftp.size(ftp_file_name)
+    assert result_size is not None, f"Failed to get the size of the file {ftp_file_name} from FTP server {ftp_host}"
+    size_mb = result_size / 1024 / 1024
     with open(path, 'wb') as fp:
         global i_rsfds
         i_rsfds = 0 # add a random suffix

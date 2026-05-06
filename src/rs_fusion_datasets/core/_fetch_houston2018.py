@@ -5,7 +5,7 @@ from typing import List, Union
 
 import numpy as np
 import rasterio
-from scipy.sparse import coo_array, spmatrix
+from scipy.sparse import coo_array
 from jaxtyping import UInt16, Float32, UInt64
 
 from ..util.fileio import zip_download_and_extract
@@ -14,8 +14,7 @@ from .common import DEFAULT_PALETTE, DataMetaInfo
 def fetch_houston2018(url :Union[str, List[str]]='http://machinelearning.ee.uh.edu/QZ23es1aMPH/2018IEEE/phase2.zip') -> tuple[
     UInt16[np.ndarray, '144 349 1905'],
     Float32[np.ndarray, '1 349 1905'],
-    UInt64[spmatrix, '349 1905'],
-    UInt64[spmatrix, '349 1905'],
+    UInt64[coo_array, '349 1905'],
     DataMetaInfo
 ]:
     """Load the Houston2018 data-set in scikit-learn style
@@ -49,7 +48,7 @@ def fetch_houston2018(url :Union[str, List[str]]='http://machinelearning.ee.uh.e
         'full_name': 'IEEE GRSS DF Contest Houston 2018',
         'homepage': 'https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/',
         'n_channel_hsi': 50,
-        'n_channel_lidar': 1,
+        'n_channel_dsm': 1,
         'n_class': 20,
         'width': -1,
         'height': -1,

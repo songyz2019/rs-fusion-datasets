@@ -92,7 +92,7 @@ def fetch_houston2013_mmr(url :Union[str, List[str]]='https://github.com/songyz2
             993.500000,  998.299988,  1003.099976, 1007.799988, 1012.599976, 1017.400024,
             1022.200012, 1026.900024, 1031.699951, 1036.500000, 1041.300049, 1046.099976
         ]),
-        'palette': ['forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan']
+        'palette': ('forestgreen', 'limegreen', 'darkgreen', 'green', 'indianred', 'royalblue', 'papayawhip', 'pink','red', 'orangered', 'cadetblue', 'yellow', 'darkorange', 'darkmagenta', 'cyan')
 
     }
     return hsi, lidar, tr, te, info

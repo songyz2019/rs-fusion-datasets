@@ -1,9 +1,15 @@
+# This is a small utility function to patchify images
+# It is used for external non-deep-learning methods
+#
+# There's a powery third-party library called `patchify` 
+# that can be used to patchify images, but we won't use it
+# because we want to have less dependencies
+
 from jaxtyping import Float, Num
 from typing import Union, List
 import numpy as np
 from scipy.sparse import coo_array
 
-# There's a powery third-party library called `patchify` that can be used to patchify images, but we won't use it because we want to have less dependencies
 
 def patchify(imgs :Union[List[Float[np.ndarray, 'c h w']], Float[np.ndarray, 'c h w']], lbl :Num[coo_array, 'h w'], patch_size :int, dtype = np.float32) -> tuple[Union[List[Float[np.ndarray, 'n c h w']], Float[np.ndarray, 'n c h w']], Float[np.ndarray, 'n d']]:
     return_list = True

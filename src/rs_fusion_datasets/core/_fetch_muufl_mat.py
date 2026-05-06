@@ -60,7 +60,7 @@ def _fetch_muufl_mat(
         'height': hsi.shape[0],
         'label_name': ['Trees', 'Grass Pure', 'Grass Groundsurface', 'Dirt and Sand', 'Road Materials', 'Water', 'Shadow Building', 'Buildings', 'Sidewalk', 'Yellowcurb', 'Cloth Panels'],
         'wavelength': np.linspace(400, 1000, hsi.shape[-1]),
-        'palette': ['forestgreen', 'limegreen', 'lightblue', 'papayawhip', 'red', 'blue', 'purple', 'pink','orangered', 'yellow', 'brown']
+        'palette': ('forestgreen', 'limegreen', 'lightblue', 'papayawhip', 'red', 'blue', 'purple', 'pink','orangered', 'yellow', 'brown')
 
     }
 

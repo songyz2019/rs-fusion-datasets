@@ -1,27 +1,29 @@
-from typing import List, Optional, Union, Callable
+from typing import List, Optional, Tuple, Union, Callable
 import warnings
 import numpy as np
 import skimage
 from torch import Tensor, zeros
 from torch import argmax, zeros_like
 import torch
+
+from ..core.common import DEFAULT_PALETTE
 from .lbl2rgb import lbl2rgb
 from jaxtyping import UInt8, Float
-from scipy.sparse import spmatrix
+from scipy.sparse import coo_array
 
 
 class Benchmarker:
-    def __init__(self, truth: spmatrix, n_class: Optional[int] = None, device='cpu', dtype=torch.int):
+    def __init__(self, truth: coo_array, n_class: Optional[int] = None, palette :Tuple[str,...] = DEFAULT_PALETTE, device='cpu', dtype=torch.int):
         if n_class is None:
             self.n_class :int = truth.max().item()
         else:
             self.n_class :int = n_class
+        self.palette :Tuple[str,...] = palette
         self.device = device 
         self.dtype = dtype 
         self.TRUTH :Tensor = torch.from_numpy(truth.todense()).to(device, self.dtype) # 0==background real_labels starts from 1
         self.TRUTH[self.TRUTH == -1] = 0 # Wierd bug: sometimes truth.todense() returns -1 and sometimes 0
         self.confusion_matrix_enabled = True  # row is truth, column is prediction
-        self.lbl2rgb :Union[None, Callable[ Float[Union[np.ndarray,Tensor]], UInt8[Tensor, '... 3 H W']]] = None # this should be injected by external
         self.reset()
 
     def reset(self):
@@ -30,11 +32,7 @@ class Benchmarker:
 
     def predicted_image(self) -> UInt8[Tensor, "C H W"]:
         with torch.no_grad():
-            if self.lbl2rgb is not None:
-                img :UInt8[Tensor, '... 3 H W'] = self.lbl2rgb(self.predict)
-            else:
-                # Fallback to general colors
-                img :UInt8[Tensor, '... 3 H W'] = lbl2rgb(self.predict)
+            img :UInt8[Tensor, '... 3 H W'] = lbl2rgb(self.predict, palette=self.palette) # type: ignore
             # img = (img * 255.0).astype(np.uint8) # THIS BUG TAKES ME MONTHS TO FIX!
             return img
 
@@ -87,7 +85,7 @@ class Benchmarker:
             x, y = location[0].to(self.device, dtype=torch.int), location[1].to(self.device, dtype=torch.int)
             self.predict[x, y] = lbl_input.to(self.device, self.dtype) + 1
             # add to confusion matrix
-            if self.confusion_matrix_enabled:
+            if lbl_target is not None:
                 lbl_target = argmax(lbl_target, dim=-1).to(self.device, self.confusion_matrix.dtype)
                 indices = self.n_class * lbl_target + lbl_input
                 cm = torch.bincount(indices, minlength=self.n_class ** 2)

@@ -18,6 +18,7 @@ def _fetch_trento_mat(
         Float32[ndarray, '63 166 600'], 
         Float32[ndarray, '2 166 600'],
         UInt8[coo_array, '166 600'],
+        UInt8[coo_array, '166 600'],
         DataMetaInfo
     ]:
     """Fetch and load the Trento dataset.
@@ -26,7 +27,7 @@ def _fetch_trento_mat(
     
     :param url: The URL to download the dataset. Use a list to specify multiple mirrored URLs.
     :param data_home: The path to store the data files, default is SCIKIT_LEARN_DATA environment variable or '~/scikit_learn_data'
-    :return: (hsi, lidar, train_labels, train_labels, info)
+    :return: (hsi, lidar, train_labels, test_labels, info)
     """
 
     basedir = zip_download_and_extract('trento-mat', url, {
@@ -48,15 +49,13 @@ def _fetch_trento_mat(
     )
     lidar = np.expand_dims(lidar, axis=-1)
 
-    lbl_train :UInt8[ndarray, '166 600'] = load_one_key_mat(
+    lbl_train :UInt8[coo_array, '166 600'] = coo_array(load_one_key_mat(
         basedir / 'Trento/TRLabel.mat',
-    )
-    lbl_train = coo_array(lbl_train)
+    ))
 
-    lbl_test :UInt8[ndarray, '166 600'] = load_one_key_mat(
+    lbl_test :UInt8[coo_array, '166 600'] = coo_array(load_one_key_mat(
         basedir / 'Trento/TSLabel.mat',
-    )
-    lbl_test = coo_array(lbl_test)
+    ))
 
 
     info :DataMetaInfo = {
@@ -79,11 +78,8 @@ def _fetch_trento_mat(
             6: "Roads"
         },
         'wavelength': np.linspace(402.89, 989.09, hsi.shape[-1]),
-        'palette': ['royalblue','lightblue' , 'limegreen', 'yellow', 'red', 'brown']
+        'palette': ('royalblue','lightblue' , 'limegreen', 'yellow', 'red', 'brown')
     }
 
     return hsi.transpose(2,0,1), lidar.transpose(2,0,1), lbl_train, lbl_test, info
 
-
-
-__all__ = ['fetch_trento']

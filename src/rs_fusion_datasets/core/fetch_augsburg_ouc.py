@@ -99,4 +99,4 @@ def fetch_augsburg_ouc(
 
 
 
-__all__ = ['fetch_trento']
+__all__ = ['fetch_augsburg_ouc']

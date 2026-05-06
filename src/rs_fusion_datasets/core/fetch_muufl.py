@@ -44,7 +44,7 @@ def fetch_muufl(
     lidar :Float32[ndarray, '325 220 2'] = d.Lidar[0].z
     truth :Float64[ndarray, '325 220'] = d.sceneLabels.labels
     truth[truth==-1] = 0
-    truth = coo_array(truth, dtype='int')
+    
     info :DataMetaInfo = {
         'name': 'muufl',
         'full_name': 'MUUFL Gulfport dataset',
@@ -58,10 +58,10 @@ def fetch_muufl(
         'height': hsi.shape[0],
         'label_name': dict(enumerate(d.sceneLabels.Materials_Type, start=1)),
         'wavelength': d.info.wavelength,
-        'palette': ['forestgreen', 'limegreen', 'lightblue', 'papayawhip', 'red', 'blue', 'purple', 'pink','orangered', 'yellow', 'brown']
+        'palette': ('forestgreen', 'limegreen', 'lightblue', 'papayawhip', 'red', 'blue', 'purple', 'pink','orangered', 'yellow', 'brown')
     }
 
-    return hsi.transpose(2,0,1), lidar.transpose(2,0,1), truth, info
+    return hsi.transpose(2,0,1), lidar.transpose(2,0,1), coo_array(truth, dtype='int'), info
 
 
-__all__ = ['fetch_muufl', 'split_spmatrix']
+__all__ = ['fetch_muufl']

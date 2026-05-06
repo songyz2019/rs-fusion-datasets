@@ -1,7 +1,7 @@
 from typing import Literal,Tuple, Dict, Union, Callable
 import warnings
 
-from scipy.sparse import coo_array, spmatrix
+from scipy.sparse import coo_array
 from torchvision.transforms.v2.functional import crop
 import torch
 import numpy as np
@@ -13,21 +13,21 @@ from ..util.benchmarker import Benchmarker
 from ..util.lbl2rgb import lbl2rgb
 from ..util.hsi2rgb import hsi2rgb
 from ..core.common import DataMetaInfo
-from ..util.transforms import Identify, NormalizePerChannel
+from ..util.transforms import Identity, NormalizePerChannel
 
 
 class CommonHsiDsmDataset(torch.utils.data.Dataset):
     def __init__(self,
                  hsi        :Num[ndarray, 'c h w'], 
                  dsm        :Num[ndarray, 'c h w'],
-                 lbl_train  :Num[spmatrix, 'h w'],
-                 lbl_test   :Num[spmatrix, 'h w'],
+                 lbl_train  :Num[coo_array, 'h w'],
+                 lbl_test   :Num[coo_array, 'h w'],
                  info       :DataMetaInfo,
                  split      :Literal['train', 'test', 'full'], 
                  patch_size :int = 5,
                  image_level_preprocess_hsi: Callable[ [Float[ndarray, 'C H W']], Float[ndarray, 'C H W']] = NormalizePerChannel(), # the default NormalizePerChannel will lose information of the original data, but it's the common practice.
                  image_level_preprocess_dsm: Callable[ [Float[ndarray, 'C H W']], Float[ndarray, 'C H W']] = NormalizePerChannel(),
-                 image_level_preprocess_lbl: Callable[ [Float[spmatrix, 'H W']],  Float[spmatrix, 'H W']]  = Identify(),
+                 image_level_preprocess_lbl: Callable[ [Float[coo_array, 'H W']],  Float[coo_array, 'H W']]  = Identity(), # type: ignore # Identity can be both LblPreprocess or Preprocess
                  n_class: Union[int, Literal['auto','fixed']] = 'fixed',
                  *args, **kwargs):
         """
@@ -47,7 +47,7 @@ class CommonHsiDsmDataset(torch.utils.data.Dataset):
         elif self.split == 'test':
             self.lbl = lbl_test
         elif self.split == 'full':
-            self.lbl = coo_array(-1*np.ones(lbl_test.shape, dtype=np.int16), dtype=np.int16)
+            self.lbl = coo_array(-1*np.ones(lbl_test.shape, dtype=np.int16), dtype=np.int16) # type: ignore # Upstream type issues
         else:
             raise ValueError(f"Unknown dataset split: {split}")
 
@@ -62,15 +62,15 @@ class CommonHsiDsmDataset(torch.utils.data.Dataset):
         # Preprocess HSI
         self.image_level_preprocess_hsi = image_level_preprocess_hsi
         pad_shape = ((0, 0), (self.patch_radius, self.patch_radius), (self.patch_radius, self.patch_radius))
-        self.hsi = self.image_level_preprocess_hsi(self.HSI)
-        self.hsi = np.pad(self.hsi, pad_shape, mode='reflect')
-        self.hsi = torch.from_numpy(self.hsi).float()
+        _hsi = self.image_level_preprocess_hsi(self.HSI)
+        _hsi = np.pad(_hsi, pad_shape, mode='reflect')
+        self.hsi: Float[torch.Tensor, 'C H W'] = torch.from_numpy(_hsi).float()
         
         # Preprocess DSM
         self.image_level_preprocess_dsm = image_level_preprocess_dsm
-        self.dsm = self.image_level_preprocess_dsm(self.DSM)
-        self.dsm = np.pad(self.dsm, pad_shape, mode='reflect')
-        self.dsm = torch.from_numpy(self.dsm).float()
+        _dsm = self.image_level_preprocess_dsm(self.DSM)
+        _dsm = np.pad(_dsm, pad_shape, mode='reflect')
+        self.dsm: Float[torch.Tensor, 'C H W'] = torch.from_numpy(_dsm).float()
 
         # Preprocess label
         self.image_level_preprocess_lbl = image_level_preprocess_lbl
@@ -92,13 +92,13 @@ class CommonHsiDsmDataset(torch.utils.data.Dataset):
         # cache for one-hot encoding in __getitem__
         self.onehot_eye = torch.eye(self.n_class).float()
 
-    def __len__(self):
-        return self.lbl.count_nonzero()
+    def __len__(self) -> int:
+        return int(self.lbl.count_nonzero())
 
     def __getitem__(self, index) -> Tuple[
-            Float[ndarray, 'c h w'],
-            Float[ndarray, 'c h w'],
-            Float[ndarray, 'c h w'],
+            Float[torch.Tensor, 'c h w'],
+            Float[torch.Tensor, 'c h w'],
+            Float[torch.Tensor, 'c h w'],
             Dict[str, int]
         ]:
         """
@@ -107,9 +107,9 @@ class CommonHsiDsmDataset(torch.utils.data.Dataset):
         """
         w = self.patch_size
 
-        i = self.lbl.row[index]
-        j = self.lbl.col[index]
-        cid = self.lbl.data[index].item()
+        i = self.lbl.row[index].item()
+        j = self.lbl.col[index].item()
+        cid = int(self.lbl.data[index].item())
 
         # x_hsi = self.hsi[:, i:i+w, j:j+w]
         # x_dsm = self.dsm[:, i:i+w, j:j+w]
@@ -139,7 +139,6 @@ class CommonHsiDsmDataset(torch.utils.data.Dataset):
     
     def benchmarker(self) -> Benchmarker:
         benchmarker = Benchmarker(self.lbl, n_class=self.n_class)
-        benchmarker.lbl2rgb = self.lbl2rgb # Inject
         return benchmarker
 
     def lbl2rgb(self, lbl=None, *args, **kwarg):

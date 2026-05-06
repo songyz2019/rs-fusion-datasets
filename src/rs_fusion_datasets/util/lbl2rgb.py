@@ -1,12 +1,13 @@
 from colorsys import hsv_to_rgb
-from typing import Union
+from typing import Tuple, Union
 import scipy
 import scipy.sparse
 import skimage
 import torch
 import numpy as np
 from jaxtyping import UInt8, Float
-import warnings
+
+from ..core.common import DEFAULT_PALETTE
 
 def hue_platte(n_sample :int):
     return [hsv_to_rgb(n/n_sample, 1, 1) for n in range(n_sample)]
@@ -22,7 +23,7 @@ def hex2rgb(x :str):
     return [r,g,b]
 
 
-def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor,scipy.sparse.spmatrix], 'C H W'], palette :Union[tuple, str]='default') -> UInt8[Union[np.ndarray,torch.Tensor], '... 3 H W']:
+def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor,scipy.sparse.coo_array], 'C H W'], palette :Tuple[str, ...]=DEFAULT_PALETTE) -> UInt8[Union[np.ndarray,torch.Tensor], '... 3 H W']:
     """
     Convert a label image to a RGB image.
 
@@ -34,10 +35,10 @@ def lbl2rgb(lbl :Float[Union[np.ndarray,torch.Tensor,scipy.sparse.spmatrix], 'C 
     if isinstance(lbl, torch.Tensor):
         lbl = lbl.cpu().numpy()
     elif scipy.sparse.issparse(lbl):
-        lbl = lbl.todense()
-    if len(lbl.shape) == 3:
-        lbl = np.argmax(lbl, axis=-3)
-    lbl = lbl.astype(np.int16)
+        lbl = lbl.todense() # type: ignore
+    if len(lbl.shape) == 3: # type: ignore
+        lbl = np.argmax(lbl, axis=-3) # type: ignore
+    lbl = lbl.astype(np.int16) # type: ignore
     img = skimage.color.label2rgb(
         lbl,
         channel_axis=-3,

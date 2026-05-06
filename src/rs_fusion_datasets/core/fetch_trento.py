@@ -58,7 +58,6 @@ def fetch_trento(
         mat_dtype=True,
         struct_as_record=False
     )['mask_test']
-    truth = coo_array(truth)
 
     info :DataMetaInfo = {
         'name': 'trento',
@@ -80,10 +79,10 @@ def fetch_trento(
             6: "Roads"
         },
         'wavelength': np.linspace(402.89, 989.09, hsi.shape[-1]),
-        'palette': ['royalblue','lightblue' , 'limegreen', 'yellow', 'red', 'brown']
+        'palette': ('royalblue','lightblue' , 'limegreen', 'yellow', 'red', 'brown')
     }
 
-    return hsi.transpose(2,0,1), lidar.transpose(2,0,1), truth, info
+    return hsi.transpose(2,0,1), lidar.transpose(2,0,1), coo_array(truth), info
 
 
 

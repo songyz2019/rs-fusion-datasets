@@ -1,12 +1,14 @@
 from functools import partial
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Union
+import warnings
 from jaxtyping import Float
 from numpy import ndarray
 import numpy as np
-from scipy.sparse import spmatrix
+from scipy.sparse import coo_array
 
 Preprocess = Callable[ [Float[ndarray, 'C H W']], Float[ndarray, 'C H W']]
-LblPreprocess = Callable[ [Float[spmatrix, 'C H W']], Float[spmatrix, 'C H W']]
+LblPreprocess = Callable[ [Float[coo_array, 'H W']], Float[coo_array, 'H W']]
+
 
 def Compose(preprocesses: List[Preprocess]) -> Preprocess:
     """
@@ -22,14 +24,21 @@ def Compose(preprocesses: List[Preprocess]) -> Preprocess:
 
 def identity(x):
     return x
-def Identify() -> Preprocess:
+def Identity() -> Union[LblPreprocess, Preprocess]:
     """
     Identity preprocessing function.
     :return: Identity function that returns the input image unchanged.
     """
     return identity
+def Identify() -> Union[LblPreprocess, Preprocess]:
+    """
+    Identity preprocessing function. This is a typo in the original code, but we keep it for backward compatibility. Please use Identity instead of Identify.
+    :return: Identity function that returns the input image unchanged.
+    """
+    warnings.warn("Identify is a typographical error of Identity, please use Identity instead of Identify", DeprecationWarning)
+    return identity
 
-def map_lbl(lbl: Float[spmatrix, 'H W'], mapping: Dict[int, int]) -> Float[spmatrix, 'H W']:
+def map_lbl(lbl: Float[coo_array, 'H W'], mapping: Dict[int, int]) -> Float[coo_array, 'H W']:
     """
     Map labels in the input label array according to the provided mapping.
     :param lbl: Input label array with shape (H, W).
