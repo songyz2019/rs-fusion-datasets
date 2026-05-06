@@ -14,7 +14,7 @@ authors = [
   { name = "songyz2019", email = "songyz2023dlut@outlook.com" },
 ]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 7 - Inactive",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
@@ -26,11 +26,11 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "jaxtyping>=0.2.0",
+  "jaxtyping>=0.3.0",
   "numpy>=1.24.0",
+  "scipy>=1.10.0",
   "rasterio>=1.2.0",
   "scikit-image>=0.21.0",
-  "scipy>=1.10.0",
 ]
 
 [project.urls]

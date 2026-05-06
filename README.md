@@ -11,8 +11,12 @@ rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint cl
 2. Provides ready-to-use torch dataloaders
 3. Provides utils for visulization, dataset spilit, benchmark, hsi to rgb, etc.
 
-
 ![screenshot](screenshot.webp)
+
+## Maintaince Status
+
+This project is under **passive maintenance**, focusing on critical bugs, security, and documentation. Related issues and PRs are welcomed.
+If you are interested in take over the project or have alternative recommendations, please feel free to [open an issue](https://github.com/songyz2019/rs-fusion-datasets/issues).
 
 
 ## Datasets
@@ -96,8 +100,6 @@ hsi, dsm, train_label, test_label, all_label, info = fetch_houston2018_ouc()
 
 [![Star History Chart](https://api.star-history.com/svg?repos=songyz2019/rs-fusion-datasets&type=Date)](https://www.star-history.com/#songyz2019/rs-fusion-datasets&Date)
 
-## Contribution
-We welcome all contributions, including issues, pull requests, feature requests and discussions.
 
 ## License
 ```text
@@ -115,8 +117,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
-
-
 
 ## Acknowledgments
 We gratefully acknowledge the following individuals and organizations for making this project possible:
