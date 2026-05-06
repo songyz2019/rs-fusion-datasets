@@ -77,7 +77,7 @@ def fetch_houston2018_ouc(
         'license': '',
         'n_channel_hsi': 50,
         'n_channel_dsm': 1,
-        'n_class': lbl_train.data.max()+1,
+        'n_class': lbl_train.data.max(),
         'width': 4768,
         'height': 1202,
         'label_name': {
@@ -119,6 +119,3 @@ def fetch_houston2018_ouc(
 
     return hsi.transpose(2,0,1), lidar.transpose(2,0,1), lbl_train, lbl_test, lbl_all, info
 
-
-
-__all__ = ['fetch_houston2018_ouc']

@@ -72,6 +72,3 @@ def fetch_augsburg(url :Union[str, List[str]]='ftp://m1657312@dataserv.ub.tum.de
 
     return hsi.transpose(2,0,1), lidar.transpose(2,0,1), truth, info
 
-
-
-__all__ = ['fetch_augsburg']

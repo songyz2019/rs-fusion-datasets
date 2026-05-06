@@ -77,7 +77,7 @@ def fetch_berlin_ouc(
         'license': '',
         'n_channel_hsi': 244,
         'n_channel_dsm': 4,
-        'n_class': lbl_train.data.max()+1,
+        'n_class': lbl_train.data.max(),
         'width': 1723,
         'height': 476,
         'label_name': {
@@ -95,7 +95,3 @@ def fetch_berlin_ouc(
     }
 
     return hsi.transpose(2,0,1), sar.transpose(2,0,1), lbl_train, lbl_test, lbl_all, info
-
-
-
-__all__ = ['fetch_berlin_ouc']

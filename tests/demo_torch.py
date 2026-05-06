@@ -53,6 +53,8 @@ if __name__=='__main__':
         skimage.io.imsave('result_rgb.png',  testset.hsi2rgb().transpose(1,2,0) )     # We use CHW in our API by default but skimage uses HWC, so we need to transpose
         skimage.io.imsave('result_lbl.png',  testset.lbl2rgb().transpose(1,2,0) )
         skimage.io.imsave('result_prd.png',  benchmarker.predicted_image().transpose(1,2,0) ) 
+        skimage.io.imsave('result_error.png',benchmarker.error_image(underlying=testset.hsi2rgb()).transpose(1,2,0) )
+
 
     # Draw The full predicted image
     with torch.no_grad():

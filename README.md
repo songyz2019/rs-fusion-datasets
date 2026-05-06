@@ -6,102 +6,132 @@
 ![GitHub Created At](https://img.shields.io/github/created-at/songyz2019/rs-fusion-datasets)
 ![GitHub License](https://img.shields.io/github/license/songyz2019/rs-fusion-datasets)
 
-rs-fusion-datasets is a remote sensing data-fetcher and data-loader for joint classification of hyperspectral, LiDAR and SAR data. rs-fusion-datasets is a Python package that:
-1. Automatically downloads and load many multimodal remote sensing datasets (houston, muufl, trento, berlin, augsburg, etc.)
-2. Provides ready-to-use torch dataloaders
-3. Provides utils for visulization, dataset spilit, benchmark, hsi to rgb, etc.
+**rs-fusion-datasets** is a Python package for frictionless multimodal remote sensing data handling.
+It simplifies the workflow for joint classification of Hyperspectral and LiDAR/SAR data with the following features:
 
-![screenshot](screenshot.webp)
+- **Out-of-the-Box PyTorch Dataloaders**: Provides standardized PyTorch [Datasets API](https://docs.pytorch.org/tutorials/beginner/basics/data_tutorial.html) with automated  downloading, loading and preprocessing.
+- **Rich Toolkit**: Built-in utilities for HSI-to-RGB conversion, label mapping, dataset splitting, and automated metric calculation (Confusion Matrix, CA, OA, AA, Kappa).
+- **Raw Data Access**: Direct raw data APIs for non-deep learning workflows, allowing to build traditional ML baselines without PyTorch dependencies.
 
-## Maintaince Status
+![screenshot](asset/screenshot.webp)
 
-This project is under **passive maintenance**, focusing on critical bugs, security, and documentation. Related issues and PRs are welcomed.
-If you are interested in take over the project or have alternative recommendations, please feel free to [open an issue](https://github.com/songyz2019/rs-fusion-datasets/issues).
-
-
-## Datasets
-
-|Dataset|Source|Fetcher Function|Torch Dataset | Modals | Note |
-|---|---|---|---|---|---|
-|[Houston 2013](https://machinelearning.ee.uh.edu/?page_id=459)| [Official Website](https://machinelearning.ee.uh.edu/?page_id=459) |`fetch_houston2013`|`Houston2013`| HSI,LiDAR |  |
-|[Houston 2013](https://machinelearning.ee.uh.edu/?page_id=459)| [S2ENet](https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit/) |`fetch_houston2013_mmr`|`Houston2013Mmr`| HSI,LiDAR | |
-|Trento| [tyust-dayu](https://github.com/tyust-dayu/Trento/tree/b4afc449ce5d6936ddc04fe267d86f9f35536afd) |`fetch_trento`|`Trento`| HSI,LiDAR | |
-|[MUUFL](https://doi.org/10.5281/zenodo.1186326)| [Official GitHub](https://github.com/GatorSense/MUUFLGulfport/tree/v0.1) |`fetch_muufl`|`Muufl`| HSI,LiDAR | |
-|[Houston 2018](https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/)| [DCMNet](https://github.com/oucailab/DCMNet) |`fetch_houston2018_ouc`|`Houston2018Ouc`| HSI,LiDAR | May have [different channel numbers](https://github.com/songyz2019/rs-fusion-datasets/issues/12) |
-|[Augsburg](https://mediatum.ub.tum.de/1657312)|[DCMNet](https://github.com/oucailab/DCMNet)|`fetch_augsburg_ouc`|`AugsburgOuc`| HSI,SAR |  |
-|[Berlin](https://gfzpublic.gfz-potsdam.de/pubman/faces/ViewItemFullPage.jsp?itemId=item_1480927_5)|[DCMNet](https://github.com/oucailab/DCMNet)|`fetch_berlin_ouc`|`BerlinOuc`| HSI,SAR |  |
-
-
-# Known Issues
-> [!IMPORTANT] 
-> 1. `version <=0.18.3` has a [serious bug](https://github.com/songyz2019/rs-fusion-datasets/releases/tag/v0.18.3) when using `benchmarker.predicted_image()`. This is fixed in the later versions.
-> 2. `version <= 0.18.4` has a [critical bug](https://github.com/songyz2019/rs-fusion-datasets/issues/14) when using `fetch_houston2013` and `Houston2013` with 30 samples not loaded. `fetch_houston2013_mmr` and `Houston2013Mmr` is not affected. This is fixed in the later versions.
+| Dataset                                                                                                                                   | Source                                                                                        | Fetcher Function          | Torch Dataset      | Modals    | Note                                                                                         |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------- | ------------------ | --------- | -------------------------------------------------------------------------------------------- |
+| [Houston 2013](https://machinelearning.ee.uh.edu/?page_id=459)                                                                               | [Official Website](https://machinelearning.ee.uh.edu/?page_id=459)                               | `fetch_houston2013`     | `Houston2013`    | HSI,LiDAR |                                                                                              |
+| [Houston 2013](https://machinelearning.ee.uh.edu/?page_id=459)                                                                               | [S2ENet](https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit/)                           | `fetch_houston2013_mmr` | `Houston2013Mmr` | HSI,LiDAR |                                                                                              |
+| Trento                                                                                                                                    | [tyust-dayu](https://github.com/tyust-dayu/Trento/tree/b4afc449ce5d6936ddc04fe267d86f9f35536afd) | `fetch_trento`          | `Trento`         | HSI,LiDAR |                                                                                              |
+| [MUUFL](https://doi.org/10.5281/zenodo.1186326)                                                                                              | [Official GitHub](https://github.com/GatorSense/MUUFLGulfport/tree/v0.1)                         | `fetch_muufl`           | `Muufl`          | HSI,LiDAR |                                                                                              |
+| [Houston 2018](https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/) | [DCMNet](https://github.com/oucailab/DCMNet)                                                     | `fetch_houston2018_ouc` | `Houston2018Ouc` | HSI,LiDAR | May have[different channel numbers](https://github.com/songyz2019/rs-fusion-datasets/issues/12) |
+| [Augsburg](https://mediatum.ub.tum.de/1657312)                                                                                               | [DCMNet](https://github.com/oucailab/DCMNet)                                                     | `fetch_augsburg_ouc`    | `AugsburgOuc`    | HSI,SAR   |                                                                                              |
+| [Berlin](https://gfzpublic.gfz-potsdam.de/pubman/faces/ViewItemFullPage.jsp?itemId=item_1480927_5)                                           | [DCMNet](https://github.com/oucailab/DCMNet)                                                     | `fetch_berlin_ouc`      | `BerlinOuc`      | HSI,SAR   |                                                                                              |
 
 ## Quick Start
+
 ### Install
-```bash
+
+```sh
 pip install rs-fusion-datasets
 ```
 
-### Use with torch
+### PyTorch Datasets
+
+PyTorch Datasets work out-of-the-box with automated downloading, splitting and cropping.
+
 ```python
-from rs_fusion_datasets import Houston2013, Trento, Muufl, Houston2018Ouc, BerlinOuc, AugsburgOuc
-dataset = Muufl('train', patch_size=11)
-x_h, x_l, y, extras = dataset[0]
+from rs_fusion_datasets import Houston2013
+from torch.utils.data import DataLoader
+testset = Houston2013('test', patch_size=11)
+for x_h, x_l, y, extras in DataLoader(testset, batch_size=64):
+    print('x_h', x_h.shape) # (64, 144, 11, 11)
+    print('x_l', x_l.shape) # (64,   1, 11, 11)
+    print('y'  , y.shape)   # (64,  15,  1)
 ```
 
-### Get the raw image and labels
+### Benchmarking and Visulazation
+
+The `benchmarker` of datasets can visualize the predicted labels and compute the confusion matrix, OA, AA, CA, Kappa.
+
 ```python
-from rs_fusion_datasets import fetch_houston2013, fetch_muufl, fetch_trento, split_spmatrix
-# For Houston 2013
+import torch
+from torch.utils.data import DataLoader
+from rs_fusion_datasets import AugsburgOuc
+
+testset = AugsburgOuc('test', patch_size=9)
+benchmarker = testset.benchmarker()
+
+for hsi, dsm, lbl, ext in DataLoader(testset, batch_size=64, drop_last=True):
+    y_hat = torch.randn(64, testset.n_class)
+    benchmarker.add_sample(ext['location'], y_hat, lbl)
+
+print(f"OA: {benchmarker.oa()}, AA: {benchmarker.aa()}, Kappa: {benchmarker.kappa()}")
+predicted_map = benchmarker.predicted_image()                          # Full predicted label map, CHW format
+error_map     = benchmarker.error_image( underlying=testset.hsi2rgb()) # Spatial distribution of errors, CHW format
+```
+
+![label_mapping](asset/label_mapping.webp)
+
+### Raw Data Access
+
+Direct raw data APIs are provided for accessing raw and full data.
+
+```python
+from rs_fusion_datasets import fetch_houston2013
 hsi, dsm, train_label, test_label, info = fetch_houston2013()
-# For Muufl and Trento
-casi, lidar, truth, info = fetch_muufl()
-train_label, test_label = split_spmatrix(truth, 20)
-# For fetch_houston2018_ouc, fetch_augsberg_ouc, fetch_berlin_ouc
-hsi, dsm, train_label, test_label, all_label, info = fetch_houston2018_ouc()
+print('hsi', hsi.shape)                 # (144, 349, 1905)
+print('dsm', dsm.shape)                 # (  1, 349, 1905)
+print('train_label', train_label.shape) # (349, 1905)
 ```
 
-> [!TIP]
-> The labels returned are [sparse matrix](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html), you can either convert them to np.array easily by
-> ```python
-> train_label=train_label.todense()
-> test_label =test_label.todense()
-> ```
-> Or directly use them for getting the value in a very fast way:
-> ```python
->     def __getitem__(self, index):
->       i = self.truth.row[index]
->       j = self.truth.col[index]
->       label = self.truth.data[index].item()
->       x_hsi = self.hsi[:, i, j]
->       x_dsm = self.dsm[:, i, j]
->       return x_hsi, x_dsm, label
-> ```
+### Dataset Splitting
 
+Default splitting:
 
-### Utils
-1. `<Dataset>.benchmarker`: Draw the predicted labels, compute the confusion matrix, OA, AA, CA, Kappa. For the usage, see [demo_torch.py](tests/demo_torch.py) 
-2. `<Dataset>.lbl2rgb`: Convert the label of dataset to rgb image for visulization
-3. `<Dataset>.hsi2rgb`: Convert HSI to true color RGB
-4. `read_roi`: Read exported `.txt` file of ENVI roi to sparse matrix
-5. `split_spmatrix`: Split a sparse to get the train dataset and test dataset
+```python
+from rs_fusion_datasets import Houston2013
+trainset = Houston2013('train', patch_size=9) # 2832  samples
+testset  = Houston2013('test' , patch_size=9) # 12197 samples
+```
 
+Sampling 20 samples in every class:
+
+```python
+trainset = Houston2013('train', patch_size=9, n_train_perclass=20) # 20*n_class
+testset  = Houston2013('test' , patch_size=9, n_train_perclass=20) # the rest
+```
+
+Sampling 10% in every class:
+
+```python
+trainset = Houston2013('train', patch_size=9, n_train_perclass=0.1) # 10%
+testset  = Houston2013('test' , patch_size=9, n_train_perclass=0.1) # the rest
+```
 
 ## Help
+
 - [PyTorch Demo: train your model in 70 lines of code with rs-fusion-datasets](tests/demo_torch.py)
 - [PyTorch Full Demo: a more powerful showcase of rs-fusion-datasets](tests/demo_torch_full.py)
 - [User Manual](https://github.com/songyz2019/rs-fusion-datasets/wiki/Usage)
 - [Developer Manual](https://github.com/songyz2019/rs-fusion-datasets/wiki/Development)
 - [Test cases](tests/test.py)
 
+## Maintaince Status
+
+This project is under **passive maintenance**, focusing on critical bugs, security, and documentation. Related issues and PRs are welcomed.
+If you are interested in take over the project or have alternative recommendations, please feel free to [open an issue](https://github.com/songyz2019/rs-fusion-datasets/issues).
+
+## Known Issues
+
+> [!IMPORTANT]
+>
+> 1. `version <=0.18.3` has a [serious bug](https://github.com/songyz2019/rs-fusion-datasets/releases/tag/v0.18.3) when using `benchmarker.predicted_image()`. This is fixed in the later versions.
+> 2. `version <= 0.18.4` has a [critical bug](https://github.com/songyz2019/rs-fusion-datasets/issues/14) when using `fetch_houston2013` and `Houston2013` with 30 samples not loaded. `fetch_houston2013_mmr` and `Houston2013Mmr` is not affected. This is fixed in the later versions.
 
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=songyz2019/rs-fusion-datasets&type=Date)](https://www.star-history.com/#songyz2019/rs-fusion-datasets&Date)
 
-
 ## License
+
 ```text
 Copyright 2023-2026 songyz2019
 
@@ -119,9 +149,11 @@ limitations under the License.
 ```
 
 ## Acknowledgments
+
 We gratefully acknowledge the following individuals and organizations for making this project possible:
+
 - The authors of [DCMNet](https://github.com/oucailab/DCMNet) for making their processed datasets available. Their efforts in significantly minimizing the distribution size made it possible for us to efficiently distribute and utilize the data.
-- The authors of [S2ENet](https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit/) for making their processed Houston 2013 dataset available. 
+- The authors of [S2ENet](https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit/) for making their processed Houston 2013 dataset available.
 - The authors of the [Augsburg](https://mediatum.ub.tum.de/1657312) dataset.
   ```bibtex
   @article{hu2022mdas,
@@ -159,4 +191,3 @@ We gratefully acknowledge the following individuals and organizations for making
 - GitHub for hosting some dataset files. [rs-fusion-datasets-dist](https://github.com/songyz2019/rs-fusion-datasets-dist) host some dataset files that are public available for download but have no direct link found for automatically downloading (for example, the author uploads it via net disk apps). The suffix of dataset is only an 3-character UID. I upload these dataset AS IS, without editing anything, making sure it is just a mirror.
 - The authors of [torchgeo](https://github.com/torchgeo/torchgeo). This project is inspired by torchgeo
 - The authors of [torchrs](https://github.com/isaaccorley/torchrs). This project is inspired by torchrs
-
