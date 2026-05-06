@@ -21,7 +21,7 @@ It simplifies the workflow for joint classification of Hyperspectral and LiDAR/S
 | [Houston 2013](https://machinelearning.ee.uh.edu/?page_id=459)                                                                               | [S2ENet](https://github.com/likyoo/Multimodal-Remote-Sensing-Toolkit/)                           | `fetch_houston2013_mmr` | `Houston2013Mmr` | HSI,LiDAR |                                                                                              |
 | Trento                                                                                                                                    | [tyust-dayu](https://github.com/tyust-dayu/Trento/tree/b4afc449ce5d6936ddc04fe267d86f9f35536afd) | `fetch_trento`          | `Trento`         | HSI,LiDAR |                                                                                              |
 | [MUUFL](https://doi.org/10.5281/zenodo.1186326)                                                                                              | [Official GitHub](https://github.com/GatorSense/MUUFLGulfport/tree/v0.1)                         | `fetch_muufl`           | `Muufl`          | HSI,LiDAR |                                                                                              |
-| [Houston 2018](https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/) | [DCMNet](https://github.com/oucailab/DCMNet)                                                     | `fetch_houston2018_ouc` | `Houston2018Ouc` | HSI,LiDAR | May have[different channel numbers](https://github.com/songyz2019/rs-fusion-datasets/issues/12) |
+| [Houston 2018](https://machinelearning.ee.uh.edu/2018-ieee-grss-data-fusion-challenge-fusion-of-multispectral-lidar-and-hyperspectral-data/) | [DCMNet](https://github.com/oucailab/DCMNet)                                                     | `fetch_houston2018_ouc` | `Houston2018Ouc` | HSI,LiDAR | May have [different channel numbers](https://github.com/songyz2019/rs-fusion-datasets/issues/12) |
 | [Augsburg](https://mediatum.ub.tum.de/1657312)                                                                                               | [DCMNet](https://github.com/oucailab/DCMNet)                                                     | `fetch_augsburg_ouc`    | `AugsburgOuc`    | HSI,SAR   |                                                                                              |
 | [Berlin](https://gfzpublic.gfz-potsdam.de/pubman/faces/ViewItemFullPage.jsp?itemId=item_1480927_5)                                           | [DCMNet](https://github.com/oucailab/DCMNet)                                                     | `fetch_berlin_ouc`      | `BerlinOuc`      | HSI,SAR   |                                                                                              |
 
@@ -75,12 +75,24 @@ error_map     = benchmarker.error_image( underlying=testset.hsi2rgb()) # Spatial
 Direct raw data APIs are provided for accessing raw and full data.
 
 ```python
-from rs_fusion_datasets import fetch_houston2013
-hsi, dsm, train_label, test_label, info = fetch_houston2013()
-print('hsi', hsi.shape)                 # (144, 349, 1905)
-print('dsm', dsm.shape)                 # (  1, 349, 1905)
-print('train_label', train_label.shape) # (349, 1905)
+from rs_fusion_datasets import fetch_muufl, split_spmatrix
+hsi, dsm, label, info = fetch_muufl()
+print('hsi', hsi.shape)   # (64, 325, 220)
+print('dsm', dsm.shape)   # ( 1, 325, 220)
+print(label.shape)        # (325, 220)
+train_label, test_label = split_spmatrix(label, n_sample_perclass=20)
+assert len(train_label.data) == 20 * info['n_class']
 ```
+
+| Function |   Returns   |
+| ------ | ----- |
+| `fetch_houston2013`     | `HSI, DSM, TrainLabel, TestLabel, Info` |
+| `fetch_houston2013_mmr` | `HSI, DSM, TrainLabel, TestLabel, Info` |
+| `fetch_trento`          | `HSI, DSM, FullLabel, Info` |
+| `fetch_muufl`           | `HSI, DSM, FullLabel, Info` |
+| `fetch_houston2018_ouc` | `HSI, DSM, TrainLabel, TestLabel, FullLabel, Info` |
+| `fetch_augsburg_ouc`    | `HSI, DSM, TrainLabel, TestLabel, FullLabel, Info` |
+| `fetch_berlin_ouc`      | `HSI, DSM, TrainLabel, TestLabel, FullLabel, Info` |
 
 ### Dataset Splitting
 
@@ -108,7 +120,7 @@ testset  = Houston2013('test' , patch_size=9, n_train_perclass=0.1) # the rest
 
 ## Help
 
-- [PyTorch Demo: train your model in 70 lines of code with rs-fusion-datasets](tests/demo_torch.py)
+- [PyTorch Demo: train your model in about 70 lines of code with rs-fusion-datasets](tests/demo_torch.py)
 - [PyTorch Full Demo: a more powerful showcase of rs-fusion-datasets](tests/demo_torch_full.py)
 - [User Manual](https://github.com/songyz2019/rs-fusion-datasets/wiki/Usage)
 - [Developer Manual](https://github.com/songyz2019/rs-fusion-datasets/wiki/Development)
